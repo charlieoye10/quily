@@ -10,4 +10,5 @@ public class QuilyApplication {
 		SpringApplication.run(QuilyApplication.class, args);
 	}
 
+	//console.log("hello");
 }
