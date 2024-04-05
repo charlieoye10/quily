@@ -9,6 +9,5 @@ public class QuilyApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(QuilyApplication.class, args);
 	}
-
-	//console.log("hello");
+	
 }
