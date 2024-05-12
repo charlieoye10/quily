@@ -1,13 +1,14 @@
 package com.example.quily.services;
 
 import com.example.quily.DAO.KeyGeneratorDAO;
+import com.example.quily.ExceptionHandler.ResourceNotFoundException;
 import com.example.quily.Repositories.KeyGeneratorRepository;
 import com.example.quily.model.KeyIndices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
 
 @Service
 @Component
@@ -22,40 +23,33 @@ public class KeyGeneratorServiceImpl implements KeyGeneratorService {
     }
 
     @Override
-    public List<KeyIndices> getIndices() {
-        try {
-            return keyGeneratorRepository.findAll();
-        } catch (Exception ex) {
-            throw new RuntimeException("getting error while fetching indices in DB with message: " + ex.getMessage());
-        }
-    }
-
-    @Override
-    public KeyIndices saveUpdatedIndices(KeyIndices keyIndices) {
-       try {
-           return keyGeneratorRepository.save(keyIndices);
-       } catch (Exception ex) {
-           throw new RuntimeException("getting error while saving updated indices in DB with message: " + ex.getMessage());
+    public KeyIndices saveUpdatedIndices(KeyIndices keyIndices) throws RuntimeException {
+       Optional<KeyIndices> keyOpt = Optional.of(keyGeneratorRepository.save(keyIndices));
+       if (keyOpt.isEmpty()) {
+           throw new RuntimeException("Unable to update in DB");
        }
+       return keyOpt.get();
     }
 
-    @Override
-    public KeyIndices createBeforeSave() {
-        KeyIndices initialIndices = new KeyIndices(1L, 0, 0, 0, 0, 0, 0);
+    public KeyIndices processCreateBeforeSave(Long id) throws RuntimeException {
+        KeyIndices initialIndices = new KeyIndices(id, 0, 0, 0, 0, 0, 0);
         return saveUpdatedIndices(initialIndices);
     }
 
     @Override
-    public KeyIndices getCurrentKeyIndices() {
-        List<KeyIndices> indices = getIndices();
-        if (indices.isEmpty()) {
-            return createBeforeSave();
-        }
+    public KeyIndices getCurrentKeyIndices(Long id) throws RuntimeException {
+        Optional<KeyIndices> key = keyGeneratorRepository.findById(id);
+        Boolean isReallyNoAnyKeyPresent = true; // need to handle *********
+        KeyIndices currentIndices;
+        if (key.isEmpty() && isReallyNoAnyKeyPresent) {
+            currentIndices = processCreateBeforeSave(id);
+        } else if (key.isEmpty()) {
+            throw new ResourceNotFoundException("key indices with id :" + id + " is not present in DB or unable to fetch in DB");
+        } else currentIndices = key.get();
 
-        KeyIndices currentIndices = indices.get(0);
         KeyIndices nextIndices = keyGeneratorDAO.getUpdatedIndices(currentIndices);
         saveUpdatedIndices(nextIndices);
-        return  currentIndices;
+        return currentIndices;
     }
 
     @Override
