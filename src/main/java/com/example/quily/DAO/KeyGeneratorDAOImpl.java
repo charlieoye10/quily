@@ -1,10 +1,29 @@
 package com.example.quily.DAO;
 
 import com.example.quily.model.KeyIndices;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class KeyGeneratorDAOImpl implements KeyGeneratorDAO {
+    @Value("${HashStringLength}")
+    private int hashStringLength;
+
+    @Value("${BaseSize}")
+    private int baseSize = 62;
+
+    @Value("${Base62_1}")
+    private String base62_1;
+    @Value("${Base62_2}")
+    private String base62_2;
+    @Value("${Base62_3}")
+    private String base62_3;
+    @Value("${Base62_4}")
+    private String base62_4;
+    @Value("${Base62_5}")
+    private String base62_5;
+    @Value("${Base62_6}")
+    private String base62_6;
     @Override
     public int[] toArray(KeyIndices keyIndices) {
         int index1 = keyIndices.getIndex1();
