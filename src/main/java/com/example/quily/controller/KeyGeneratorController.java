@@ -12,15 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1")
 public class KeyGeneratorController {
-    final KeyGeneratorService keyGeneratorService;
+    @Autowired
+     KeyGeneratorService keyGeneratorService;
 
     @Value("${KeyGeneratedIndicesId}")
     Long keyIndicesId;
-
-    @Autowired
-    public KeyGeneratorController(KeyGeneratorService keyGeneratorService) {
-        this.keyGeneratorService = keyGeneratorService;
-    }
 
     @GetMapping("/getHashKey")
     public ResponseEntity<String> getHashString() {

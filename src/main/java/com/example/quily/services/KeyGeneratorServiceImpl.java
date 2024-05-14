@@ -13,14 +13,10 @@ import java.util.Optional;
 @Service
 @Component
 public class KeyGeneratorServiceImpl implements KeyGeneratorService {
-    KeyGeneratorDAO keyGeneratorDAO;
-    KeyGeneratorRepository keyGeneratorRepository;
-
     @Autowired
-    public KeyGeneratorServiceImpl(KeyGeneratorDAO keyGeneratorDAO, KeyGeneratorRepository keyGeneratorRepository) {
-        this.keyGeneratorDAO = keyGeneratorDAO;
-        this.keyGeneratorRepository = keyGeneratorRepository;
-    }
+    KeyGeneratorDAO keyGeneratorDAO;
+    @Autowired
+    KeyGeneratorRepository keyGeneratorRepository;
 
     @Override
     public KeyIndices saveUpdatedIndices(KeyIndices keyIndices) throws RuntimeException {
