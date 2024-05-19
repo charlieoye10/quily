@@ -1,30 +1,27 @@
 package com.example.quily.model;
 
-import jakarta.persistence.*;
-
+import jakarta.persistence.Entity;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 @Entity
-@Table(name = "keyGenerator")
+@Table(name = "key_indices")
 public class KeyIndices {
+    @jakarta.persistence.Id
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column("id")
     private Long id;
 
-    @Column(nullable = false)
     private int index1;
 
-    @Column(nullable = false)
     private int index2;
 
-    @Column(nullable = false)
     private int index3;
 
-    @Column(nullable = false)
     private int index4;
 
-    @Column(nullable = false)
     private int index5;
 
-    @Column(nullable = false)
     private int index6;
 
     public KeyIndices(Long id, int index1, int index2, int index3, int index4, int index5, int index6) {

@@ -1,8 +1,13 @@
 package com.example.quily.DAO;
 
 import com.example.quily.model.KeyIndices;
+import com.example.quily.response.KGSResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @Component
 public class KeyGeneratorDAOImpl implements KeyGeneratorDAO {
@@ -59,7 +64,7 @@ public class KeyGeneratorDAOImpl implements KeyGeneratorDAO {
     }
 
     @Override
-    public String giveSixLengthHash(KeyIndices keyIndices) {
+    public String getSixLengthHash(KeyIndices keyIndices) {
         int [] indexArray = toArray(keyIndices);
         return "" + base62_1.charAt(indexArray[0]) +
                 base62_2.charAt(indexArray[1]) +
@@ -67,5 +72,12 @@ public class KeyGeneratorDAOImpl implements KeyGeneratorDAO {
                 base62_4.charAt(indexArray[3]) +
                 base62_5.charAt(indexArray[4]) +
                 base62_6.charAt(indexArray[5]);
+    }
+
+    @Override
+    public KGSResponse getHashKeyInKGSResponse(KeyIndices keyIndices) {
+        int[] indices = toArray(keyIndices);
+        String hashKey = getSixLengthHash(keyIndices);
+        return new KGSResponse(indices, hashKey);
     }
 }
