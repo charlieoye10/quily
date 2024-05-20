@@ -7,7 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 class QuilyApplicationTests {
 
 	@Test
-	void contextLoads() {
-	}
+	void contextLoads() {}
 
+	@Test
+	void getSixLengthHashShouldReturnValidString() {}
+
+	@Test
+	void getHashKeyShouldReturnSIxLength() {}
 }
