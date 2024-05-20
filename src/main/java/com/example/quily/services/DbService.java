@@ -1,16 +1,16 @@
-package com.example.quily.services;
-import com.example.quily.model.KeyIndices;
 
-import java.util.List;
+package com.example.quily.services;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface DbService<T> {
-    List<T> findAll();
+    Flux<T> findAll();
 
-    T findById(Long id);
+    Mono<T> findByUniqueId(Long id);
 
-    T save(T t);
+    Mono<T> save(T t);
 
-    T update(T t);
+    Mono<T> update(T t);
 
     void Delete(Long id);
 }
