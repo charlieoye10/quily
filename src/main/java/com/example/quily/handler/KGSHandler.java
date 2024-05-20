@@ -1,7 +1,7 @@
 package com.example.quily.handler;
 
-import com.example.quily.Exception.ErrorResponse;
-import com.example.quily.Exception.ResourceNotFoundException;
+import com.example.quily.exception.ErrorResponse;
+import com.example.quily.exception.ResourceNotFoundException;
 import com.example.quily.services.KGSService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

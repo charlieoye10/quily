@@ -1,7 +1,7 @@
 package com.example.quily.services;
 
 import com.example.quily.dao.KeyGeneratorDAO;
-import com.example.quily.Exception.ResourceNotFoundException;
+import com.example.quily.exception.ResourceNotFoundException;
 import com.example.quily.model.KeyIndices;
 import com.example.quily.response.KGSResponse;
 import jakarta.annotation.PostConstruct;
