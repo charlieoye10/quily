@@ -14,5 +14,4 @@ class QuilyApplicationTests {
 
 	@Test
 	void getHashKeyShouldReturnSIxLength() {}
-
 }

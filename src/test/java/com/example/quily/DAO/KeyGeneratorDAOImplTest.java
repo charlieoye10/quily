@@ -1,4 +1,4 @@
-package com.example.quily.DAOTest;
+package com.example.quily.DAO;
 
 import com.example.quily.dao.KeyGeneratorDAOImpl;
 import com.example.quily.model.KeyIndices;
@@ -31,7 +31,7 @@ class KeyGeneratorDAOImplTest {
         ReflectionTestUtils.setField(keyGeneratorDAO, "base62_4", "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
         ReflectionTestUtils.setField(keyGeneratorDAO, "base62_5", "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
         ReflectionTestUtils.setField(keyGeneratorDAO, "base62_6", "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
-        keyIndices = new KeyIndices(1L, 0, 1, 2, 3, 4,5);
+        keyIndices = new KeyIndices(1L, 0, 1, 2, 3, 4, 5);
     }
 
     @Test
@@ -45,6 +45,6 @@ class KeyGeneratorDAOImplTest {
     @Test
     void getHashKeyShouldReturnSIxLength() {
         String actualHash = keyGeneratorDAO.getSixLengthHash(keyIndices);
-        assertEquals(6, actualHash.length());
+        assertEquals(ReflectionTestUtils.getField(keyGeneratorDAO, "hashStringLength"), actualHash.length());
     }
 }
