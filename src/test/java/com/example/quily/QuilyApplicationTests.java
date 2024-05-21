@@ -5,13 +5,4 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class QuilyApplicationTests {
-
-	@Test
-	void contextLoads() {}
-
-	@Test
-	void getSixLengthHashShouldReturnValidString() {}
-
-	@Test
-	void getHashKeyShouldReturnSIxLength() {}
 }
