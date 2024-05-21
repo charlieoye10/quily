@@ -63,7 +63,6 @@ class KeyGeneratorDAOImplTest {
 
     @Test
     public void getUpdatedIndices1() {
-
         KeyIndices updatedIndices = keyGeneratorDAO.getUpdatedIndices(keyIndices1);
         assertEquals(1, updatedIndices.getIndex1());
         assertEquals(1, updatedIndices.getIndex2());
@@ -75,7 +74,6 @@ class KeyGeneratorDAOImplTest {
 
     @Test
     public void getUpdatedIndices2() {
-
         KeyIndices updatedIndices = keyGeneratorDAO.getUpdatedIndices(keyIndices2);
         assertEquals(0, updatedIndices.getIndex1());
         assertEquals(1, updatedIndices.getIndex2());
@@ -87,7 +85,6 @@ class KeyGeneratorDAOImplTest {
 
     @Test
     public void getUpdatedIndices3() {
-
         KeyIndices updatedIndices = keyGeneratorDAO.getUpdatedIndices(keyIndices3);
         assertEquals(1, updatedIndices.getIndex1());
         assertEquals(0, updatedIndices.getIndex2());
@@ -99,7 +96,6 @@ class KeyGeneratorDAOImplTest {
 
     @Test
     public void getUpdatedIndices4() {
-
         KeyIndices updatedIndices = keyGeneratorDAO.getUpdatedIndices(keyIndices4);
         assertEquals(1, updatedIndices.getIndex1());
         assertEquals(0, updatedIndices.getIndex2());
@@ -111,7 +107,6 @@ class KeyGeneratorDAOImplTest {
 
     @Test
     public void getUpdatedIndices5() {
-
         KeyIndices updatedIndices = keyGeneratorDAO.getUpdatedIndices(keyIndices5);
         assertEquals(1, updatedIndices.getIndex1());
         assertEquals(1, updatedIndices.getIndex2());
@@ -123,7 +118,6 @@ class KeyGeneratorDAOImplTest {
 
     @Test
     public void toArrayFromkeyIndices() {
-
         int[] result = keyGeneratorDAO.toArray(keyIndices);
         int[] expectedResult = {0, 1, 2, 3, 4, 5};
         assertArrayEquals(expectedResult, result);
@@ -131,7 +125,6 @@ class KeyGeneratorDAOImplTest {
 
     @Test
     public void toArrayShouldReturnSIxLength() {
-
         int[] result = keyGeneratorDAO.toArray(keyIndices);
         assertEquals(ReflectionTestUtils.getField(keyGeneratorDAO,"hashStringLength"), result.length);
     }
