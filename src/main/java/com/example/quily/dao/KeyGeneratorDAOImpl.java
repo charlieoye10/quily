@@ -7,6 +7,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class KeyGeneratorDAOImpl implements KeyGeneratorDAO {
+    int hashStringLength = KGSUtil.HashStringLength;
+    int baseSize = KGSUtil.BaseSize;
+    String base62_1 = KGSUtil.Base62_1;
+    String base62_2 = KGSUtil.Base62_2;
+    String base62_3 = KGSUtil.Base62_3;
+    String base62_4 = KGSUtil.Base62_4;
+    String base62_5 = KGSUtil.Base62_5;
+    String base62_6 = KGSUtil.Base62_6;
 
     @Override
     public int[] toArray(KeyIndices keyIndices) {
@@ -22,8 +30,6 @@ public class KeyGeneratorDAOImpl implements KeyGeneratorDAO {
 
     @Override
     public void updateIndices(int[] indexArray, int currentIndex, int carry) {
-        int hashStringLength = KGSUtil.HashStringLength;
-        int baseSize = KGSUtil.BaseSize;
         if (currentIndex == hashStringLength) return;
 
         int value = (indexArray[currentIndex] + carry) % baseSize;
@@ -48,13 +54,6 @@ public class KeyGeneratorDAOImpl implements KeyGeneratorDAO {
     @Override
     public String getSixLengthHash(KeyIndices keyIndices) {
         int [] indexArray = toArray(keyIndices);
-        String base62_1 = KGSUtil.Base62_1;
-        String base62_2 = KGSUtil.Base62_2;
-        String base62_3 = KGSUtil.Base62_3;
-        String base62_4 = KGSUtil.Base62_4;
-        String base62_5 = KGSUtil.Base62_5;
-        String base62_6 = KGSUtil.Base62_6;
-
         return "" + base62_1.charAt(indexArray[0]) +
                 base62_2.charAt(indexArray[1]) +
                 base62_3.charAt(indexArray[2]) +
