@@ -10,7 +10,6 @@ public class KeyGeneratorDAOImpl implements KeyGeneratorDAO {
     int hashStringLength = KGSUtil.HashStringLength;
     int baseSize = KGSUtil.BaseSize;
     String base62_1 = KGSUtil.Base62_1;
-
     String base62_2 = KGSUtil.Base62_2;
     String base62_3 = KGSUtil.Base62_3;
     String base62_4 = KGSUtil.Base62_4;
