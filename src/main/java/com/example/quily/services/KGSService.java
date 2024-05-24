@@ -4,9 +4,9 @@ import com.example.quily.dao.KeyGeneratorDAO;
 import com.example.quily.exception.ResourceNotFoundException;
 import com.example.quily.model.KeyIndices;
 import com.example.quily.response.KGSResponse;
+import com.example.quily.util.KGSUtil;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -18,8 +18,8 @@ public class KGSService {
     @Autowired
     DbService<KeyIndices> dbService;
 
-    @Value("${KeyGeneratedIndicesId}")
-    Long id;
+
+    Long id = KGSUtil.KeyGeneratedIndicesId;
     private KeyIndices currentIndices;
 
     @PostConstruct

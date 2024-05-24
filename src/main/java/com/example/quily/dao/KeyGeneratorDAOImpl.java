@@ -2,29 +2,20 @@ package com.example.quily.dao;
 
 import com.example.quily.model.KeyIndices;
 import com.example.quily.response.KGSResponse;
-import org.springframework.beans.factory.annotation.Value;
+import com.example.quily.util.KGSUtil;
 import org.springframework.stereotype.Component;
 
 @Component
 public class KeyGeneratorDAOImpl implements KeyGeneratorDAO {
-    @Value("${HashStringLength}")
-    private int hashStringLength;
+    int hashStringLength = KGSUtil.HashStringLength;
+    int baseSize = KGSUtil.BaseSize;
+    String base62_1 = KGSUtil.Base62_1;
+    String base62_2 = KGSUtil.Base62_2;
+    String base62_3 = KGSUtil.Base62_3;
+    String base62_4 = KGSUtil.Base62_4;
+    String base62_5 = KGSUtil.Base62_5;
+    String base62_6 = KGSUtil.Base62_6;
 
-    @Value("${BaseSize}")
-    private int baseSize = 62;
-
-    @Value("${Base62_1}")
-    private String base62_1;
-    @Value("${Base62_2}")
-    private String base62_2;
-    @Value("${Base62_3}")
-    private String base62_3;
-    @Value("${Base62_4}")
-    private String base62_4;
-    @Value("${Base62_5}")
-    private String base62_5;
-    @Value("${Base62_6}")
-    private String base62_6;
     @Override
     public int[] toArray(KeyIndices keyIndices) {
         int index1 = keyIndices.getIndex1();
@@ -40,6 +31,7 @@ public class KeyGeneratorDAOImpl implements KeyGeneratorDAO {
     @Override
     public void updateIndices(int[] indexArray, int currentIndex, int carry) {
         if (currentIndex == hashStringLength) return;
+
         int value = (indexArray[currentIndex] + carry) % baseSize;
         int nextCarry = (indexArray[currentIndex] + carry) / baseSize;
         indexArray[currentIndex] = value;
