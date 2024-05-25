@@ -1,0 +1,29 @@
+package com.example.quily.router;
+
+
+import com.example.quily.handler.ShortLinkHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
+import org.springframework.web.reactive.function.server.RequestPredicates;
+import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.RouterFunctions;
+import org.springframework.web.reactive.function.server.ServerResponse;
+
+@Configuration
+public class ShortLinkRouter {
+    @Autowired
+    private ShortLinkHandler shortLinkHandler;
+
+    @Bean
+    public RouterFunction<ServerResponse> orderRoutes() {
+
+        return RouterFunctions
+                .route(RequestPredicates.POST("/api/shortLink/create")
+                        .and(RequestPredicates
+                                .accept(MediaType.APPLICATION_JSON)
+                        ), shortLinkHandler::createShortLink
+                );
+    }
+}
