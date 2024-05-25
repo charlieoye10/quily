@@ -29,7 +29,7 @@ public class KeyGeneratorServiceImpl implements DbService<KeyIndices> {
 
     @Override
     public Mono<KeyIndices> save(KeyIndices keyIndices) {
-        return null;
+        return kGSRepository.save(keyIndices);
     }
 
     @Override
