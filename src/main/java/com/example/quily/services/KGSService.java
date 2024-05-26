@@ -45,8 +45,21 @@ public class KGSService {
                                     kgsRequest.getIndex3(), kgsRequest.getIndex4(),
                                     kgsRequest.getIndex5(), kgsRequest.getIndex6());
 
+      if(getSum(currentIndices) < getSum(updatedIndices))
+      {
+          return dbService.update(updatedIndices);
+      }
 
-      return dbService.update(updatedIndices);
+      return Mono.error(
+                new RuntimeException("Key Indices is less than existing indices"));
 
+
+
+    }
+
+    private int getSum(KeyIndices indices)
+    {
+        return   indices.getIndex1()*100000 + indices.getIndex2()*10000 + indices.getIndex3()*1000 +
+                 indices.getIndex4()*100 + indices.getIndex5()*10 + indices.getIndex6();
     }
 }
