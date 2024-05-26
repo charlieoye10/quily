@@ -45,16 +45,14 @@ public class KGSService {
                                     kgsRequest.getIndex3(), kgsRequest.getIndex4(),
                                     kgsRequest.getIndex5(), kgsRequest.getIndex6());
 
-      if(getSum(currentIndices) < getSum(updatedIndices))
-      {
-          return dbService.update(updatedIndices);
-      }
-
-      return Mono.error(
-                new RuntimeException("Key Indices is less than existing indices"));
-
-
-
+        return dbService.findByUniqueId(id).flatMap(indices -> {
+            if (indices == null) {
+                return Mono.error(new ResourceNotFoundException("unable to fetch keyIndices of id: " + id + " from DB"));
+            }
+            return getSum(indices) < getSum(updatedIndices)
+                    ? dbService.save(updatedIndices)
+                    : Mono.just(indices);
+        });
     }
 
     private int getSum(KeyIndices indices)
