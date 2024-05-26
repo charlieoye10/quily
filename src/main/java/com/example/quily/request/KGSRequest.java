@@ -2,22 +2,22 @@ package com.example.quily.request;
 
 public class KGSRequest {
 
-    int  id;
+   private Long  id;
 
-    int index1;
+    private int index1;
 
-    int index2;
+    private int index2;
 
-    int index3;
+    private int index3;
 
-    int index4;
+   private int index4;
 
-    int index5;
+   private int index5;
 
-    int index6;
+   private int index6;
 
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
@@ -45,7 +45,7 @@ public class KGSRequest {
         return index6;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

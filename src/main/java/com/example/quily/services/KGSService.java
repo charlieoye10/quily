@@ -3,7 +3,6 @@ package com.example.quily.services;
 import com.example.quily.dao.KeyGeneratorDAO;
 import com.example.quily.exception.ResourceNotFoundException;
 import com.example.quily.model.KeyIndices;
-import com.example.quily.repositories.KGSRepository;
 import com.example.quily.request.KGSRequest;
 import com.example.quily.response.KGSResponse;
 import com.example.quily.util.KGSUtil;
@@ -41,7 +40,11 @@ public class KGSService {
 
     public Mono<KeyIndices> saveCurrentKey(KGSRequest kgsRequest) {
 
-      KeyIndices updatedIndices =  new KeyIndices( (long)kgsRequest.getId(),kgsRequest.getIndex1(),kgsRequest.getIndex2(),kgsRequest.getIndex3(),kgsRequest.getIndex4(),kgsRequest.getIndex5(),kgsRequest.getIndex6());
+      KeyIndices updatedIndices =  new KeyIndices(kgsRequest.getId(),
+                                    kgsRequest.getIndex1(), kgsRequest.getIndex2(),
+                                    kgsRequest.getIndex3(), kgsRequest.getIndex4(),
+                                    kgsRequest.getIndex5(), kgsRequest.getIndex6());
+
 
       return dbService.update(updatedIndices);
 
