@@ -18,7 +18,7 @@ public class ShortLink {
 
     public ShortLink(){}
 
-    public ShortLink( String originalLink, String shortedLink, String creationDate, String expiryDate) {
+    public ShortLink(String originalLink, String shortedLink, String creationDate, String expiryDate) {
         this.userID =  "101";
         this.originalLink = originalLink;
         this.shortedLink = shortedLink;

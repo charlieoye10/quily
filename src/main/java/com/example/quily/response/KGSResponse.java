@@ -26,7 +26,4 @@ public class KGSResponse {
         this.hashKey = hashKey;
     }
 
-    public String getShortenedLink() {
-                return hashKey;
-    }
 }

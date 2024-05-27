@@ -1,6 +1,5 @@
 package com.example.quily.router;
 
-
 import com.example.quily.handler.ShortLinkHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -17,8 +16,7 @@ public class ShortLinkRouter {
     private ShortLinkHandler shortLinkHandler;
 
     @Bean
-    public RouterFunction<ServerResponse> orderRoutes() {
-
+    public RouterFunction<ServerResponse> ShortLinkRoutes() {
         return RouterFunctions
                 .route(RequestPredicates.POST("/api/shortLink/create")
                         .and(RequestPredicates
