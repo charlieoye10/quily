@@ -3,7 +3,6 @@ package com.example.quily.services;
 import com.example.quily.dao.KeyGeneratorDAO;
 import com.example.quily.exception.ResourceNotFoundException;
 import com.example.quily.model.KeyIndices;
-import com.example.quily.request.KGSRequest;
 import com.example.quily.response.KGSResponse;
 import com.example.quily.util.KGSUtil;
 import jakarta.annotation.PostConstruct;

@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 @Component
-public class KeyGeneratorServiceImpl implements DbService<KeyIndices> {
+public class KeyGeneratorServiceImpl implements DbService<KeyIndices, Long> {
     @Autowired
     KGSRepository kGSRepository;
 
