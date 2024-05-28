@@ -18,7 +18,6 @@ public class KGSService {
     @Autowired
     DbService<KeyIndices> dbService;
 
-
     Long id = KGSUtil.KeyGeneratedIndicesId;
     private KeyIndices currentIndices;
 

@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono;
 public class KeyGeneratorServiceImpl implements DbService<KeyIndices> {
     @Autowired
     KeyGeneratorDAO keyGeneratorDAO;
+
     @Autowired
     KGSRepository kGSRepository;
 

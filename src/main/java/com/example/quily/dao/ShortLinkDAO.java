@@ -1,24 +1,21 @@
-package com.example.quily.services;
+package com.example.quily.dao;
 
 import com.example.quily.model.ShortLink;
-import com.example.quily.repositories.ShortLinkRepository;
 import com.example.quily.request.CreateShortLinkRequest;
 import com.example.quily.response.ShortLinkResponse;
+import com.example.quily.services.KGSService;
 import com.example.quily.util.ShortLinkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import java.time.LocalDateTime;
 
-@Service
-public class ShortLinkServices {
+@Component
+public class ShortLinkDAO {
     String ShortedLink = ShortLinkUtil.ShortLink;
-    @Autowired
-    ShortLinkRepository shortLinkRepository;
+
     @Autowired
     KGSService kgsService;
-    @Autowired
-    DbService <ShortLink> dbService;
 
     public Mono<ShortLink> mapCreateShortLinkRequestToShortLink(CreateShortLinkRequest createShortLinkRequest) {
         return kgsService.getCurrentKey()
@@ -28,10 +25,6 @@ public class ShortLinkServices {
                                 ShortedLink + kgsResponse.getHashKey(),
                                 LocalDateTime.now().toString(),
                                 createShortLinkRequest.getExpiryDate()));
-    }
-
-    public Mono<ShortLink> saveShortLink(Mono<ShortLink> shortLink) {
-        return shortLink.flatMap(dbService::save);
     }
 
     public ShortLinkResponse mapShortLinkToShortLinkResponse(ShortLink shortLink) {
