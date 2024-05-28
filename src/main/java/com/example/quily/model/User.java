@@ -5,6 +5,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.data.relational.core.mapping.Column;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 @Table(name = "users")
 public class User {
@@ -46,6 +49,7 @@ public class User {
     }
 
     public SignUpResponse toSignUpResponse() {
-        return new SignUpResponse(email, LocalDate.now().toString());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mma 'on' dd MMMM yyyy", Locale.ENGLISH);
+        return new SignUpResponse(email, LocalDateTime.now().format(formatter));
     }
 }

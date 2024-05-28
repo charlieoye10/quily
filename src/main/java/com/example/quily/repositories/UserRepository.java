@@ -7,7 +7,4 @@ import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import org.springframework.data.repository.query.Param;
 import reactor.core.publisher.Mono;
 
-public interface UserRepository extends R2dbcRepository<User, String> {
-    @Query("SELECT email, user_name, password FROM users WHERE email = :email")
-    Mono<User> findByEmail(@Param("email") String email);
-}
+public interface UserRepository extends R2dbcRepository<User, String> {}

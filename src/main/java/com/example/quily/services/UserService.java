@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Service;
+import org.springframework.web.ErrorResponseException;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -36,12 +37,8 @@ public class UserService implements DbService<User, String>{
         return userRepository.findById(email);
     }
 
-    public Mono<User> findUserByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
     @Override
-    public Mono<User> save(User user){
+    public Mono<User> save(User user) throws RuntimeException {
         return databaseClient.sql("INSERT INTO users (email, user_name, password) VALUES (:email, :name, :password)")
                 .bind("email", user.getEmail())
                 .bind("name", user.getUserName())

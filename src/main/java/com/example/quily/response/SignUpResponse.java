@@ -10,6 +10,6 @@ public class SignUpResponse {
     public SignUpResponse(String email, String creationTime) {
         this.email = email;
         this.creationTime = creationTime;
-        this.message = "user is created with email: " + email + "at " + creationTime;
+        this.message = "user is created with email: " + email + " at " + creationTime;
     }
 }
