@@ -1,8 +1,8 @@
 package com.example.quily.services;
 
-import com.example.quily.dao.ShortLinkDAOImp;
 import com.example.quily.model.ShortLink;
 import com.example.quily.repositories.ShortLinkRepository;
+import com.example.quily.request.CreateShortLinkRequest;
 import com.example.quily.response.ShortLinkResponse;
 import com.example.quily.util.ShortLinkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +20,14 @@ public class ShortLinkServices {
     @Autowired
     DbService <ShortLink> dbService;
 
-    public Mono<ShortLink> mapCreateShortLinkRequestToShortLink(ShortLinkDAOImp shortLinkDAOImp) {
+    public Mono<ShortLink> mapCreateShortLinkRequestToShortLink(CreateShortLinkRequest createShortLinkRequest) {
         return kgsService.getCurrentKey()
                 .map(kgsResponse ->
                         new ShortLink(
-                                shortLinkDAOImp.getOriginalLink(),
+                                createShortLinkRequest.getOriginalLink(),
                                 ShortedLink + kgsResponse.getHashKey(),
                                 LocalDateTime.now().toString(),
-                                shortLinkDAOImp.getExpiryDate()));
+                                createShortLinkRequest.getExpiryDate()));
     }
 
     public Mono<ShortLink> saveShortLink(Mono<ShortLink> shortLink) {

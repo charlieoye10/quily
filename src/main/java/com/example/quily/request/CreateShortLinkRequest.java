@@ -1,6 +1,6 @@
-package com.example.quily.dao;
+package com.example.quily.request;
 
-public class ShortLinkDAOImp {
+public class CreateShortLinkRequest {
     private String userID;
     private String originalLink;
     private String expiryDate;
