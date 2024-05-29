@@ -22,7 +22,7 @@ public class KGSHandler {
     }
 
     public Mono<ServerResponse> saveData(ServerRequest request) {
-        Mono<KGSRequest>  kgsRequest =  request.bodyToMono(KGSRequest.class);
+        Mono<KGSRequest> kgsRequest = request.bodyToMono(KGSRequest.class);
         return  kgsRequest.flatMap(kGSService::saveCurrentKey)
                 .flatMap(kgsResponse -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
