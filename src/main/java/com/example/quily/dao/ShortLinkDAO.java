@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
 
 @Component
 public class ShortLinkDAO {
-    String ShortedLink = ShortLinkUtil.ShortLink;
-
     @Autowired
     KGSService kgsService;
 
@@ -22,7 +20,7 @@ public class ShortLinkDAO {
                 .map(kgsResponse ->
                         new ShortLink(
                                 createShortLinkRequest.getOriginalLink(),
-                                ShortedLink + kgsResponse.getHashKey(),
+                                ShortLinkUtil.baseUrl + kgsResponse.getHashKey(),
                                 LocalDateTime.now().toString(),
                                 createShortLinkRequest.getExpiryDate()));
     }
