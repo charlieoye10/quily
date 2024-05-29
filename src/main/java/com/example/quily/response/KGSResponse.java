@@ -25,5 +25,4 @@ public class KGSResponse {
     public void setHashKey(String hashKey) {
         this.hashKey = hashKey;
     }
-
 }
