@@ -19,6 +19,9 @@ public class KGSService {
     @Autowired
     DbService<KeyIndices> dbService;
 
+    @Autowired
+    KeyGeneratorServiceImpl serviceImpl;
+
 
     Long id = KGSUtil.KeyGeneratedIndicesId;
     private KeyIndices currentIndices;
@@ -45,14 +48,8 @@ public class KGSService {
                                     kgsRequest.getIndex3(), kgsRequest.getIndex4(),
                                     kgsRequest.getIndex5(), kgsRequest.getIndex6());
 
-        return dbService.findByUniqueId(id).flatMap(indices -> {
-            if (indices == null) {
-                return Mono.error(new ResourceNotFoundException("unable to fetch keyIndices of id: " + id + " from DB"));
-            }
-            return getSum(indices) < getSum(updatedIndices)
-                    ? dbService.save(updatedIndices)
-                    : Mono.just(indices);
-        });
+    return serviceImpl.updateIfGreater(updatedIndices.getId(),updatedIndices);
+
     }
 
     private int getSum(KeyIndices indices)
