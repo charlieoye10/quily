@@ -40,19 +40,12 @@ public class KGSService {
     }
 
     public Mono<KeyIndices> saveCurrentKey(KGSRequest kgsRequest) {
-
-      KeyIndices updatedIndices =  new KeyIndices(kgsRequest.getId(),
+        KeyIndices updatedIndices = new KeyIndices(kgsRequest.getId(),
                                     kgsRequest.getIndex1(), kgsRequest.getIndex2(),
                                     kgsRequest.getIndex3(), kgsRequest.getIndex4(),
                                     kgsRequest.getIndex5(), kgsRequest.getIndex6());
 
     return serviceImpl.updateIfGreater(updatedIndices.getId(),updatedIndices);
 
-    }
-
-    private int getSum(KeyIndices indices)
-    {
-        return   indices.getIndex1()*100000 + indices.getIndex2()*10000 + indices.getIndex3()*1000 +
-                 indices.getIndex4()*100 + indices.getIndex5()*10 + indices.getIndex6();
     }
 }
