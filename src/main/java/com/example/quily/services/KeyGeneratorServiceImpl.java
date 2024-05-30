@@ -1,9 +1,7 @@
 package com.example.quily.services;
 
-import com.example.quily.dao.KeyGeneratorDAO;
 import com.example.quily.exception.GreaterIndicesFoundException;
 import com.example.quily.model.KeyIndices;
-import com.example.quily.query.SQLQueries;
 import com.example.quily.repositories.KGSRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.r2dbc.core.DatabaseClient;
@@ -16,16 +14,10 @@ import reactor.core.publisher.Mono;
 @Component
 public class KeyGeneratorServiceImpl implements DbService<KeyIndices> {
     @Autowired
-    KeyGeneratorDAO keyGeneratorDAO;
-
-    @Autowired
     KGSRepository kGSRepository;
 
     @Autowired
     DatabaseClient databaseClient;
-
-    @Autowired
-    SQLQueries query;
 
     @Override
     public Flux<KeyIndices> findAll() {
@@ -52,7 +44,9 @@ public class KeyGeneratorServiceImpl implements DbService<KeyIndices> {
 
     public Mono<KeyIndices> updateIfGreater(Long id, KeyIndices newObj)
     {
-        return databaseClient.sql(query.updateIndicesIfIndicesIsGreater())
+        return databaseClient.sql("UPDATE key_indices SET index1 = :index1, index2 = :index2, index3 = :index3, index4 = :index4, index5 = :index5, index6 = :index6 " +
+                "WHERE id = :id AND (index6 * 100000 + index5 * 10000 + index4 * 1000 + index3 * 100 + index2 * 10 + index1) < " +
+                "(:index6 * 100000 + :index5 * 10000 + :index4 * 1000 + :index3 * 100 + :index2 * 10 + :index1)")
                 .bind("index1", newObj.getIndex1())
                 .bind("index2", newObj.getIndex2())
                 .bind("index3", newObj.getIndex3())
@@ -64,12 +58,10 @@ public class KeyGeneratorServiceImpl implements DbService<KeyIndices> {
                 .rowsUpdated(
                 ).flatMap(
                         row -> {
-                            if (row > 0) {
+                            if (row > 0)
                                 return Mono.just(newObj);
-                            }
-                            else {
+                            else
                                 return Mono.error(new GreaterIndicesFoundException(("Greater value already exist in db")));
-                            }
                         }
                 );
     }
