@@ -17,7 +17,7 @@ public class KGSService {
     KeyGeneratorDAO keyGeneratorDAO;
 
     @Autowired
-    DbService<KeyIndices> dbService;
+    DbService<KeyIndices, Long> dbService;
     @Autowired
     KeyGeneratorServiceImpl serviceImpl;
 

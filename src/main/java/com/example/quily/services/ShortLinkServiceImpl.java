@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 @Component
-public class ShortLinkServiceImpl implements DbService<ShortLink>{
+public class ShortLinkServiceImpl implements DbService<ShortLink, Long> {
     @Autowired
     ShortLinkRepository shortLinkRepository;
 
@@ -35,5 +35,5 @@ public class ShortLinkServiceImpl implements DbService<ShortLink>{
     }
 
     @Override
-    public void Delete(Long id) {}
+    public void delete(Long id) {}
 }

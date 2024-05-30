@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 @Component
-public class KeyGeneratorServiceImpl implements DbService<KeyIndices> {
+public class KeyGeneratorServiceImpl implements DbService<KeyIndices, Long> {
     @Autowired
     KGSRepository kGSRepository;
 
@@ -40,7 +40,7 @@ public class KeyGeneratorServiceImpl implements DbService<KeyIndices> {
     }
 
     @Override
-    public void Delete(Long id) {}
+    public void delete(Long id) {}
 
     public Mono<KeyIndices> updateIfGreater(KeyIndices newObj)
     {
