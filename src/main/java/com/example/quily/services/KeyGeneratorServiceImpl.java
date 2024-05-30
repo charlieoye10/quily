@@ -40,7 +40,7 @@ public class KeyGeneratorServiceImpl implements DbService<KeyIndices, Long> {
     }
 
     @Override
-    public void Delete(Long id) {}
+    public void delete(Long id) {}
 
     public Mono<KeyIndices> updateIfGreater(KeyIndices newObj)
     {

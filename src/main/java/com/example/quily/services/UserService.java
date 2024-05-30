@@ -54,7 +54,7 @@ public class UserService implements DbService<User, String>{
     }
 
     @Override
-    public void Delete(String email) {
+    public void delete(String email) {
         userRepository.deleteById(email);
     }
 }

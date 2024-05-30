@@ -35,5 +35,5 @@ public class ShortLinkServiceImpl implements DbService<ShortLink, Long> {
     }
 
     @Override
-    public void Delete(Long id) {}
+    public void delete(Long id) {}
 }

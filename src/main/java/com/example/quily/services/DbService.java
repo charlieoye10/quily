@@ -12,5 +12,5 @@ public interface DbService<T, I> {
 
     Mono<T> update(T t);
 
-    void Delete(I id);
+    void delete(I id);
 }
