@@ -3,6 +3,7 @@ package com.example.quily.services;
 import com.example.quily.dao.KeyGeneratorDAO;
 import com.example.quily.exception.ResourceNotFoundException;
 import com.example.quily.model.KeyIndices;
+import com.example.quily.request.KGSRequest;
 import com.example.quily.response.KGSResponse;
 import com.example.quily.util.KGSUtil;
 import jakarta.annotation.PostConstruct;
@@ -17,6 +18,8 @@ public class KGSService {
 
     @Autowired
     DbService<KeyIndices> dbService;
+    @Autowired
+    KeyGeneratorServiceImpl serviceImpl;
 
     Long id = KGSUtil.KeyGeneratedIndicesId;
     private KeyIndices currentIndices;
@@ -34,5 +37,14 @@ public class KGSService {
         }
         return Mono.error(
                 new ResourceNotFoundException("unable to fetch keyIndices of id: " + id + " from DB"));
+    }
+
+    public Mono<KeyIndices> saveCurrentKey(KGSRequest kgsRequest) {
+        KeyIndices updatedIndices = new KeyIndices(kgsRequest.getId(),
+                                    kgsRequest.getIndex1(), kgsRequest.getIndex2(),
+                                    kgsRequest.getIndex3(), kgsRequest.getIndex4(),
+                                    kgsRequest.getIndex5(), kgsRequest.getIndex6());
+
+    return serviceImpl.updateIfGreater(updatedIndices);
     }
 }
