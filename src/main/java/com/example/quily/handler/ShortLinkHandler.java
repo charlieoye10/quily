@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 @Component
 public class ShortLinkHandler {
     @Autowired
-    DbService <ShortLink> dbService;
+    DbService <ShortLink, Long> dbService;
 
     @Autowired
     ShortLinkDAO shortLinkDAO;
