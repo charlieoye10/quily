@@ -45,7 +45,6 @@ public class KGSService {
                                     kgsRequest.getIndex3(), kgsRequest.getIndex4(),
                                     kgsRequest.getIndex5(), kgsRequest.getIndex6());
 
-    return serviceImpl.updateIfGreater(updatedIndices.getId(),updatedIndices);
-
+    return serviceImpl.updateIfGreater(updatedIndices);
     }
 }

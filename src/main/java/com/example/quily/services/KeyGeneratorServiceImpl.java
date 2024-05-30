@@ -42,7 +42,7 @@ public class KeyGeneratorServiceImpl implements DbService<KeyIndices> {
     @Override
     public void Delete(Long id) {}
 
-    public Mono<KeyIndices> updateIfGreater(Long id, KeyIndices newObj)
+    public Mono<KeyIndices> updateIfGreater(KeyIndices newObj)
     {
         return databaseClient.sql("UPDATE key_indices SET index1 = :index1, index2 = :index2, index3 = :index3, index4 = :index4, index5 = :index5, index6 = :index6 " +
                 "WHERE id = :id AND (index6 * 100000 + index5 * 10000 + index4 * 1000 + index3 * 100 + index2 * 10 + index1) < " +
