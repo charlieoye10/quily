@@ -16,23 +16,43 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
+
 @Component
 public class UserHandler {
     @Autowired
-    DbService<User, String> dbService;
+    UserService userService;
 
     @Autowired
     UserDao userDao;
     public Mono<ServerResponse> signUp(ServerRequest request) {
        return request.bodyToMono(SignUpRequest.class)
-                .flatMap(req -> dbService.save(userDao.signUpReqToUser(req)))
-                .flatMap(savedUser -> ServerResponse.ok()
+                .flatMap(req -> userService.sendEmailVerificationLink(userDao.signUpReqToUser(req)))
+                .flatMap(resString -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(savedUser.toSignUpResponse()))
-               .onErrorResume(AlreadyExistEntityException.class, e ->
+                        .bodyValue(resString))
+               .onErrorResume(e ->
                        ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                .contentType(MediaType.APPLICATION_JSON)
                                .bodyValue(new ErrorResponse("Internal Server Error with error message: ", e.getMessage()) {
                                }));
     }
+
+    public Mono<ServerResponse> verifyUser(ServerRequest serverRequest) {
+        Optional<String> tokenMono = serverRequest.queryParam("token");
+		return tokenMono.map(token -> userService.verifyTokenAndSaveUser(token)
+				.flatMap(resString -> ServerResponse.ok()
+						.contentType(MediaType.APPLICATION_JSON)
+						.bodyValue(resString))
+				.onErrorResume(e ->
+						ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
+								.contentType(MediaType.APPLICATION_JSON)
+								.bodyValue(new ErrorResponse("Internal Server Error with error message: ", e.getMessage()) {
+								}))).orElseGet(() -> ServerResponse.status(HttpStatus.BAD_REQUEST)
+				.contentType(MediaType.APPLICATION_JSON)
+				.bodyValue(new ErrorResponse("confiration token was empty in verification link",
+						"please check your verification link or request for new verification link") {
+				}));
+
+	}
 }

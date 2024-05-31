@@ -16,6 +16,6 @@ public class UserDao {
     }
 
     public User signUpReqToUser(SignUpRequest req) {
-        return new User(req.email, emailToUsername(req.email), passwordEncoder.encode(req.password));
+        return new User(req.email, emailToUsername(req.email), passwordEncoder.encode(req.password), false);
     }
 }
