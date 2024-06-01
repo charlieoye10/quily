@@ -98,8 +98,8 @@ public class ShortLink {
 
     public String getOriginalLinkWithoutParams() {
         if (originalLink.contains("?")){
-            return originalLink.substring(0, originalLink.indexOf("?"))+"%";
+            return originalLink.substring(0, originalLink.indexOf("?")) + "%";
         }
-        return originalLink+"%";
+        return originalLink + "%";
     }
 }
