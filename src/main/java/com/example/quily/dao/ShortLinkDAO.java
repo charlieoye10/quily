@@ -4,6 +4,7 @@ import com.example.quily.model.ShortLink;
 import com.example.quily.request.CreateShortLinkRequest;
 import com.example.quily.response.ShortLinkResponse;
 import com.example.quily.services.KGSService;
+import com.example.quily.util.CommonUtil;
 import com.example.quily.util.ShortLinkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,9 +20,10 @@ public class ShortLinkDAO {
         return kgsService.getCurrentKey()
                 .map(kgsResponse ->
                         new ShortLink(
+                                createShortLinkRequest.getUserID(),
                                 createShortLinkRequest.getOriginalLink(),
-                                ShortLinkUtil.baseUrl + kgsResponse.getHashKey(),
-                                LocalDateTime.now().toString(),
+                                ShortLinkUtil.localBaseUrl + kgsResponse.getHashKey(),
+                                CommonUtil.getCurrentDateTimeInFormat(),
                                 createShortLinkRequest.getExpiryDate()));
     }
 

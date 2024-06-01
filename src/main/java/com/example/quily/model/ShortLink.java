@@ -18,8 +18,8 @@ public class ShortLink {
 
     public ShortLink(){}
 
-    public ShortLink(String originalLink, String shortedLink, String creationDate, String expiryDate) {
-        this.userID =  "101";
+    public ShortLink(String userID,String originalLink, String shortedLink, String creationDate, String expiryDate) {
+        this.userID =  userID;
         this.originalLink = originalLink;
         this.shortedLink = shortedLink;
         this.creationDate = creationDate;
@@ -94,5 +94,12 @@ public class ShortLink {
                 ", expiryDate='" + expiryDate + '\'' +
                 ", active=" + active +
                 '}';
+    }
+
+    public String getOriginalLinkWithoutParams() {
+        if (originalLink.contains("?")){
+            return originalLink.substring(0, originalLink.indexOf("?")) + "%";
+        }
+        return originalLink + "%";
     }
 }
