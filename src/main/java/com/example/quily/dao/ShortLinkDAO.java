@@ -19,6 +19,7 @@ public class ShortLinkDAO {
         return kgsService.getCurrentKey()
                 .map(kgsResponse ->
                         new ShortLink(
+                                createShortLinkRequest.getUserID(),
                                 createShortLinkRequest.getOriginalLink(),
                                 ShortLinkUtil.baseUrl + kgsResponse.getHashKey(),
                                 LocalDateTime.now().toString(),
