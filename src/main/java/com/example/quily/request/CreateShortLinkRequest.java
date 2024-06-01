@@ -10,6 +10,9 @@ public class CreateShortLinkRequest {
     }
 
     public String getOriginalLink() {
+        if (originalLink.contains("?")){
+            return originalLink.substring(0, originalLink.indexOf("?"));
+        }
         return originalLink;
     }
 
