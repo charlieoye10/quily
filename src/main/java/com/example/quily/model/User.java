@@ -3,11 +3,7 @@ package com.example.quily.model;
 import com.example.quily.response.SignUpResponse;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
-import org.springframework.data.relational.core.mapping.Column;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
+import com.example.quily.util.CommonUtil;
 
 @Table(name = "users")
 public class User {
@@ -15,11 +11,13 @@ public class User {
     private String email;
     private String userName;
     private String password;
+    private boolean isActive;
 
-    public User(String email, String userName, String password) {
+    public User(String email, String userName, String password, Boolean isActive) {
         this.email = email;
         this.userName = userName;
         this.password = password;
+        this.isActive = isActive;
     }
 
     public User() {}
@@ -48,8 +46,15 @@ public class User {
         this.password = password;
     }
 
-    public SignUpResponse toSignUpResponse() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mma 'on' dd MMMM yyyy", Locale.ENGLISH);
-        return new SignUpResponse(email, LocalDateTime.now().format(formatter));
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        this.isActive = active;
+    }
+
+    public SignUpResponse toSignUpResponse(String message) {
+        return new SignUpResponse(email, CommonUtil.getCurrentDateTimeInFormat(), message);
     }
 }

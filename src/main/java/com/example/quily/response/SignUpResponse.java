@@ -7,9 +7,9 @@ public class SignUpResponse {
 
     public String message;
 
-    public SignUpResponse(String email, String creationTime) {
+    public SignUpResponse(String email, String creationTime, String message) {
         this.email = email;
         this.creationTime = creationTime;
-        this.message = "User is created with email: " + email + " at " + creationTime;
+        this.message = message;
     }
 }

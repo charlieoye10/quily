@@ -19,6 +19,8 @@ public class UserRouter {
     public RouterFunction<ServerResponse> userRoutes() {
         return RouterFunctions
                 .route(RequestPredicates.POST("/api/auth/signup"),
-                        serverRequest -> userHandler.signUp(serverRequest));
+                        serverRequest -> userHandler.signUp(serverRequest))
+                .andRoute(RequestPredicates.GET("/api/auth/confirm-account"),
+                        serverRequest -> userHandler.verifyUser(serverRequest));
     }
 }
