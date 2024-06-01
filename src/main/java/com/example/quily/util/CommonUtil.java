@@ -9,4 +9,6 @@ public class CommonUtil {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mma 'on' dd MMMM yyyy", Locale.ENGLISH);
 		return LocalDateTime.now().format(formatter);
 	}
+
+	public static final String emailPatternRegex = "^[\\w.%+-]+@[A-Za-z0-9.-]+\\.com$";
 }

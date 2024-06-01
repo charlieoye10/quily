@@ -1,12 +1,8 @@
 package com.example.quily.handler;
 
 import com.example.quily.dao.UserDao;
-import com.example.quily.exception.AlreadyExistEntityException;
 import com.example.quily.exception.ErrorResponse;
-import com.example.quily.exception.ResourceNotFoundException;
-import com.example.quily.model.User;
 import com.example.quily.request.SignUpRequest;
-import com.example.quily.services.DbService;
 import com.example.quily.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,9 +21,15 @@ public class UserHandler {
 
     @Autowired
     UserDao userDao;
+
     public Mono<ServerResponse> signUp(ServerRequest request) {
        return request.bodyToMono(SignUpRequest.class)
-                .flatMap(req -> userService.sendEmailVerificationLink(userDao.signUpReqToUser(req)))
+                .flatMap(req -> {
+					if (userDao.checkEmailPattern(req.email))
+						return userService.sendEmailVerificationLink(userDao.signUpReqToUser(req));
+					else
+						return Mono.error(new Exception("Email format is not considerable, Please provide email with correct format eg. `user_name@(gmail or any company_name).com`"));
+				})
                 .flatMap(resString -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(resString))
@@ -50,7 +52,7 @@ public class UserHandler {
 								.bodyValue(new ErrorResponse("Internal Server Error with error message: ", e.getMessage()) {
 								}))).orElseGet(() -> ServerResponse.status(HttpStatus.BAD_REQUEST)
 				.contentType(MediaType.APPLICATION_JSON)
-				.bodyValue(new ErrorResponse("confiration token was empty in verification link",
+				.bodyValue(new ErrorResponse("confirmation token was empty in verification link",
 						"please check your verification link or request for new verification link") {
 				}));
 
