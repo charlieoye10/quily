@@ -95,4 +95,11 @@ public class ShortLink {
                 ", active=" + active +
                 '}';
     }
+
+    public String getOriginalLinkWithoutParams() {
+        if (originalLink.contains("?")){
+            return originalLink.substring(0, originalLink.indexOf("?"))+"%";
+        }
+        return originalLink+"%";
+    }
 }

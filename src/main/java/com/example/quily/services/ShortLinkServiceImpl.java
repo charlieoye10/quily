@@ -40,10 +40,11 @@ public class ShortLinkServiceImpl implements DbService<ShortLink, Long> {
         String sql = "INSERT INTO short_link (user_id, original_link, shorted_link, creation_date, expiry_date) " +
                 "SELECT :user_id, :original_link, :shorted_link, :creation_date, :expiry_date " +
                 "FROM dual WHERE NOT EXISTS (" +
-                "   SELECT 1 FROM short_link WHERE user_id = :user_id AND original_link = :original_link" +
+                "   SELECT 1 FROM short_link WHERE user_id = :user_id AND original_link Like  :compare_link" +
                 ")";
         return databaseClient.sql(sql)
                 .bind("user_id", shortLink.getUserID())
+                .bind("compare_link", shortLink.getOriginalLinkWithoutParams())
                 .bind("original_link", shortLink.getOriginalLink())
                 .bind("shorted_link", shortLink.getShortedLink())
                 .bind("creation_date", shortLink.getCreationDate())
