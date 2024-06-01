@@ -2,6 +2,9 @@ package com.example.quily.services;
 
 import com.example.quily.exception.GreaterIndicesFoundException;
 import com.example.quily.model.ShortLink;
+import com.example.quily.repositories.ShortLinkRepository;
+import com.example.quily.response.OriginalLinkResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -58,4 +61,12 @@ public class ShortLinkServiceImpl implements DbService<ShortLink, Long> {
                         return Mono.error(new GreaterIndicesFoundException("Provided link already has been used."));
                 });
     }
+
+	public Mono<OriginalLinkResponse> findOriginalLink(String shortLink) {
+		return databaseClient.sql("SELECT original_link FROM short_link WHERE shorted_link = :shortLink")
+				.bind("shortLink", shortLink)
+				.fetch()
+				.first()
+				.map(row -> new OriginalLinkResponse((String) row.get("original_link")));
+	}
 }
