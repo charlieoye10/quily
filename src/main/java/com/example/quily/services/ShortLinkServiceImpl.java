@@ -14,11 +14,8 @@ import reactor.core.publisher.Mono;
 @Service
 @Component
 public class ShortLinkServiceImpl implements DbService<ShortLink, Long> {
-    private final DatabaseClient databaseClient;
-
-    public ShortLinkServiceImpl(DatabaseClient databaseClient) {
-        this.databaseClient = databaseClient;
-    }
+	@Autowired
+    private DatabaseClient databaseClient;
 
     @Override
     public Flux<ShortLink> findAll() {
