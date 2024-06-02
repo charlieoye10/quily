@@ -47,8 +47,11 @@ public class ShortLinkHandler {
                 .flatMap(originalLink -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(originalLink))
-                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Looks like this URL is not in the database")))
-                .onErrorResume(ResourceNotFoundException.class, e ->
+                .switchIfEmpty(ServerResponse.status(HttpStatus.NOT_FOUND)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(new ErrorResponse("Looks like this URL is not in the database",
+                                        "Please provide a valid URL")))
+                .onErrorResume(e ->
                         ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .bodyValue(new ErrorResponse("error:", e.getMessage()))
