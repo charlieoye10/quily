@@ -22,6 +22,8 @@ public class ShortLinkRouter {
                         .and(RequestPredicates
                                 .accept(MediaType.APPLICATION_JSON)
                         ), shortLinkHandler::createShortLink
-                );
+                )
+                .andRoute(RequestPredicates.GET("/**"),
+                        shortLinkHandler::getOriginalLink);
     }
 }
