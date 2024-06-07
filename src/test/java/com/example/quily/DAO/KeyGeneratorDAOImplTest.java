@@ -2,6 +2,7 @@ package com.example.quily.DAO;
 
 import com.example.quily.dao.KeyGeneratorDAOImpl;
 import com.example.quily.model.KeyIndices;
+import com.example.quily.response.KGSResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -128,4 +129,15 @@ class KeyGeneratorDAOImplTest {
         int[] result = keyGeneratorDAO.toArray(keyIndices);
         assertEquals(ReflectionTestUtils.getField(keyGeneratorDAO,"hashStringLength"), result.length);
     }
+
+    @Test
+    public void getHashKeyInKGSResponseReturnIndicesAndHashKey() {
+        KGSResponse result= keyGeneratorDAO.getHashKeyInKGSResponse(keyIndices);
+        int [] indices = { 0,1,2,3,4,5};
+        KGSResponse expectedResponse = new KGSResponse(indices, "ABCDEF");
+        assertArrayEquals(expectedResponse.getIndices(), result.getIndices());
+        assertEquals(expectedResponse.getHashKey(),result.getHashKey());
+    }
+
+
 }
