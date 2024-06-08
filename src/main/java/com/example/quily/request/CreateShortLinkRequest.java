@@ -20,5 +20,5 @@ public class CreateShortLinkRequest {
         return expiryDate;
     }
 
-    public String getCustomAlias(){return ShortLinkUtil.localBaseUrl + customAlias;}
+    public String getCustomAlias(){return  customAlias;}
 }
