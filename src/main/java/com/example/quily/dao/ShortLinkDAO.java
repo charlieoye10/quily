@@ -20,37 +20,28 @@ public class ShortLinkDAO {
     @Autowired
     ShortLinkServiceImpl shortLinkServiceImpl;
 
-    public Mono<ShortLink> mapCreateShortLinkRequestToShortLink(CreateShortLinkRequest createShortLinkRequest) {
-        if(createShortLinkRequest.getCustomAlias() !=null){
-            return shortLinkServiceImpl.findByCustomAlias(createShortLinkRequest)
+    public Mono<Object> mapCreateShortLinkRequestToShortLink(CreateShortLinkRequest createShortLinkRequest) {
+        if (createShortLinkRequest.getCustomAlias() != null) {
+            return shortLinkServiceImpl.hasCustomAliasBeenUsed(createShortLinkRequest)
                     .flatMap(customLink -> {
-                        return kgsService.getCurrentKey()
-                                .flatMap(kgsResponse -> {
-                                    if (customLink) {
-                                        return Mono.error(new ResourceNotFoundException("The custom alias is already present."));
-                                    } else {
-                                        String shortedLink = createShortLinkRequest.getCustomAlias();
-                                        return Mono.just(new ShortLink(
-                                                createShortLinkRequest.getUserID(),
-                                                createShortLinkRequest.getOriginalLink(),
-                                               ShortLinkUtil.localBaseUrl + shortedLink,
-                                                CommonUtil.getCurrentDateTimeInFormat(),
-                                                createShortLinkRequest.getExpiryDate()));
-                                    }
-                                });
+                        if (customLink) {
+                            return Mono.error(new ResourceNotFoundException("The custom alias is already present."));
+                        } else {
+                            return Mono.just(createShortLink(createShortLinkRequest, createShortLinkRequest.getCustomAlias()));
+                        }
                     });
-        }
-        else {
+        } else {
             return kgsService.getCurrentKey()
-                    .map(kgsResponse ->
-                            new ShortLink(
-                                    createShortLinkRequest.getUserID(),
-                                    createShortLinkRequest.getOriginalLink(),
-                                    ShortLinkUtil.localBaseUrl + kgsResponse.getHashKey(),
-                                    CommonUtil.getCurrentDateTimeInFormat(),
-                                    createShortLinkRequest.getExpiryDate()));
+                    .map(kgsResponse -> createShortLink(createShortLinkRequest, kgsResponse.getHashKey()));
         }
-
+    }
+    private ShortLink createShortLink(CreateShortLinkRequest createShortLinkRequest, String alias) {
+        return new ShortLink(
+                createShortLinkRequest.getUserID(),
+                createShortLinkRequest.getOriginalLink(),
+                ShortLinkUtil.localBaseUrl + alias,
+                CommonUtil.getCurrentDateTimeInFormat(),
+                createShortLinkRequest.getExpiryDate());
     }
 
     public ShortLinkResponse mapShortLinkToShortLinkResponse(ShortLink shortLink) {

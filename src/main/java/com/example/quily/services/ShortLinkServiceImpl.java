@@ -68,7 +68,7 @@ public class ShortLinkServiceImpl implements DbService<ShortLink, Long> {
 				.map(row -> new OriginalLinkResponse((String) row.get("original_link")));
 	}
 
-    public Mono<Boolean> findByCustomAlias(CreateShortLinkRequest createShortLinkRequest){
+    public Mono<Boolean> hasCustomAliasBeenUsed(CreateShortLinkRequest createShortLinkRequest){
         return databaseClient.sql("SELECT shorted_link FROM short_link WHERE shorted_link = :customAlias")
                 .bind("customAlias", ShortLinkUtil.localBaseUrl + createShortLinkRequest.getCustomAlias())
                 .fetch()
