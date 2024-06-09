@@ -23,8 +23,8 @@ public class ShortLinkDAO {
     public Mono<ShortLink> mapCreateShortLinkRequestToShortLink(CreateShortLinkRequest createShortLinkRequest) {
         if (createShortLinkRequest.getCustomAlias() != null) {
             return shortLinkServiceImpl.hasCustomAliasBeenUsed(createShortLinkRequest)
-                    .flatMap(customLink -> {
-                        if (customLink) {
+                    .flatMap(usedCustomLink -> {
+                        if (usedCustomLink) {
                             return Mono.error(new ResourceNotFoundException("The custom alias is already present."));
                         } else {
                             return Mono.just(createShortLink(createShortLinkRequest, createShortLinkRequest.getCustomAlias()));
