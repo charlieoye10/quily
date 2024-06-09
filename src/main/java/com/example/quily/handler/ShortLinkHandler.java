@@ -35,7 +35,8 @@ public class ShortLinkHandler {
                 .body(
                         monoShortLinkRequest
                                 .flatMap(shortLinkDAO::mapCreateShortLinkRequestToShortLink)
-                                .flatMap(shortLink -> dbService.save(shortLink))                                .map(shortLink ->
+                                .flatMap(shortLink -> dbService.save(shortLink))
+                                .map(shortLink ->
                                         shortLinkDAO.mapShortLinkToShortLinkResponse(shortLink)),
                         ShortLinkResponse.class
                 );
