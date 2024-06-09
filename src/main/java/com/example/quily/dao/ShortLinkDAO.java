@@ -20,7 +20,7 @@ public class ShortLinkDAO {
     @Autowired
     ShortLinkServiceImpl shortLinkServiceImpl;
 
-    public Mono<Object> mapCreateShortLinkRequestToShortLink(CreateShortLinkRequest createShortLinkRequest) {
+    public Mono<ShortLink> mapCreateShortLinkRequestToShortLink(CreateShortLinkRequest createShortLinkRequest) {
         if (createShortLinkRequest.getCustomAlias() != null) {
             return shortLinkServiceImpl.hasCustomAliasBeenUsed(createShortLinkRequest)
                     .flatMap(customLink -> {
