@@ -4,6 +4,7 @@ import com.example.quily.model.ShortLink;
 import com.example.quily.request.CreateShortLinkRequest;
 import com.example.quily.response.ShortLinkResponse;
 import com.example.quily.services.KGSService;
+import com.example.quily.services.ShortLinkService;
 import com.example.quily.util.CommonUtil;
 import com.example.quily.util.ShortLinkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +17,20 @@ public class ShortLinkDAO {
     @Autowired
     KGSService kgsService;
 
-    public Mono<ShortLink> mapCreateShortLinkRequestToShortLink(CreateShortLinkRequest createShortLinkRequest) {
+    @Autowired
+    ShortLinkService shortLinkService;
+
+    public Mono<ShortLink> createSortLink(CreateShortLinkRequest createShortLinkRequest) {
         return kgsService.getCurrentKey()
-                .map(kgsResponse ->
-                        new ShortLink(
+                .flatMap(tuple ->
+                      shortLinkService.createSortLinkAndUpdateIndices(new ShortLink(
                                 createShortLinkRequest.getUserID(),
                                 createShortLinkRequest.getOriginalLink(),
-                                ShortLinkUtil.localBaseUrl + kgsResponse.getHashKey(),
+                                ShortLinkUtil.localBaseUrl + tuple.getT1().getHashKey(),
                                 CommonUtil.getCurrentDateTimeInFormat(),
-                                createShortLinkRequest.getExpiryDate()));
+                                createShortLinkRequest.getExpiryDate()),
+                                tuple.getT2())
+                );
     }
 
     public ShortLinkResponse mapShortLinkToShortLinkResponse(ShortLink shortLink) {

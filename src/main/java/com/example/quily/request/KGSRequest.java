@@ -1,23 +1,26 @@
 package com.example.quily.request;
 
 import lombok.Data;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Data
+@RequiredArgsConstructor
 public class KGSRequest {
 
-    private Long  id;
+    @NonNull private Long  id;
 
-    private int index1;
+    @NonNull private int index1;
 
-    private int index2;
+    @NonNull private int index2;
 
-    private int index3;
+    @NonNull private int index3;
 
-    private int index4;
+    @NonNull private int index4;
 
-    private int index5;
+    @NonNull private int index5;
 
-    private int index6;
+    @NonNull private int index6;
 }
 
 
