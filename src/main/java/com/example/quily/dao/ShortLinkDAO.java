@@ -6,11 +6,12 @@ import com.example.quily.request.CreateShortLinkRequest;
 import com.example.quily.response.ShortLinkResponse;
 import com.example.quily.services.KGSService;
 import com.example.quily.services.ShortLinkServiceImpl;
-import com.example.quily.util.CommonUtil;
 import com.example.quily.util.ShortLinkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+
+import java.time.LocalDateTime;
 
 @Component
 public class ShortLinkDAO {
@@ -26,21 +27,19 @@ public class ShortLinkDAO {
                     .flatMap(usedCustomLink -> {
                         if (usedCustomLink) {
                             return Mono.error(new ResourceNotFoundException("The custom alias is already present."));
-                        } else {
-                            return Mono.just(createShortLink(createShortLinkRequest, createShortLinkRequest.getCustomAlias()));
                         }
+                        return Mono.just(createShortLink(createShortLinkRequest, createShortLinkRequest.getCustomAlias()));
                     });
-        } else {
-            return kgsService.getCurrentKey()
-                    .map(kgsResponse -> createShortLink(createShortLinkRequest, kgsResponse.getHashKey()));
         }
+        return kgsService.getCurrentKey()
+                    .map(kgsResponse -> createShortLink(createShortLinkRequest, kgsResponse.getHashKey()));
     }
     private ShortLink createShortLink(CreateShortLinkRequest createShortLinkRequest, String alias) {
         return new ShortLink(
                 createShortLinkRequest.getUserID(),
                 createShortLinkRequest.getOriginalLink(),
                 ShortLinkUtil.localBaseUrl + alias,
-                CommonUtil.getCurrentDateTimeInFormat(),
+                LocalDateTime.now().toString(),
                 createShortLinkRequest.getExpiryDate());
     }
 
