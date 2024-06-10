@@ -4,9 +4,11 @@ import com.example.quily.model.KeyIndices;
 import com.example.quily.model.ShortLink;
 import com.example.quily.request.KGSRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
+@Service
 public class ShortLinkService {
 
     @Autowired
