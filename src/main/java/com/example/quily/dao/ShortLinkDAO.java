@@ -1,16 +1,21 @@
 package com.example.quily.dao;
 
+import com.example.quily.exception.ResourceNotFoundException;
+import com.example.quily.model.KeyIndices;
 import com.example.quily.model.ShortLink;
 import com.example.quily.request.CreateShortLinkRequest;
 import com.example.quily.response.ShortLinkResponse;
 import com.example.quily.services.KGSService;
+import com.example.quily.services.ShortLinkServiceImpl;
 import com.example.quily.services.ShortLinkService;
 import com.example.quily.util.CommonUtil;
 import com.example.quily.util.ShortLinkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Component
 public class ShortLinkDAO {
@@ -18,19 +23,42 @@ public class ShortLinkDAO {
     KGSService kgsService;
 
     @Autowired
+    ShortLinkServiceImpl shortLinkServiceImpl;
+    @Autowired
     ShortLinkService shortLinkService;
 
-    public Mono<ShortLink> createSortLink(CreateShortLinkRequest createShortLinkRequest) {
+    public Mono<ShortLink> createShortLinkAndUpdateIndices(CreateShortLinkRequest createShortLinkRequest) {
+        if (createShortLinkRequest.getCustomAlias() != null) {
+            return shortLinkServiceImpl.hasCustomAliasBeenUsed(createShortLinkRequest)
+                    .flatMap(usedCustomLink -> {
+                        if (usedCustomLink) {
+                            return Mono.error(new ResourceNotFoundException("The custom alias is already present."));
+                        }
+                        return createShortLink(createShortLinkRequest, createShortLinkRequest.getCustomAlias(),true, Optional.empty());
+                    });
+        }
+
         return kgsService.getCurrentKey()
-                .flatMap(tuple ->
-                      shortLinkService.createSortLinkAndUpdateIndices(new ShortLink(
-                                createShortLinkRequest.getUserID(),
-                                createShortLinkRequest.getOriginalLink(),
-                                ShortLinkUtil.localBaseUrl + tuple.getT1().getHashKey(),
-                                CommonUtil.getCurrentDateTimeInFormat(),
-                                createShortLinkRequest.getExpiryDate()),
-                                tuple.getT2())
-                );
+                    .flatMap(kgsResponse -> createShortLink(createShortLinkRequest, kgsResponse.getT1().getHashKey(),false, Optional.of(kgsResponse.getT2())));
+    }
+
+
+    private Mono<ShortLink> createShortLink(CreateShortLinkRequest createShortLinkRequest, String alias,boolean shortLinkCreateByAlias, Optional<KeyIndices> keyIndicesOpt) {
+
+        ShortLink shortLink =  new ShortLink(
+                createShortLinkRequest.getUserID(),
+                createShortLinkRequest.getOriginalLink(),
+                ShortLinkUtil.localBaseUrl + alias,
+                LocalDateTime.now().toString(),
+                createShortLinkRequest.getExpiryDate());
+
+        if(shortLinkCreateByAlias)
+        {
+           return shortLinkService.createSortLinkAndUpdateIndices(shortLink, Optional.empty());
+        }
+        else {
+            return shortLinkService.createSortLinkAndUpdateIndices(shortLink, keyIndicesOpt);
+        }
     }
 
     public ShortLinkResponse mapShortLinkToShortLinkResponse(ShortLink shortLink) {

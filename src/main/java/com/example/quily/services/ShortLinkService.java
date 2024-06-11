@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
+import java.util.Optional;
+
 @Service
 public class ShortLinkService {
 
@@ -16,11 +18,12 @@ public class ShortLinkService {
 
     @Autowired
     KGSService kgsService;
-    public Mono<ShortLink> createSortLinkAndUpdateIndices(ShortLink shortLink, KeyIndices currentIndices)
+    public Mono<ShortLink> createSortLinkAndUpdateIndices(ShortLink shortLink,  Optional<KeyIndices> currentIndicesOpt)
     {
         Mono<ShortLink> link=  dbService.save(shortLink);
 
-        Mono<KeyIndices> indices= kgsService.saveCurrentKey(new KGSRequest(
+        Mono<KeyIndices> indices= currentIndicesOpt.map(currentIndices ->
+                kgsService.saveCurrentKey(new KGSRequest(
                 currentIndices.getId(),
                 currentIndices.getIndex1(),
                 currentIndices.getIndex2(),
@@ -28,7 +31,7 @@ public class ShortLinkService {
                 currentIndices.getIndex4(),
                 currentIndices.getIndex5(),
                 currentIndices.getIndex6()
-        ));
+        ))).orElse(Mono.empty());
 
         return Mono.zip(link, indices)
                 .map(Tuple2::getT1);

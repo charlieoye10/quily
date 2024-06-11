@@ -33,7 +33,7 @@ public class ShortLinkHandler {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(
                         monoShortLinkRequest
-                                .flatMap(shortLinkDAO::createSortLink)
+                                .flatMap(shortLinkDAO::createShortLinkAndUpdateIndices)
                                 .map(shortLink ->
                                         shortLinkDAO.mapShortLinkToShortLinkResponse(shortLink)),
                         ShortLinkResponse.class
