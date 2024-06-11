@@ -2,8 +2,9 @@ package com.example.quily.services;
 
 import com.example.quily.exception.GreaterIndicesFoundException;
 import com.example.quily.model.ShortLink;
-import com.example.quily.repositories.ShortLinkRepository;
+import com.example.quily.request.CreateShortLinkRequest;
 import com.example.quily.response.OriginalLinkResponse;
+import com.example.quily.util.ShortLinkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
@@ -66,4 +67,12 @@ public class ShortLinkServiceImpl implements DbService<ShortLink, Long> {
 				.first()
 				.map(row -> new OriginalLinkResponse((String) row.get("original_link")));
 	}
+
+    public Mono<Boolean> hasCustomAliasBeenUsed(CreateShortLinkRequest createShortLinkRequest){
+        return databaseClient.sql("SELECT shorted_link FROM short_link WHERE shorted_link = :customAlias")
+                .bind("customAlias", ShortLinkUtil.localBaseUrl + createShortLinkRequest.getCustomAlias())
+                .fetch()
+                .first().map(customAlias -> true)
+                .switchIfEmpty(Mono.just(false));
+    }
 }

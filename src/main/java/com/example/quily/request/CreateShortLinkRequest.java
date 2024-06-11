@@ -7,4 +7,5 @@ public class CreateShortLinkRequest {
     private String userID;
     private String originalLink;
     private String expiryDate;
+    private String customAlias;
 }
