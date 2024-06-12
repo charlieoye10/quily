@@ -7,8 +7,6 @@ import com.example.quily.request.CreateShortLinkRequest;
 import com.example.quily.response.ShortLinkResponse;
 import com.example.quily.services.KGSService;
 import com.example.quily.services.ShortLinkServiceImpl;
-import com.example.quily.services.ShortLinkService;
-import com.example.quily.util.CommonUtil;
 import com.example.quily.util.ShortLinkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,8 +22,6 @@ public class ShortLinkDAO {
 
     @Autowired
     ShortLinkServiceImpl shortLinkServiceImpl;
-    @Autowired
-    ShortLinkService shortLinkService;
 
     public Mono<ShortLink> createShortLinkAndUpdateIndices(CreateShortLinkRequest createShortLinkRequest) {
         if (createShortLinkRequest.getCustomAlias() != null) {
@@ -54,10 +50,10 @@ public class ShortLinkDAO {
 
         if(shortLinkCreateByAlias)
         {
-           return shortLinkService.createSortLinkAndUpdateIndices(shortLink, Optional.empty());
+           return shortLinkServiceImpl.createSortLinkAndUpdateIndices(shortLink, Optional.empty());
         }
         else {
-            return shortLinkService.createSortLinkAndUpdateIndices(shortLink, keyIndicesOpt);
+            return shortLinkServiceImpl.createSortLinkAndUpdateIndices(shortLink, keyIndicesOpt);
         }
     }
 
