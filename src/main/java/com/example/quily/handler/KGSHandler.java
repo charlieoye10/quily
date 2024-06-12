@@ -39,7 +39,7 @@ public class KGSHandler {
         return kGSService.getCurrentKey()
                 .flatMap(kgsResponse -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(kgsResponse))
+                        .bodyValue(kgsResponse.getKgsResponse()))
                 .onErrorResume(ResourceNotFoundException.class, e ->
                         ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                 .contentType(MediaType.APPLICATION_JSON)

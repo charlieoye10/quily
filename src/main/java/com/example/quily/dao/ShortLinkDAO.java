@@ -30,12 +30,12 @@ public class ShortLinkDAO {
                         if (usedCustomLink) {
                             return Mono.error(new ResourceNotFoundException("The custom alias is already present."));
                         }
-                        return createShortLink(createShortLinkRequest, createShortLinkRequest.getCustomAlias(),true, Optional.empty());
+                        return createShortLink(createShortLinkRequest, createShortLinkRequest.getCustomAlias(), true, Optional.empty());
                     });
         }
 
         return kgsService.getCurrentKey()
-                    .flatMap(kgsResponse -> createShortLink(createShortLinkRequest, kgsResponse.getT1().getHashKey(),false, Optional.of(kgsResponse.getT2())));
+                    .flatMap(kgsResponseDetail -> createShortLink(createShortLinkRequest, kgsResponseDetail.getKgsResponse().getHashKey(), false, Optional.of(kgsResponseDetail.getNextIndices())));
     }
 
 
