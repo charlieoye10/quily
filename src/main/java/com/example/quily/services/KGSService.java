@@ -7,9 +7,12 @@ import com.example.quily.request.KGSRequest;
 import com.example.quily.response.KGSResponse;
 import com.example.quily.util.KGSUtil;
 import jakarta.annotation.PostConstruct;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 @Service
 public class KGSService {
@@ -29,22 +32,26 @@ public class KGSService {
         currentIndices = dbService.findByUniqueId(id).block();
     }
 
-    public synchronized Mono<KGSResponse> getCurrentKey() {
+    public synchronized Mono<KGSResponseDetail> getCurrentKey() {
         if (currentIndices != null) {
             KGSResponse currentHashKey = keyGeneratorDAO.getHashKeyInKGSResponse(currentIndices);
             currentIndices = keyGeneratorDAO.getUpdatedIndices(currentIndices);
-            return Mono.just(currentHashKey);
+            return Mono.just(new KGSResponseDetail(currentHashKey, currentIndices));
         }
         return Mono.error(
                 new ResourceNotFoundException("unable to fetch keyIndices of id: " + id + " from DB"));
     }
 
     public Mono<KeyIndices> saveCurrentKey(KGSRequest kgsRequest) {
-        KeyIndices updatedIndices = new KeyIndices(kgsRequest.getId(),
-                                    kgsRequest.getIndex1(), kgsRequest.getIndex2(),
-                                    kgsRequest.getIndex3(), kgsRequest.getIndex4(),
-                                    kgsRequest.getIndex5(), kgsRequest.getIndex6());
-
-    return serviceImpl.updateIfGreater(updatedIndices);
+        return serviceImpl.updateIfGreater(kgsRequest.toKeyIndices());
     }
+
+    @Getter
+    @AllArgsConstructor
+    public static class KGSResponseDetail
+    {
+        private KGSResponse kgsResponse;
+        private KeyIndices nextIndices;
+    }
+
 }

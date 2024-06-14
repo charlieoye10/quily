@@ -2,7 +2,6 @@ package com.example.quily.handler;
 
 import com.example.quily.dao.ShortLinkDAO;
 import com.example.quily.exception.ErrorResponse;
-import com.example.quily.exception.ResourceNotFoundException;
 import com.example.quily.model.ShortLink;
 import com.example.quily.request.CreateShortLinkRequest;
 import com.example.quily.response.ShortLinkResponse;
@@ -34,8 +33,7 @@ public class ShortLinkHandler {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(
                         monoShortLinkRequest
-                                .flatMap(shortLinkDAO::mapCreateShortLinkRequestToShortLink)
-                                .flatMap(shortLink -> dbService.save(shortLink))
+                                .flatMap(shortLinkDAO::createShortLinkAndUpdateIndices)
                                 .map(shortLink ->
                                         shortLinkDAO.mapShortLinkToShortLinkResponse(shortLink)),
                         ShortLinkResponse.class

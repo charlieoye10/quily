@@ -1,6 +1,8 @@
 package com.example.quily.dao;
 
+import com.example.quily.exception.AlreadyExistEntityException;
 import com.example.quily.exception.ResourceNotFoundException;
+import com.example.quily.model.KeyIndices;
 import com.example.quily.model.ShortLink;
 import com.example.quily.request.CreateShortLinkRequest;
 import com.example.quily.response.ShortLinkResponse;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Component
 public class ShortLinkDAO {
@@ -21,26 +24,31 @@ public class ShortLinkDAO {
     @Autowired
     ShortLinkServiceImpl shortLinkServiceImpl;
 
-    public Mono<ShortLink> mapCreateShortLinkRequestToShortLink(CreateShortLinkRequest createShortLinkRequest) {
+    public Mono<ShortLink> createShortLinkAndUpdateIndices(CreateShortLinkRequest createShortLinkRequest) {
         if (createShortLinkRequest.getCustomAlias() != null) {
             return shortLinkServiceImpl.hasCustomAliasBeenUsed(createShortLinkRequest)
                     .flatMap(usedCustomLink -> {
                         if (usedCustomLink) {
-                            return Mono.error(new ResourceNotFoundException("The custom alias is already present."));
+                            return Mono.error(new AlreadyExistEntityException("The custom alias is already present."));
                         }
-                        return Mono.just(createShortLink(createShortLinkRequest, createShortLinkRequest.getCustomAlias()));
+                        return createShortLink(createShortLinkRequest, createShortLinkRequest.getCustomAlias(), Optional.empty());
                     });
         }
+
         return kgsService.getCurrentKey()
-                    .map(kgsResponse -> createShortLink(createShortLinkRequest, kgsResponse.getHashKey()));
+                    .flatMap(kgsResponseDetail -> createShortLink(createShortLinkRequest, kgsResponseDetail.getKgsResponse().getHashKey(), Optional.of(kgsResponseDetail.getNextIndices())));
     }
-    private ShortLink createShortLink(CreateShortLinkRequest createShortLinkRequest, String alias) {
-        return new ShortLink(
+
+
+    private Mono<ShortLink> createShortLink(CreateShortLinkRequest createShortLinkRequest, String alias, Optional<KeyIndices> keyIndicesOpt) {
+        ShortLink shortLink = new ShortLink(
                 createShortLinkRequest.getUserID(),
                 createShortLinkRequest.getOriginalLink(),
                 ShortLinkUtil.localBaseUrl + alias,
                 LocalDateTime.now().toString(),
                 createShortLinkRequest.getExpiryDate());
+
+        return shortLinkServiceImpl.createSortLinkAndUpdateIndices(shortLink, keyIndicesOpt);
     }
 
     public ShortLinkResponse mapShortLinkToShortLinkResponse(ShortLink shortLink) {

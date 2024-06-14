@@ -1,8 +1,10 @@
 package com.example.quily.services;
 
 import com.example.quily.exception.GreaterIndicesFoundException;
+import com.example.quily.model.KeyIndices;
 import com.example.quily.model.ShortLink;
 import com.example.quily.request.CreateShortLinkRequest;
+import com.example.quily.request.KGSRequest;
 import com.example.quily.response.OriginalLinkResponse;
 import com.example.quily.util.ShortLinkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +13,18 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
+
+import java.util.Optional;
 
 @Service
 @Component
 public class ShortLinkServiceImpl implements DbService<ShortLink, Long> {
 	@Autowired
     private DatabaseClient databaseClient;
+
+    @Autowired
+    private KGSService kgsService;
 
     @Override
     public Flux<ShortLink> findAll() {
@@ -74,5 +82,14 @@ public class ShortLinkServiceImpl implements DbService<ShortLink, Long> {
                 .fetch()
                 .first().map(customAlias -> true)
                 .switchIfEmpty(Mono.just(false));
+    }
+
+    public Mono<ShortLink> createSortLinkAndUpdateIndices(ShortLink shortLink,  Optional<KeyIndices> currentIndicesOpt)
+    {   Mono<ShortLink> link = save(shortLink);
+        Mono<KeyIndices> indices = currentIndicesOpt.map(currentIndices ->
+                kgsService.saveCurrentKey(currentIndices.toKGSRequest())).orElse(Mono.empty());
+
+        return indices.flatMap(ind -> Mono.zip(link, Mono.just(ind)).map(Tuple2::getT1))
+                .switchIfEmpty(link);
     }
 }
