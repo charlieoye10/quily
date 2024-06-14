@@ -43,12 +43,7 @@ public class KGSService {
     }
 
     public Mono<KeyIndices> saveCurrentKey(KGSRequest kgsRequest) {
-        KeyIndices updatedIndices = new KeyIndices(kgsRequest.getId(),
-                                    kgsRequest.getIndex1(), kgsRequest.getIndex2(),
-                                    kgsRequest.getIndex3(), kgsRequest.getIndex4(),
-                                    kgsRequest.getIndex5(), kgsRequest.getIndex6());
-
-    return serviceImpl.updateIfGreater(updatedIndices);
+        return serviceImpl.updateIfGreater(kgsRequest.toKeyIndices());
     }
 
     @Getter

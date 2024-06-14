@@ -85,17 +85,9 @@ public class ShortLinkServiceImpl implements DbService<ShortLink, Long> {
     }
 
     public Mono<ShortLink> createSortLinkAndUpdateIndices(ShortLink shortLink,  Optional<KeyIndices> currentIndicesOpt)
-    {   Mono<ShortLink> link=  save(shortLink);
-        Mono<KeyIndices> indices= currentIndicesOpt.map(currentIndices ->
-                kgsService.saveCurrentKey(new KGSRequest(
-                        currentIndices.getId(),
-                        currentIndices.getIndex1(),
-                        currentIndices.getIndex2(),
-                        currentIndices.getIndex3(),
-                        currentIndices.getIndex4(),
-                        currentIndices.getIndex5(),
-                        currentIndices.getIndex6()
-                ))).orElse(Mono.empty());
+    {   Mono<ShortLink> link = save(shortLink);
+        Mono<KeyIndices> indices = currentIndicesOpt.map(currentIndices ->
+                kgsService.saveCurrentKey(currentIndices.toKGSRequest())).orElse(Mono.empty());
 
         return indices.flatMap(ind -> Mono.zip(link, Mono.just(ind)).map(Tuple2::getT1))
                 .switchIfEmpty(link);
