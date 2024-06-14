@@ -97,7 +97,7 @@ public class ShortLinkServiceImpl implements DbService<ShortLink, Long> {
                         currentIndices.getIndex6()
                 ))).orElse(Mono.empty());
 
-        return Mono.zip(link, indices)
-                .map(Tuple2::getT1);
+        return indices.flatMap(ind -> Mono.zip(link, Mono.just(ind)).map(Tuple2::getT1))
+                .switchIfEmpty(link);
     }
 }
