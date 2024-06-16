@@ -11,4 +11,5 @@ public class CommonUtil {
 	}
 
 	public static final String emailPatternRegex = "^[\\w.%+-]+@[A-Za-z0-9.-]+\\.com$";
+
 }

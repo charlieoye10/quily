@@ -1,6 +1,7 @@
 package com.example.quily.model;
 
 import com.example.quily.request.KGSRequest;
+import com.example.quily.response.ResponseBody;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -27,5 +28,9 @@ public class KeyIndices {
 
     public KGSRequest toKGSRequest() {
         return new KGSRequest(id, index1, index2, index3, index4, index5, index6);
+    }
+
+    public ResponseBody<KeyIndices> successResponseBody() {
+        return new ResponseBody<KeyIndices>(200, "key indices successfully updated", this);
     }
 }

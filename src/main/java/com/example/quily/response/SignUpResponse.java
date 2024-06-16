@@ -8,5 +8,7 @@ public class SignUpResponse {
 
     public String creationTime;
 
-    public String message;
+    public ResponseBody<SignUpResponse> toSuccessResponse() {
+        return new ResponseBody<>(200, "Successfully registered with Quily", this);
+    }
 }

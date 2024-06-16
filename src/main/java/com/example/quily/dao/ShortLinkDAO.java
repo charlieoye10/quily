@@ -44,7 +44,7 @@ public class ShortLinkDAO {
         ShortLink shortLink = new ShortLink(
                 createShortLinkRequest.getUserID(),
                 createShortLinkRequest.getOriginalLink(),
-                ShortLinkUtil.localBaseUrl + alias,
+                ShortLinkUtil.localBaseUrl + "/" + alias,
                 LocalDateTime.now().toString(),
                 createShortLinkRequest.getExpiryDate());
 

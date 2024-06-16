@@ -4,6 +4,8 @@ import com.example.quily.dao.ShortLinkDAO;
 import com.example.quily.exception.ErrorResponse;
 import com.example.quily.model.ShortLink;
 import com.example.quily.request.CreateShortLinkRequest;
+import com.example.quily.response.OriginalLinkResponse;
+import com.example.quily.response.ResponseBody;
 import com.example.quily.response.ShortLinkResponse;
 import com.example.quily.services.DbService;
 import com.example.quily.services.ShortLinkServiceImpl;
@@ -18,7 +20,7 @@ import reactor.core.publisher.Mono;
 @Component
 public class ShortLinkHandler {
     @Autowired
-    DbService <ShortLink, Long> dbService;
+    DbService<ShortLink, Long> dbService;
 
     @Autowired
     ShortLinkDAO shortLinkDAO;
@@ -27,32 +29,25 @@ public class ShortLinkHandler {
     ShortLinkServiceImpl shortLinkService;
 
     public Mono<ServerResponse> createShortLink(ServerRequest serverRequest) {
-        Mono<CreateShortLinkRequest> monoShortLinkRequest =
-                serverRequest.bodyToMono(CreateShortLinkRequest.class);
-        return ServerResponse.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(
-                        monoShortLinkRequest
-                                .flatMap(shortLinkDAO::createShortLinkAndUpdateIndices)
-                                .map(shortLink ->
-                                        shortLinkDAO.mapShortLinkToShortLinkResponse(shortLink)),
-                        ShortLinkResponse.class
-                );
+        return serverRequest.bodyToMono(CreateShortLinkRequest.class)
+                .flatMap(req ->
+                        shortLinkDAO.createShortLinkAndUpdateIndices(req)
+                                .map(shortLink -> shortLinkDAO.mapShortLinkToShortLinkResponse(shortLink).toSuccessResponse())
+                                .flatMap(response -> ServerResponse.ok()
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .bodyValue(response)));
     }
+
 
     public Mono<ServerResponse> getOriginalLink(ServerRequest serverRequest) {
         return shortLinkService.findOriginalLink(serverRequest.uri().toString())
                 .flatMap(originalLink -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(originalLink))
-                .switchIfEmpty(ServerResponse.status(HttpStatus.NOT_FOUND)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(new ErrorResponse("Looks like this URL is not in the database",
-                                        "Please provide a valid URL")))
-                .onErrorResume(e ->
-                        ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(new ErrorResponse("error:", e.getMessage()))
-                );
+                        .bodyValue(originalLink.toSuccessResponse()))
+                .switchIfEmpty(ServerResponse.status(HttpStatus.BAD_REQUEST)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(
+                                new ResponseBody<OriginalLinkResponse>(400, "Looks like the short link is invalid", null)
+                        ));
     }
 }

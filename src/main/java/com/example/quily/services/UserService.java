@@ -1,9 +1,11 @@
 package com.example.quily.services;
 
 import com.example.quily.exception.AlreadyExistEntityException;
+import com.example.quily.exception.BadRequestException;
 import com.example.quily.model.EmailConfirmationToken;
 import com.example.quily.model.User;
 import com.example.quily.repositories.UserRepository;
+import com.example.quily.response.SignUpResponse;
 import com.example.quily.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.r2dbc.core.DatabaseClient;
@@ -91,11 +93,15 @@ public class UserService implements DbService<User, String>{
                         " if you didn't get verification link please check your email"));
     }
 
-    public Mono<String> verifyTokenAndSaveUser(String token) {
+    public Mono<SignUpResponse> verifyTokenAndSaveUser(String token) {
         return emailTokenService.findByToken(token)
-                .flatMap(confirmedToken -> makeUserActive(confirmedToken.getUserEmail())
-						.flatMap(activatedUser -> emailTokenService.deleteByToken(token)
-                                .then(Mono.fromCallable(() -> "Email verified successfully"))))
-                .switchIfEmpty(Mono.just("Email verification failed, token did not match"));
+                .flatMap(confirmedToken -> {
+                    Mono<Long> activatedUser =  makeUserActive(confirmedToken.getUserEmail());
+                    Mono<Long> deletedToken  = emailTokenService.deleteByToken(token);
+                    return Mono.zip(activatedUser, deletedToken)
+                            .map(result ->
+                                    new SignUpResponse(confirmedToken.getUserEmail(), CommonUtil.getCurrentDateTimeInFormat())
+                            );
+                });
     }
 }

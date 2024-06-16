@@ -48,8 +48,7 @@ public class KGSService {
 
     @Getter
     @AllArgsConstructor
-    public static class KGSResponseDetail
-    {
+    public static class KGSResponseDetail {
         private KGSResponse kgsResponse;
         private KeyIndices nextIndices;
     }

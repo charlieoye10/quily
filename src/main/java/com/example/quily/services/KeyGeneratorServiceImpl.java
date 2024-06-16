@@ -61,7 +61,7 @@ public class KeyGeneratorServiceImpl implements DbService<KeyIndices, Long> {
                             if (row > 0)
                                 return Mono.just(newObj);
                             else
-                                return Mono.error(new GreaterIndicesFoundException(("Greater value already exist in db")));
+                                return Mono.empty();
                         }
                 );
     }

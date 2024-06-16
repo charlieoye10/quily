@@ -58,10 +58,10 @@ public class EmailTokenService implements DbService<EmailConfirmationToken, Long
 				.one();
 	}
 
-	public Mono<Void> deleteByToken(String token) {
+	public Mono<Long> deleteByToken(String token) {
 		return dbClient.sql("DELETE FROM email_confirmation_token WHERE confirmation_token = :token")
 				.bind("token", token)
 				.fetch()
-				.first().map(Void.class::cast);
+				.rowsUpdated();
 	}
 }

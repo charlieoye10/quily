@@ -11,4 +11,8 @@ public class ShortLinkResponse {
     private String shortedLink;
     private String expiryDate;
     private String creationDate;
+
+    public ResponseBody<ShortLinkResponse> toSuccessResponse() {
+        return new ResponseBody<>(200, "Successfully short link created.", this);
+    }
 }

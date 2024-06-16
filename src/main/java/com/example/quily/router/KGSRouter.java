@@ -17,8 +17,8 @@ public class KGSRouter {
         return RouterFunctions
                 .route(RequestPredicates.GET("/api/kgs/hashKey"),
                         serverRequest -> kGSHandler.getAvailableKey())
-                .andRoute(RequestPredicates.PUT("/api/kgs/saveData").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
-                        kGSHandler::saveData
-                );
+                .andRoute(RequestPredicates.PUT("/api/kgs/saveData")
+                                .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
+                        kGSHandler::saveData);
     }
 }

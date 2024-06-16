@@ -9,4 +9,8 @@ public class KGSResponse {
     private int [] indices;
 
     private String hashKey;
+
+    public ResponseBody<KGSResponse> toSuccessResponse() {
+        return new ResponseBody<>(200, "", this);
+    }
 }

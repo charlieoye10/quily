@@ -1,11 +1,10 @@
 package com.example.quily.handler;
 
-import com.example.quily.exception.ErrorResponse;
-import com.example.quily.exception.ResourceNotFoundException;
+import com.example.quily.model.KeyIndices;
 import com.example.quily.request.KGSRequest;
+import com.example.quily.response.ResponseBody;
 import com.example.quily.services.KGSService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -24,14 +23,13 @@ public class KGSHandler {
     public Mono<ServerResponse> saveData(ServerRequest request) {
         Mono<KGSRequest> kgsRequest = request.bodyToMono(KGSRequest.class);
         return  kgsRequest.flatMap(kGSService::saveCurrentKey)
-                .flatMap(kgsResponse -> ServerResponse.ok()
+                .flatMap(keyIndices -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(kgsResponse))
-                .onErrorResume(ResourceNotFoundException.class, e ->
-                        ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(new ErrorResponse("Internal Server Error with error message: ", e.getMessage()) {
-                                }));
+                        .bodyValue(keyIndices.successResponseBody()))
+                .switchIfEmpty(ServerResponse.badRequest()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new ResponseBody<KeyIndices>(
+                                400, "Greater Indices found! couldn't update key indices", null)));
 
     }
 
@@ -39,12 +37,7 @@ public class KGSHandler {
         return kGSService.getCurrentKey()
                 .flatMap(kgsResponse -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(kgsResponse.getKgsResponse()))
-                .onErrorResume(ResourceNotFoundException.class, e ->
-                        ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(new ErrorResponse("Internal Server Error with error message: ", e.getMessage()) {
-                                }));
+                        .bodyValue(kgsResponse.getKgsResponse().toSuccessResponse()));
 
     }
 }

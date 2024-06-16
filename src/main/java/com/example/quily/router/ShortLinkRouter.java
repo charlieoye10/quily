@@ -19,11 +19,9 @@ public class ShortLinkRouter {
     public RouterFunction<ServerResponse> ShortLinkRoutes() {
         return RouterFunctions
                 .route(RequestPredicates.POST("/api/shortLink/create")
-                        .and(RequestPredicates
-                                .accept(MediaType.APPLICATION_JSON)
-                        ), shortLinkHandler::createShortLink
-                )
-                .andRoute(RequestPredicates.GET("/**"),
+                        .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)
+                        ), shortLinkHandler::createShortLink)
+                .andRoute(RequestPredicates.GET("{id:[a-zA-Z0-9]{6}}"),
                         shortLinkHandler::getOriginalLink);
     }
 }
