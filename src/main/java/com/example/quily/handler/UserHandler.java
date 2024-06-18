@@ -2,7 +2,6 @@ package com.example.quily.handler;
 
 import com.example.quily.dao.UserDao;
 import com.example.quily.exception.BadRequestException;
-import com.example.quily.exception.ErrorResponse;
 import com.example.quily.request.SignUpRequest;
 import com.example.quily.response.ResponseBody;
 import com.example.quily.services.UserService;

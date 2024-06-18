@@ -1,7 +1,6 @@
 package com.example.quily.handler;
 
 import com.example.quily.dao.ShortLinkDAO;
-import com.example.quily.exception.ErrorResponse;
 import com.example.quily.model.ShortLink;
 import com.example.quily.request.CreateShortLinkRequest;
 import com.example.quily.response.OriginalLinkResponse;
