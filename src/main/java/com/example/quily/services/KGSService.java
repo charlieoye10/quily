@@ -10,6 +10,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
@@ -27,7 +29,7 @@ public class KGSService {
     Long id = KGSUtil.KeyGeneratedIndicesId;
     private KeyIndices currentIndices;
 
-    @PostConstruct
+    @EventListener(ContextRefreshedEvent.class)
     public void init() {
         currentIndices = dbService.findByUniqueId(id).block();
     }
