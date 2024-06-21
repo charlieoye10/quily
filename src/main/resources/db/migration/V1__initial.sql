@@ -19,7 +19,7 @@ CREATE TABLE short_link
 
 CREATE TABLE key_indices
 (
-    id     INT,
+    id     BIGINT,
     index1 INT,
     index2 INT,
     index3 INT,
