@@ -14,13 +14,13 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
-
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
 @Component
 public class ShortLinkServiceImpl implements DbService<ShortLink, Long> {
-	@Autowired
+    @Autowired
     private DatabaseClient databaseClient;
 
     @Autowired
@@ -42,7 +42,8 @@ public class ShortLinkServiceImpl implements DbService<ShortLink, Long> {
     }
 
     @Override
-    public void delete(Long id) {}
+    public void delete(Long id) {
+    }
 
     @Override
     public Mono<ShortLink> save(ShortLink shortLink) throws RuntimeException {
@@ -68,15 +69,22 @@ public class ShortLinkServiceImpl implements DbService<ShortLink, Long> {
                 });
     }
 
-	public Mono<OriginalLinkResponse> findOriginalLink(String shortLink) {
-		return databaseClient.sql("SELECT original_link FROM short_link WHERE shorted_link = :shortLink")
-				.bind("shortLink", shortLink)
-				.fetch()
-				.first()
-				.map(row -> new OriginalLinkResponse((String) row.get("original_link")));
-	}
+    public Mono<OriginalLinkResponse> findOriginalLink(String shortLink) {
+        return databaseClient.sql("SELECT original_link FROM short_link WHERE shorted_link = :shortLink")
+                .bind("shortLink", shortLink)
+                .fetch()
+                .first()
+                .map(row -> new OriginalLinkResponse((String) row.get("original_link")));
+    }
 
-    public Mono<Boolean> hasCustomAliasBeenUsed(CreateShortLinkRequest createShortLinkRequest){
+    public Mono<Long> deleteShortLink(LocalDateTime now) {
+        return databaseClient.sql("DELETE FROM short_link WHERE expiry_date < :now")
+                .bind("now", now)
+                .fetch()
+                .rowsUpdated();
+    }
+
+    public Mono<Boolean> hasCustomAliasBeenUsed(CreateShortLinkRequest createShortLinkRequest) {
         return databaseClient.sql("SELECT shorted_link FROM short_link WHERE shorted_link = :customAlias")
                 .bind("customAlias", ShortLinkUtil.localBaseUrl + createShortLinkRequest.getCustomAlias())
                 .fetch()
@@ -84,8 +92,8 @@ public class ShortLinkServiceImpl implements DbService<ShortLink, Long> {
                 .switchIfEmpty(Mono.just(false));
     }
 
-    public Mono<ShortLink> createSortLinkAndUpdateIndices(ShortLink shortLink,  Optional<KeyIndices> currentIndicesOpt)
-    {   Mono<ShortLink> link = save(shortLink);
+    public Mono<ShortLink> createSortLinkAndUpdateIndices(ShortLink shortLink, Optional<KeyIndices> currentIndicesOpt) {
+        Mono<ShortLink> link = save(shortLink);
         Mono<KeyIndices> indices = currentIndicesOpt.map(currentIndices ->
                 kgsService.saveCurrentKey(currentIndices.toKGSRequest())).orElse(Mono.empty());
 
