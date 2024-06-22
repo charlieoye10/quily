@@ -1,6 +1,5 @@
 package com.example.quily.router;
 
-import com.example.quily.handler.KGSHandler;
 import com.example.quily.handler.UserHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
