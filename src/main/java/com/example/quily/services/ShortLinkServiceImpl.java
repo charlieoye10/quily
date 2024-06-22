@@ -4,7 +4,6 @@ import com.example.quily.exception.GreaterIndicesFoundException;
 import com.example.quily.model.KeyIndices;
 import com.example.quily.model.ShortLink;
 import com.example.quily.request.CreateShortLinkRequest;
-import com.example.quily.request.KGSRequest;
 import com.example.quily.response.OriginalLinkResponse;
 import com.example.quily.util.ShortLinkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ public class ShortLinkServiceImpl implements DbService<ShortLink, Long> {
     private DatabaseClient databaseClient;
 
     @Autowired
-    private KGSService kgsService;
+    private KeyGeneratorService KeyGeneratorService;
 
     @Override
     public Flux<ShortLink> findAll() {
@@ -86,8 +85,7 @@ public class ShortLinkServiceImpl implements DbService<ShortLink, Long> {
 
     public Mono<ShortLink> createSortLinkAndUpdateIndices(ShortLink shortLink,  Optional<KeyIndices> currentIndicesOpt)
     {   Mono<ShortLink> link = save(shortLink);
-        Mono<KeyIndices> indices = currentIndicesOpt.map(currentIndices ->
-                kgsService.saveCurrentKey(currentIndices.toKGSRequest())).orElse(Mono.empty());
+        Mono<KeyIndices> indices = currentIndicesOpt.map(KeyGeneratorService::updateIfGreater).orElse(Mono.empty());
 
         return indices.flatMap(ind -> Mono.zip(link, Mono.just(ind)).map(Tuple2::getT1))
                 .switchIfEmpty(link);

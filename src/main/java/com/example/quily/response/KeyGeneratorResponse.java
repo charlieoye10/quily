@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class KGSResponse {
+public class KeyGeneratorResponse {
     private int [] indices;
 
     private String hashKey;

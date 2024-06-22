@@ -1,12 +1,11 @@
 package com.example.quily.dao;
 
 import com.example.quily.exception.AlreadyExistEntityException;
-import com.example.quily.exception.ResourceNotFoundException;
 import com.example.quily.model.KeyIndices;
 import com.example.quily.model.ShortLink;
 import com.example.quily.request.CreateShortLinkRequest;
 import com.example.quily.response.ShortLinkResponse;
-import com.example.quily.services.KGSService;
+import com.example.quily.services.KeyGeneratorService;
 import com.example.quily.services.ShortLinkServiceImpl;
 import com.example.quily.util.ShortLinkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,7 @@ import java.util.Optional;
 @Component
 public class ShortLinkDAO {
     @Autowired
-    KGSService kgsService;
+    KeyGeneratorService keyGeneratorService;
 
     @Autowired
     ShortLinkServiceImpl shortLinkServiceImpl;
@@ -35,8 +34,8 @@ public class ShortLinkDAO {
                     });
         }
 
-        return kgsService.getCurrentKey()
-                    .flatMap(kgsResponseDetail -> createShortLink(createShortLinkRequest, kgsResponseDetail.getKgsResponse().getHashKey(), Optional.of(kgsResponseDetail.getNextIndices())));
+        return keyGeneratorService.getCurrentKey()
+                    .flatMap(kgsResponseDetail -> createShortLink(createShortLinkRequest, kgsResponseDetail.getKeyGeneratorResponse().getHashKey(), Optional.of(kgsResponseDetail.getNextIndices())));
     }
 
 
