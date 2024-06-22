@@ -12,18 +12,19 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 @Configuration
 public class ShortLinkRouter {
-    @Autowired
-    private ShortLinkHandler shortLinkHandler;
+   private final ShortLinkHandler shortLinkHandler;
+   private static final String CREATE_SHORT_LINK_URL = "/api/shortLink/create";
+   private static final String GET_ORIGINAL_LINK_URL = "/**";
 
-    @Bean
-    public RouterFunction<ServerResponse> ShortLinkRoutes() {
-        return RouterFunctions
-                .route(RequestPredicates.POST("/api/shortLink/create")
-                        .and(RequestPredicates
-                                .accept(MediaType.APPLICATION_JSON)
-                        ), shortLinkHandler::createShortLink
-                )
-                .andRoute(RequestPredicates.GET("/**"),
-                        shortLinkHandler::getOriginalLink);
-    }
+   @Autowired
+   public ShortLinkRouter(ShortLinkHandler shortLinkHandler) {
+      this.shortLinkHandler = shortLinkHandler;
+   }
+
+   @Bean
+   public RouterFunction<ServerResponse> ShortLinkRoutes() {
+      return RouterFunctions
+         .route(RequestPredicates.POST(CREATE_SHORT_LINK_URL), shortLinkHandler::createShortLink)
+         .andRoute(RequestPredicates.GET(GET_ORIGINAL_LINK_URL), shortLinkHandler::getOriginalLink);
+   }
 }
