@@ -10,10 +10,14 @@ import org.springframework.stereotype.Component;
 public class ShortLinkConverter implements Converter<CreateShortLinkRequest, ShortLinkResponse, ShortLink> {
    @Override
    public ShortLink convertRequestToModel(CreateShortLinkRequest createShortLinkRequest) {
+      return null;
+   }
+
+   public ShortLink convertRequestToModel(CreateShortLinkRequest createShortLinkRequest, String shortLink) {
       return new ShortLink(
          createShortLinkRequest.getUserID(),
          createShortLinkRequest.getOriginalLink(),
-         "",
+         shortLink,
          CommonUtil.getCurrentDateTimeInFormat(),
          createShortLinkRequest.getExpiryDate(),
          true);

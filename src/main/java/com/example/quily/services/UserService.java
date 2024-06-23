@@ -17,14 +17,14 @@ public class UserService implements DbService<User, String> {
    private final UserRepository userRepository;
    private final DatabaseClient databaseClient;
    private final EmailTokenService emailTokenService;
-   private final EmailService emailService;
+   private final EmailConfirmationTokenDAO emailConfirmationTokenDAO;
 
    @Autowired
-   public UserService(UserRepository userRepository, DatabaseClient databaseClient, EmailTokenService emailTokenService, EmailService emailService) {
+   public UserService(UserRepository userRepository, DatabaseClient databaseClient, EmailTokenService emailTokenService, EmailConfirmationTokenDAO emailConfirmationTokenDAO) {
       this.userRepository = userRepository;
       this.databaseClient = databaseClient;
       this.emailTokenService = emailTokenService;
-      this.emailService = emailService;
+      this.emailConfirmationTokenDAO = emailConfirmationTokenDAO;
    }
 
    @Override
@@ -75,10 +75,10 @@ public class UserService implements DbService<User, String> {
    }
 
    public Mono<String> sendEmailVerificationLink(User user) {
-      final String token = EmailConfirmationTokenDAO.getConfirmationToken(user);
+      final String token = emailConfirmationTokenDAO.getConfirmationToken(user);
       final EmailConfirmationToken confirmationToken = new EmailConfirmationToken(token, user.getEmail(), CommonUtil.getCurrentDateTimeInFormat());
       Mono<EmailConfirmationToken> saveToken = emailTokenService.save(confirmationToken);
-      Mono<Void> sentEmail = Mono.fromRunnable(() ->emailService.sendEmail(user, token));
+      Mono<Void> sentEmail = Mono.fromRunnable(() -> emailConfirmationTokenDAO.sendEmail(user, token));
       Mono<User> savedUser = save(user);
 
       return Mono.when(saveToken, sentEmail, savedUser)

@@ -46,7 +46,7 @@ public class UserHandler {
    }
 
    public Mono<ServerResponse> verifyUser(ServerRequest serverRequest) {
-      Optional<String> tokenMono = serverRequest.queryParam("token");
+      final Optional<String> tokenMono = serverRequest.queryParam("token");
       return tokenMono.map(token -> userService.verifyTokenAndSaveUser(token)
          .flatMap(resString -> ServerResponse.ok()
             .contentType(MediaType.APPLICATION_JSON)

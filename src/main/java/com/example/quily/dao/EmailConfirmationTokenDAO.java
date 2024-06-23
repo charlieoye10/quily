@@ -1,12 +1,33 @@
 package com.example.quily.dao;
 
 import com.example.quily.model.User;
+import com.example.quily.util.ShortLinkUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Component;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+@Component
 public class EmailConfirmationTokenDAO {
-   public static String generateMD5Hash(String input) {
+   private final JavaMailSender javaMailSender;
+
+   @Autowired
+   public EmailConfirmationTokenDAO(JavaMailSender javaMailSender) {
+      this.javaMailSender = javaMailSender;
+   }
+
+   public void sendEmail(User user, String token) {
+      SimpleMailMessage mailMessage = new SimpleMailMessage();
+      mailMessage.setTo(user.getEmail());
+      mailMessage.setSubject("Complete Registration!");
+      mailMessage.setText("To confirm your account, please click here : "
+         + ShortLinkUtil.EMAIL_VERIFICATION_URL + token);
+      javaMailSender.send(mailMessage);
+   }
+   public String generateMD5Hash(String input) {
       try {
          MessageDigest md = MessageDigest.getInstance("MD5");
          byte[] messageDigest = md.digest(input.getBytes());
@@ -16,7 +37,7 @@ public class EmailConfirmationTokenDAO {
       }
    }
 
-   private static String convertByteArrayToHexString(byte[] arrayBytes) {
+   private String convertByteArrayToHexString(byte[] arrayBytes) {
       StringBuilder sb = new StringBuilder();
       for (byte b : arrayBytes) {
          sb.append(String.format("%02x", b));
@@ -24,7 +45,7 @@ public class EmailConfirmationTokenDAO {
       return sb.toString();
    }
 
-   public static String getConfirmationToken(User user) {
+   public String getConfirmationToken(User user) {
       return generateMD5Hash(user.getEmail());
    }
 }

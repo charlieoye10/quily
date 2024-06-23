@@ -52,7 +52,7 @@ public class ShortLinkService implements DbService<ShortLink, Long> {
    }
 
    public Mono<ShortLink> saveShortLink(ShortLink shortLink) {
-      String sql = "INSERT INTO short_link (user_id, original_link, shorted_link, creation_date, expiry_date, is_active) " +
+      final String sql = "INSERT INTO short_link (user_id, original_link, shorted_link, creation_date, expiry_date, is_active) " +
          "SELECT :user_id, :original_link, :shorted_link, :creation_date, :expiry_date, :is_active " +
          "FROM dual WHERE NOT EXISTS (" +
          "   SELECT 1 FROM short_link WHERE user_id = :user_id AND original_link Like  :compare_link" +

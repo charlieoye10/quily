@@ -48,16 +48,15 @@ public class ShortLinkDAO {
    private Mono<ShortLink> handleGeneratedAlias(CreateShortLinkRequest request) {
       return keyGeneratorService.getCurrentKey()
          .flatMap(responseDetail -> {
-            String hashKey = responseDetail.getKeyGeneratorResponse().getHashKey();
-            Optional<KeyIndices> nextIndices = Optional.of(responseDetail.getNextIndices());
+            final String hashKey = responseDetail.getKeyGeneratorResponse().getHashKey();
+            final Optional<KeyIndices> nextIndices = Optional.of(responseDetail.getNextIndices());
             final ShortLink shortLink = getShortLink(request, hashKey);
             return shortLinkService.createSortLinkAndUpdateIndices(shortLink, nextIndices);
          });
    }
 
    private ShortLink getShortLink(CreateShortLinkRequest request, String hashKey) {
-      ShortLink shortLink = converter.convertRequestToModel(request);
-      shortLink.setShortedLink(ShortLinkUtil.LOCALHOST_URL + hashKey);
-      return shortLink;
+      final String shortUrl = ShortLinkUtil.LOCALHOST_URL + hashKey;
+      return converter.convertRequestToModel(request, shortUrl);
    }
 }

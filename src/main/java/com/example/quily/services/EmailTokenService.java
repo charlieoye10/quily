@@ -10,11 +10,14 @@ import reactor.core.publisher.Mono;
 
 @Service
 public class EmailTokenService implements DbService<EmailConfirmationToken, Long> {
-   @Autowired
-   DatabaseClient dbClient;
+   private final DatabaseClient dbClient;
+   private final EmailTokenRepository emailTokenRepository;
 
    @Autowired
-   EmailTokenRepository emailTokenRepository;
+   public EmailTokenService(DatabaseClient dbClient, EmailTokenRepository emailTokenRepository) {
+      this.dbClient = dbClient;
+      this.emailTokenRepository = emailTokenRepository;
+   }
 
    @Override
    public Flux<EmailConfirmationToken> findAll() {
