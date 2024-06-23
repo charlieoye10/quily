@@ -11,15 +11,19 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 @Configuration
 public class UserRouter {
-    @Autowired
-    UserHandler userHandler;
+   private final UserHandler userHandler;
+   private static final String SIGNUP_URL = "/api/auth/signup";
+   private static final String CONFIRM_ACCOUNT_URL = "/api/auth/confirm-account";
 
-    @Bean
-    public RouterFunction<ServerResponse> userRoutes() {
-        return RouterFunctions
-                .route(RequestPredicates.POST("/api/auth/signup"),
-                        serverRequest -> userHandler.signUp(serverRequest))
-                .andRoute(RequestPredicates.GET("/api/auth/confirm-account"),
-                        serverRequest -> userHandler.verifyUser(serverRequest));
-    }
+   @Autowired
+   public UserRouter(UserHandler userHandler) {
+      this.userHandler = userHandler;
+   }
+
+   @Bean
+   public RouterFunction<ServerResponse> userRoutes() {
+      return RouterFunctions
+         .route(RequestPredicates.POST(SIGNUP_URL), userHandler::signUp)
+         .andRoute(RequestPredicates.GET(CONFIRM_ACCOUNT_URL), userHandler::verifyUser);
+   }
 }

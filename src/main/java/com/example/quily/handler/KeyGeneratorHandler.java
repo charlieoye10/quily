@@ -1,6 +1,6 @@
 package com.example.quily.handler;
 
-import com.example.quily.converter.KgRequestKeyIndicesConverter;
+import com.example.quily.converter.KeyIndicesConverter;
 import com.example.quily.exception.ErrorResponse;
 import com.example.quily.exception.ResourceNotFoundException;
 import com.example.quily.request.KeyGeneratorRequest;
@@ -16,17 +16,17 @@ import reactor.core.publisher.Mono;
 @Component
 public class KeyGeneratorHandler {
    private final KeyGeneratorService keyGeneratorService;
-   private final KgRequestKeyIndicesConverter kgRequestKeyIndicesConverter;
+   private final KeyIndicesConverter keyIndicesConverter;
 
    @Autowired
-   public KeyGeneratorHandler(KeyGeneratorService keyGeneratorService, KgRequestKeyIndicesConverter kgRequestKeyIndicesConverter) {
+   public KeyGeneratorHandler(KeyGeneratorService keyGeneratorService, KeyIndicesConverter keyIndicesConverter) {
       this.keyGeneratorService = keyGeneratorService;
-      this.kgRequestKeyIndicesConverter = kgRequestKeyIndicesConverter;
+      this.keyIndicesConverter = keyIndicesConverter;
    }
 
    public Mono<ServerResponse> updateKey(ServerRequest request) {
       return request.bodyToMono(KeyGeneratorRequest.class)
-         .flatMap(req -> keyGeneratorService.updateIfGreater(kgRequestKeyIndicesConverter.convertFrom(req)))
+         .flatMap(req -> keyGeneratorService.updateIfGreater(keyIndicesConverter.convertRequestToModel(req)))
          .flatMap(kgsResponse -> ServerResponse.ok()
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(kgsResponse))
