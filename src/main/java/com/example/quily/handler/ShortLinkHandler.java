@@ -35,7 +35,7 @@ public class ShortLinkHandler {
          .body(
             monoShortLinkRequest
                .flatMap(shortLinkDAO::createShortLink)
-               .map(shortLinkConverter::convertModel),
+               .map(shortLinkConverter::convertModelToResponse),
             ShortLinkResponse.class
          );
    }

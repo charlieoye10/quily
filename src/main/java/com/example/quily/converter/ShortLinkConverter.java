@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ShortLinkConverter implements Converter<CreateShortLinkRequest, ShortLinkResponse, ShortLink> {
    @Override
-   public ShortLink convertRequest(CreateShortLinkRequest createShortLinkRequest) {
+   public ShortLink convertRequestToModel(CreateShortLinkRequest createShortLinkRequest) {
       return new ShortLink(
          createShortLinkRequest.getUserID(),
          createShortLinkRequest.getOriginalLink(),
@@ -20,7 +20,7 @@ public class ShortLinkConverter implements Converter<CreateShortLinkRequest, Sho
    }
 
    @Override
-   public ShortLinkResponse convertModel(ShortLink shortLink) {
+   public ShortLinkResponse convertModelToResponse(ShortLink shortLink) {
       return new ShortLinkResponse(shortLink.getUserID(), shortLink.getOriginalLink(),
          shortLink.getShortedLink(), shortLink.getExpiryDate(), shortLink.getCreationDate());
    }

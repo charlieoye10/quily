@@ -32,7 +32,7 @@ public class UserHandler {
       return request.bodyToMono(SignUpRequest.class)
          .flatMap(req -> {
             if (userDao.isEmailPatternCorrect(req.email))
-               return userService.sendEmailVerificationLink(userSignupConverter.convertRequest(req));
+               return userService.sendEmailVerificationLink(userSignupConverter.convertRequestToModel(req));
             else
                return Mono.error(new Exception("Email format is not considerable, Please provide email with correct format eg. `user_name@(gmail or any company_name).com`"));
          })

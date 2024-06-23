@@ -18,7 +18,7 @@ public class UserSignupConverter implements Converter<SignUpRequest, SignUpRespo
       this.passwordEncoder = passwordEncoder;
    }
    @Override
-   public User convertRequest(SignUpRequest signUpRequest) {
+   public User convertRequestToModel(SignUpRequest signUpRequest) {
       return new User(
          signUpRequest.email,
          signUpRequest.userName,
@@ -27,7 +27,7 @@ public class UserSignupConverter implements Converter<SignUpRequest, SignUpRespo
    }
 
    @Override
-   public SignUpResponse convertModel(User user) {
+   public SignUpResponse convertModelToResponse(User user) {
       return new SignUpResponse(
          user.getEmail(),
          LocalDateTime.now().toString(),

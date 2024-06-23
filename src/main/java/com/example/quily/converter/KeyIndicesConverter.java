@@ -17,13 +17,13 @@ public class KeyIndicesConverter implements Converter<KeyGeneratorRequest, KeyGe
    }
 
    @Override
-   public KeyIndices convertRequest(KeyGeneratorRequest keyGeneratorRequest) {
+   public KeyIndices convertRequestToModel(KeyGeneratorRequest keyGeneratorRequest) {
       return new KeyIndices(keyGeneratorRequest.getId(), keyGeneratorRequest.getIndex1(), keyGeneratorRequest.getIndex2(),
          keyGeneratorRequest.getIndex3(), keyGeneratorRequest.getIndex4(), keyGeneratorRequest.getIndex5(), keyGeneratorRequest.getIndex6());
    }
 
    @Override
-   public KeyGeneratorResponse convertModel(KeyIndices keyIndices) {
+   public KeyGeneratorResponse convertModelToResponse(KeyIndices keyIndices) {
       return keyGeneratorDAO.getHashKeyInKGSResponse(keyIndices);
    }
 }

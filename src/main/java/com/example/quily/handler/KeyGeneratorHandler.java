@@ -26,7 +26,7 @@ public class KeyGeneratorHandler {
 
    public Mono<ServerResponse> updateKey(ServerRequest request) {
       return request.bodyToMono(KeyGeneratorRequest.class)
-         .flatMap(req -> keyGeneratorService.updateIfGreater(keyIndicesConverter.convertRequest(req)))
+         .flatMap(req -> keyGeneratorService.updateIfGreater(keyIndicesConverter.convertRequestToModel(req)))
          .flatMap(kgsResponse -> ServerResponse.ok()
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(kgsResponse))

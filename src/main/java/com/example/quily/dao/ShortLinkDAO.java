@@ -56,7 +56,7 @@ public class ShortLinkDAO {
    }
 
    private ShortLink getShortLink(CreateShortLinkRequest request, String hashKey) {
-      ShortLink shortLink = converter.convertRequest(request);
+      ShortLink shortLink = converter.convertRequestToModel(request);
       shortLink.setShortedLink(ShortLinkUtil.LOCALHOST_URL + hashKey);
       return shortLink;
    }
