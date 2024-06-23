@@ -27,6 +27,7 @@ public class EmailConfirmationTokenDAO {
          + ShortLinkUtil.EMAIL_VERIFICATION_URL + token);
       javaMailSender.send(mailMessage);
    }
+
    public String generateMD5Hash(String input) {
       try {
          MessageDigest md = MessageDigest.getInstance("MD5");
