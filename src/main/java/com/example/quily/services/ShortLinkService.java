@@ -1,7 +1,7 @@
 package com.example.quily.services;
 
-import com.example.quily.exception.AlreadyExistEntityException;
-import com.example.quily.exception.GreaterIndicesFoundException;
+import com.example.quily.constants.ShortLinkConstants;
+import com.example.quily.exception.EntityAlreadyExistException;
 import com.example.quily.model.KeyIndices;
 import com.example.quily.model.ShortLink;
 import com.example.quily.util.ShortLinkUtil;
@@ -51,7 +51,7 @@ public class ShortLinkService implements DbService<ShortLink, Long> {
    }
 
    public Mono<ShortLink> saveShortLink(ShortLink shortLink) {
-      final String errorMessage = ShortLinkUtil.LINK_ALREADY_USED_MESSAGE;
+      final String errorMessage = ShortLinkConstants.LINK_ALREADY_USED_MESSAGE;
       final String sql = "INSERT INTO short_link (user_id, original_link, shorted_link, creation_date, expiry_date, is_active) " +
          "SELECT :user_id, :original_link, :shorted_link, :creation_date, :expiry_date, :is_active " +
          "FROM dual WHERE NOT EXISTS (" +
@@ -71,7 +71,7 @@ public class ShortLinkService implements DbService<ShortLink, Long> {
             if (row > 0)
                return Mono.just(shortLink);
             else
-               return Mono.error(new AlreadyExistEntityException(errorMessage));
+               return Mono.error(new EntityAlreadyExistException(errorMessage));
          });
    }
 
@@ -85,7 +85,7 @@ public class ShortLinkService implements DbService<ShortLink, Long> {
 
    public Mono<Boolean> isCustomAliasAvailable(String customAlias) {
       return databaseClient.sql("SELECT shorted_link FROM short_link WHERE shorted_link = :customAlias")
-         .bind("customAlias", ShortLinkUtil.LOCALHOST_URL + customAlias)
+         .bind("customAlias", ShortLinkConstants.LOCALHOST_URL + customAlias)
          .fetch()
          .first().map(usedAlias -> false)
          .switchIfEmpty(Mono.just(true));

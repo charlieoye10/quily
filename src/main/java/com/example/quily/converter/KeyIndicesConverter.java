@@ -18,15 +18,15 @@ public class KeyIndicesConverter implements Converter<KeyGeneratorRequest, KeyGe
    }
 
    @Override
-   public KeyIndices convertRequestToModel(KeyGeneratorRequest keyGeneratorRequest) {
+   public KeyIndices getModelFromRequest(KeyGeneratorRequest keyGeneratorRequest) {
       return new KeyIndices(keyGeneratorRequest.getId(), keyGeneratorRequest.getIndex1(), keyGeneratorRequest.getIndex2(),
          keyGeneratorRequest.getIndex3(), keyGeneratorRequest.getIndex4(), keyGeneratorRequest.getIndex5(), keyGeneratorRequest.getIndex6());
    }
 
    @Override
-   public ResponseBody<KeyGeneratorResponse> convertModelToResponse(KeyIndices keyIndices) {
+   public ResponseBody<KeyGeneratorResponse> getResponseFromModel(KeyIndices keyIndices) {
       final KeyGeneratorResponse keyGeneratorResponse =
-         keyGeneratorDAO.getHashKeyInKGSResponse(keyIndices);
+         keyGeneratorDAO.getResponseFromKeyIndices(keyIndices);
       return new ResponseBody<>(200, "", keyGeneratorResponse);
    }
 }

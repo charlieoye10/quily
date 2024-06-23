@@ -1,12 +1,12 @@
 package com.example.quily.handler;
 
+import com.example.quily.constants.ShortLinkConstants;
 import com.example.quily.converter.ShortLinkConverter;
 import com.example.quily.dao.ShortLinkDAO;
 import com.example.quily.request.CreateShortLinkRequest;
 import com.example.quily.response.ResponseBody;
 import com.example.quily.response.ShortLinkResponse;
 import com.example.quily.services.ShortLinkService;
-import com.example.quily.util.ShortLinkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,7 +34,7 @@ public class ShortLinkHandler {
             shortLinkDAO.createShortLink(req)
                .flatMap(createdShortLink -> {
                      ResponseBody<ShortLinkResponse> responseBody =
-                        shortLinkConverter.convertModelToResponse(createdShortLink);
+                        shortLinkConverter.getResponseFromModel(createdShortLink);
                      return ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(responseBody);
@@ -60,7 +60,7 @@ public class ShortLinkHandler {
    }
 
    private Mono<ServerResponse> handleIfInvalidUrl() {
-      final String errorMessage = ShortLinkUtil.INVALID_URL_MESSAGE;
+      final String errorMessage = ShortLinkConstants.INVALID_URL_MESSAGE;
       return ServerResponse.status(HttpStatus.BAD_REQUEST)
          .contentType(MediaType.APPLICATION_JSON)
          .bodyValue(

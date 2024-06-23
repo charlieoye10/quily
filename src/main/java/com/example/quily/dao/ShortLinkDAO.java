@@ -1,13 +1,13 @@
 package com.example.quily.dao;
 
+import com.example.quily.constants.ShortLinkConstants;
 import com.example.quily.converter.ShortLinkConverter;
-import com.example.quily.exception.AlreadyExistEntityException;
+import com.example.quily.exception.EntityAlreadyExistException;
 import com.example.quily.model.KeyIndices;
 import com.example.quily.model.ShortLink;
 import com.example.quily.request.CreateShortLinkRequest;
 import com.example.quily.services.KeyGeneratorService;
 import com.example.quily.services.ShortLinkService;
-import com.example.quily.util.ShortLinkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -35,11 +35,11 @@ public class ShortLinkDAO {
    }
 
    private Mono<ShortLink> handleCustomAlias(CreateShortLinkRequest request) {
-      final String errorMessage = ShortLinkUtil.CUSTOM_ALIAS_EXISTS_MESSAGE;
+      final String errorMessage = ShortLinkConstants.CUSTOM_ALIAS_EXISTS_MESSAGE;
       return shortLinkService.isCustomAliasAvailable(request.getCustomAlias())
          .flatMap(available -> {
             if (!available) {
-               return Mono.error(new AlreadyExistEntityException(errorMessage));
+               return Mono.error(new EntityAlreadyExistException(errorMessage));
             }
             final ShortLink shortLink = getShortLink(request, request.getCustomAlias());
             return shortLinkService.createSortLinkAndUpdateIndices(shortLink, Optional.empty());
@@ -57,7 +57,7 @@ public class ShortLinkDAO {
    }
 
    private ShortLink getShortLink(CreateShortLinkRequest request, String hashKey) {
-      final String shortUrl = ShortLinkUtil.LOCALHOST_URL + hashKey;
+      final String shortUrl = String.join("", ShortLinkConstants.LOCALHOST_URL, hashKey);
       return converter.convertRequestToModel(request, shortUrl);
    }
 }

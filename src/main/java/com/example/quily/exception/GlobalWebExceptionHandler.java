@@ -19,22 +19,25 @@ public class GlobalWebExceptionHandler implements WebExceptionHandler {
    public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
       HttpStatus status =
          switch (ex.getClass().getSimpleName()) {
-         case "ResourceNotFoundException" -> HttpStatus.NOT_FOUND;
-         case "AlreadyExistEntityException" -> HttpStatus.CONFLICT;
-         case "GreaterIndicesFoundException", "BadRequestException", "EmailFormatException" ->
-            HttpStatus.BAD_REQUEST;
-         default -> HttpStatus.INTERNAL_SERVER_ERROR;
-      };
+            case "ResourceNotFoundException" -> HttpStatus.NOT_FOUND;
+            case "EntityAlreadyExistException" -> HttpStatus.CONFLICT;
+            case "GreaterIndicesFoundException", "BadRequestException", "EmailFormatException" ->
+               HttpStatus.BAD_REQUEST;
+            default -> HttpStatus.INTERNAL_SERVER_ERROR;
+         };
 
       ResponseBody<String> response = new ResponseBody<>(
          status.value(),
          ex.getMessage(),
          null
       );
-
       exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
       exchange.getResponse().setStatusCode(status);
+      return handleResponse(exchange, ex, response);
+   }
 
+
+   private Mono<Void> handleResponse(ServerWebExchange exchange, Throwable ex, ResponseBody<String> response) {
       try {
          return exchange.getResponse().writeWith(
             Mono.just(exchange.getResponse().bufferFactory().wrap(

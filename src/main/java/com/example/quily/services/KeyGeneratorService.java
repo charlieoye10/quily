@@ -5,7 +5,7 @@ import com.example.quily.exception.ResourceNotFoundException;
 import com.example.quily.model.KeyIndices;
 import com.example.quily.repositories.KeyGeneratorRepository;
 import com.example.quily.response.KeyGeneratorResponse;
-import com.example.quily.util.KeyGeneratorUtil;
+import com.example.quily.constants.KeyGeneratorConstants;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class KeyGeneratorService implements DbService<KeyIndices, Long> {
    private final KeyGeneratorDAO keyGeneratorDAO;
    private final KeyGeneratorRepository keyGeneratorRepository;
    private final DatabaseClient databaseClient;
-   private final String errorMessage = KeyGeneratorUtil.KEY_NOT_FOUND_EXCEPTION_MESSAGE;
+   private final String errorMessage = KeyGeneratorConstants.KEY_NOT_FOUND_MESSAGE;
 
    @Autowired
    public KeyGeneratorService(KeyGeneratorDAO keyGeneratorDAO, KeyGeneratorRepository keyGeneratorRepository, DatabaseClient databaseClient) {
@@ -30,7 +30,7 @@ public class KeyGeneratorService implements DbService<KeyIndices, Long> {
       this.databaseClient = databaseClient;
    }
 
-   final Long id = KeyGeneratorUtil.KeyGeneratedIndicesId;
+   final Long id = KeyGeneratorConstants.KeyGeneratedIndicesId;
    private KeyIndices currentIndices;
 
    @EventListener(ContextRefreshedEvent.class)
@@ -43,7 +43,7 @@ public class KeyGeneratorService implements DbService<KeyIndices, Long> {
 
    public synchronized Mono<KGSResponseDetail> getCurrentKey() {
       if (currentIndices != null) {
-         KeyGeneratorResponse currentHashKey = keyGeneratorDAO.getHashKeyInKGSResponse(currentIndices);
+         KeyGeneratorResponse currentHashKey = keyGeneratorDAO.getResponseFromKeyIndices(currentIndices);
          currentIndices = keyGeneratorDAO.getUpdatedIndices(currentIndices);
          return Mono.just(new KGSResponseDetail(currentHashKey, currentIndices));
       }

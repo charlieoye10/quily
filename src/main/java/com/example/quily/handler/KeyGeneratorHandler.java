@@ -6,7 +6,7 @@ import com.example.quily.request.KeyGeneratorRequest;
 import com.example.quily.response.KeyGeneratorResponse;
 import com.example.quily.response.ResponseBody;
 import com.example.quily.services.KeyGeneratorService;
-import com.example.quily.util.KeyGeneratorUtil;
+import com.example.quily.constants.KeyGeneratorConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,10 +30,10 @@ public class KeyGeneratorHandler {
 
    public Mono<ServerResponse> updateKey(ServerRequest request) {
       return request.bodyToMono(KeyGeneratorRequest.class)
-         .flatMap(req -> keyGeneratorService.updateKeyIndicesIfGreater(keyIndicesConverter.convertRequestToModel(req)))
+         .flatMap(req -> keyGeneratorService.updateKeyIndicesIfGreater(keyIndicesConverter.getModelFromRequest(req)))
          .flatMap(updatedKeyIndices -> {
             final ResponseBody<KeyGeneratorResponse> response =
-               keyIndicesConverter.convertModelToResponse(updatedKeyIndices);
+               keyIndicesConverter.getResponseFromModel(updatedKeyIndices);
             return ServerResponse.ok()
                .contentType(MediaType.APPLICATION_JSON)
                .bodyValue(response);
@@ -47,7 +47,7 @@ public class KeyGeneratorHandler {
             ServerResponse.ok()
             .contentType(MediaType.APPLICATION_JSON)
                .bodyValue(
-                  keyIndicesConverter.convertModelToResponse(
+                  keyIndicesConverter.getResponseFromModel(
                      keyGeneratorDAO.getKeyIndicesFromResponse(keyDetail.getKeyGeneratorResponse())
                   )
                ));
@@ -55,7 +55,7 @@ public class KeyGeneratorHandler {
    }
 
    private Mono<ServerResponse> handleIfGreaterIndicesFound() {
-      final String errorMessage = KeyGeneratorUtil.GREATER_INDICES_FOUND_EXCEPTION_MESSAGE;
+      final String errorMessage = KeyGeneratorConstants.GREATER_INDICES_FOUND_MESSAGE;
       return ServerResponse.badRequest()
          .contentType(MediaType.APPLICATION_JSON)
          .bodyValue(new ResponseBody<>(

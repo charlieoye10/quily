@@ -1,6 +1,6 @@
-package com.example.quily.util;
+package com.example.quily.constants;
 
-public final class KeyGeneratorUtil {
+public final class KeyGeneratorConstants {
 
     public static final int HashStringLength = 6;
 
@@ -20,7 +20,7 @@ public final class KeyGeneratorUtil {
 
     public static final String Base62_6 = "EqSIFVbuXDZPlpWYnKTmOi7cA3ew0Uhy1Qt84gkBdz2RfJoGaxv5s6Cjr9HNLM";
 
-    public static final String GREATER_INDICES_FOUND_EXCEPTION_MESSAGE = "Greater Indices found! couldn't update key indices";
+    public static final String GREATER_INDICES_FOUND_MESSAGE = "Greater Indices found! couldn't update key indices";
 
-    public static final String KEY_NOT_FOUND_EXCEPTION_MESSAGE = "Unable to fetch keyIndices of from DB";
+    public static final String KEY_NOT_FOUND_MESSAGE = "Unable to fetch keyIndices of from DB";
 }

@@ -1,12 +1,12 @@
 package com.example.quily.services;
 
-import com.example.quily.exception.AlreadyExistEntityException;
+import com.example.quily.exception.EntityAlreadyExistException;
 import com.example.quily.model.EmailConfirmationToken;
 import com.example.quily.model.User;
 import com.example.quily.repositories.UserRepository;
 import com.example.quily.response.SignUpResponse;
 import com.example.quily.util.CommonUtil;
-import com.example.quily.util.UserUtil;
+import com.example.quily.constants.UserConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Service;
@@ -44,7 +44,7 @@ public class UserService implements DbService<User, String> {
       return userRepository.findById(user.getEmail())
          .flatMap(dbUser -> {
             if (dbUser.isActive())
-               return Mono.error(new AlreadyExistEntityException("User with email " + user.getEmail() + " already exist"));
+               return Mono.error(new EntityAlreadyExistException("User with email " + user.getEmail() + " already exist"));
             else return Mono.just(dbUser);
          })
          .switchIfEmpty(
@@ -79,7 +79,7 @@ public class UserService implements DbService<User, String> {
    public Mono<String> sendEmailVerificationLink(User user) {
       final String token = emailConfirmationTokenDAO.getConfirmationToken(user);
       final EmailConfirmationToken confirmationToken = new EmailConfirmationToken(token, user.getEmail(), CommonUtil.getCurrentDateTimeInFormat());
-      final String message = String.format(UserUtil.EMAIL_VERIFICATION_MESSAGE, user.getEmail());
+      final String message = String.format(UserConstants.EMAIL_VERIFICATION_MESSAGE, user.getEmail());
       Mono<EmailConfirmationToken> saveToken = emailTokenService.save(confirmationToken);
       Mono<Void> sentEmail = Mono.fromRunnable(() -> emailConfirmationTokenDAO.sendEmail(user, token));
       Mono<User> savedUser = save(user);

@@ -131,7 +131,7 @@ class KeyGeneratorDAOImplTest {
 
     @Test
     public void getHashKeyInKGSResponseReturnIndicesAndHashKey() {
-        KeyGeneratorResponse result= keyGeneratorDAO.getHashKeyInKGSResponse(keyIndices);
+        KeyGeneratorResponse result= keyGeneratorDAO.getResponseFromKeyIndices(keyIndices);
         int [] indices = {0,1,2,3,4,5};
         KeyGeneratorResponse expectedResponse = new KeyGeneratorResponse(indices, "ABCDEF");
         assertArrayEquals(expectedResponse.getIndices(), result.getIndices());

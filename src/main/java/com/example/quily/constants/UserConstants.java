@@ -1,6 +1,6 @@
-package com.example.quily.util;
+package com.example.quily.constants;
 
-public class UserUtil {
+public class UserConstants {
    public static final String USER_CREATED_MESSAGE = "User registered successfully";
 
    public static final String INVALID_EMAIL_FORMAT_MESSAGE =

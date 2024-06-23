@@ -5,9 +5,8 @@ import com.example.quily.exception.EmailFormatException;
 import com.example.quily.request.SignUpRequest;
 import com.example.quily.services.UserService;
 import com.example.quily.util.CommonUtil;
-import com.example.quily.util.UserUtil;
+import com.example.quily.constants.UserConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -24,17 +23,17 @@ public class UserDao {
       this.userSignupConverter = userSignupConverter;
    }
 
-   public Boolean isEmailPatternCorrect(String email) {
+   public Boolean isValidEmailFormat(String email) {
       return Pattern.compile(CommonUtil.emailPatternRegex)
          .matcher(email)
          .matches();
    }
 
-   public Mono<String> emailVerification(SignUpRequest req) {
-      final String errorMessage = UserUtil.INVALID_EMAIL_FORMAT_MESSAGE;
-      if (!isEmailPatternCorrect(req.email)) {
+   public Mono<String> processEmailVerification(SignUpRequest req) {
+      final String errorMessage = UserConstants.INVALID_EMAIL_FORMAT_MESSAGE;
+      if (!isValidEmailFormat(req.email)) {
          return Mono.error(new EmailFormatException(errorMessage));
       }
-      return userService.sendEmailVerificationLink(userSignupConverter.convertRequestToModel(req));
+      return userService.sendEmailVerificationLink(userSignupConverter.getModelFromRequest(req));
    }
 }

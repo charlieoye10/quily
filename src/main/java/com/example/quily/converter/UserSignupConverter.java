@@ -4,13 +4,10 @@ import com.example.quily.model.User;
 import com.example.quily.request.SignUpRequest;
 import com.example.quily.response.ResponseBody;
 import com.example.quily.response.SignUpResponse;
-import com.example.quily.util.ShortLinkUtil;
-import com.example.quily.util.UserUtil;
+import com.example.quily.constants.UserConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 
 @Component
 public class UserSignupConverter implements Converter<SignUpRequest, SignUpResponse, User> {
@@ -21,7 +18,7 @@ public class UserSignupConverter implements Converter<SignUpRequest, SignUpRespo
       this.passwordEncoder = passwordEncoder;
    }
    @Override
-   public User convertRequestToModel(SignUpRequest signUpRequest) {
+   public User getModelFromRequest(SignUpRequest signUpRequest) {
       return new User(
          signUpRequest.email,
          signUpRequest.userName,
@@ -30,12 +27,12 @@ public class UserSignupConverter implements Converter<SignUpRequest, SignUpRespo
    }
 
    @Override
-   public ResponseBody<SignUpResponse> convertModelToResponse(User user) {
+   public ResponseBody<SignUpResponse> getResponseFromModel(User user) {
       return null;
    }
 
-   public ResponseBody<SignUpResponse> convertModelToResponse(SignUpResponse signUpResponse) {
-      final String message = UserUtil.USER_CREATED_MESSAGE;
+   public ResponseBody<SignUpResponse> getResponseFromModel(SignUpResponse signUpResponse) {
+      final String message = UserConstants.USER_CREATED_MESSAGE;
       return new ResponseBody<>(200, message, signUpResponse);
    }
 }

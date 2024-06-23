@@ -6,7 +6,7 @@ import com.example.quily.exception.BadRequestException;
 import com.example.quily.request.SignUpRequest;
 import com.example.quily.response.ResponseBody;
 import com.example.quily.services.UserService;
-import com.example.quily.util.UserUtil;
+import com.example.quily.constants.UserConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,7 +32,7 @@ public class UserHandler {
 
    public Mono<ServerResponse> signUp(ServerRequest request) {
       return request.bodyToMono(SignUpRequest.class)
-         .flatMap(userDao::emailVerification)
+         .flatMap(userDao::processEmailVerification)
          .flatMap(resString -> {
             ResponseBody<String> responseBody =
                new ResponseBody<>(HttpStatus.OK.value(), "", resString);
@@ -43,13 +43,13 @@ public class UserHandler {
    }
 
    public Mono<ServerResponse> verifyUser(ServerRequest serverRequest) {
-      final String errorMessage = UserUtil.VERIFICATION_FAILED_MESSAGE;
+      final String errorMessage = UserConstants.VERIFICATION_FAILED_MESSAGE;
       final Optional<String> tokenOpt = serverRequest.queryParam("token");
       return tokenOpt.map(token -> userService.verifyTokenAndSaveUser(token)
             .flatMap(signUpResponse -> ServerResponse.ok()
                .contentType(MediaType.APPLICATION_JSON)
                .bodyValue(
-                  userSignupConverter.convertModelToResponse(signUpResponse)
+                  userSignupConverter.getResponseFromModel(signUpResponse)
                )))
          .orElseGet(() -> Mono.error(new BadRequestException(errorMessage)));
 
