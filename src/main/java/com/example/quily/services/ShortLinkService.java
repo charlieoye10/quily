@@ -1,9 +1,9 @@
 package com.example.quily.services;
 
-import com.example.quily.exception.GreaterIndicesFoundException;
+import com.example.quily.constants.ShortLinkConstants;
+import com.example.quily.exception.EntityAlreadyExistException;
 import com.example.quily.model.KeyIndices;
 import com.example.quily.model.ShortLink;
-import com.example.quily.response.OriginalLinkResponse;
 import com.example.quily.util.ShortLinkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.r2dbc.core.DatabaseClient;
@@ -43,8 +43,7 @@ public class ShortLinkService implements DbService<ShortLink, Long> {
    }
 
    @Override
-   public void delete(Long id) {
-   }
+   public void delete(Long id) {}
 
    @Override
    public Mono<ShortLink> save(ShortLink shortLink) {
@@ -52,6 +51,7 @@ public class ShortLinkService implements DbService<ShortLink, Long> {
    }
 
    public Mono<ShortLink> saveShortLink(ShortLink shortLink) {
+      final String errorMessage = ShortLinkConstants.LINK_ALREADY_USED_MESSAGE;
       final String sql = "INSERT INTO short_link (user_id, original_link, shorted_link, creation_date, expiry_date, is_active) " +
          "SELECT :user_id, :original_link, :shorted_link, :creation_date, :expiry_date, :is_active " +
          "FROM dual WHERE NOT EXISTS (" +
@@ -71,21 +71,21 @@ public class ShortLinkService implements DbService<ShortLink, Long> {
             if (row > 0)
                return Mono.just(shortLink);
             else
-               return Mono.error(new GreaterIndicesFoundException("Provided link already has been used."));
+               return Mono.error(new EntityAlreadyExistException(errorMessage));
          });
    }
 
-   public Mono<OriginalLinkResponse> findOriginalLink(String shortLink) {
+   public Mono<String> findOriginalLink(String shortLink) {
       return databaseClient.sql("SELECT original_link FROM short_link WHERE shorted_link = :shortLink")
          .bind("shortLink", shortLink)
          .fetch()
          .first()
-         .map(row -> new OriginalLinkResponse((String) row.get("original_link")));
+         .map(row -> (String) row.get("original_link"));
    }
 
    public Mono<Boolean> isCustomAliasAvailable(String customAlias) {
       return databaseClient.sql("SELECT shorted_link FROM short_link WHERE shorted_link = :customAlias")
-         .bind("customAlias", ShortLinkUtil.LOCALHOST_URL + customAlias)
+         .bind("customAlias", ShortLinkConstants.LOCALHOST_URL + customAlias)
          .fetch()
          .first().map(usedAlias -> false)
          .switchIfEmpty(Mono.just(true));
@@ -94,7 +94,7 @@ public class ShortLinkService implements DbService<ShortLink, Long> {
    public Mono<ShortLink> createSortLinkAndUpdateIndices(ShortLink shortLink, Optional<KeyIndices> currentIndicesOpt) {
       final Mono<ShortLink> savedLink = saveShortLink(shortLink);
       final Mono<KeyIndices> updatedIndices = currentIndicesOpt
-         .map(KeyGeneratorService::updateIfGreater)
+         .map(KeyGeneratorService::updateKeyIndicesIfGreater)
          .orElse(Mono.empty());
 
       return updatedIndices

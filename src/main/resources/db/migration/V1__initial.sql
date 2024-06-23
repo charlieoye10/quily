@@ -28,12 +28,12 @@ CREATE TABLE key_indices
     index6 INT
 );
 
-CREATE TABLE EmailConfirmationToken
+CREATE TABLE email_confirmation_token
 (
     id                 BIGINT AUTO_INCREMENT PRIMARY KEY,
-    confirmation_token VARCHAR(1000) NOT NULL,
-    user_email         VARCHAR(255)  NOT NULL,
-    created_time       VARCHAR(255)  NOT NULL
+    confirmation_token VARCHAR(255) UNIQUE NOT NULL,
+    user_email         VARCHAR(255)  UNIQUE NOT NULL,
+    created_time       VARCHAR(255)  UNIQUE NOT NULL
 );
 
 INSERT INTO key_indices VALUES (1, 0, 0, 0, 0, 0, 0)

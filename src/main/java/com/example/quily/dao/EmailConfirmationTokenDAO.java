@@ -1,7 +1,7 @@
 package com.example.quily.dao;
 
+import com.example.quily.constants.ShortLinkConstants;
 import com.example.quily.model.User;
-import com.example.quily.util.ShortLinkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -24,7 +24,7 @@ public class EmailConfirmationTokenDAO {
       mailMessage.setTo(user.getEmail());
       mailMessage.setSubject("Complete Registration!");
       mailMessage.setText("To confirm your account, please click here : "
-         + ShortLinkUtil.EMAIL_VERIFICATION_URL + token);
+         + ShortLinkConstants.EMAIL_VERIFICATION_URL + token);
       javaMailSender.send(mailMessage);
    }
 

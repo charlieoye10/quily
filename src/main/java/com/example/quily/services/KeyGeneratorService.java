@@ -1,12 +1,11 @@
 package com.example.quily.services;
 
 import com.example.quily.dao.KeyGeneratorDAO;
-import com.example.quily.exception.GreaterIndicesFoundException;
 import com.example.quily.exception.ResourceNotFoundException;
 import com.example.quily.model.KeyIndices;
 import com.example.quily.repositories.KeyGeneratorRepository;
 import com.example.quily.response.KeyGeneratorResponse;
-import com.example.quily.util.KeyGeneratorUtil;
+import com.example.quily.constants.KeyGeneratorConstants;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,7 @@ public class KeyGeneratorService implements DbService<KeyIndices, Long> {
    private final KeyGeneratorDAO keyGeneratorDAO;
    private final KeyGeneratorRepository keyGeneratorRepository;
    private final DatabaseClient databaseClient;
+   private final String errorMessage = KeyGeneratorConstants.KEY_NOT_FOUND_MESSAGE;
 
    @Autowired
    public KeyGeneratorService(KeyGeneratorDAO keyGeneratorDAO, KeyGeneratorRepository keyGeneratorRepository, DatabaseClient databaseClient) {
@@ -30,25 +30,25 @@ public class KeyGeneratorService implements DbService<KeyIndices, Long> {
       this.databaseClient = databaseClient;
    }
 
-   final Long id = KeyGeneratorUtil.KeyGeneratedIndicesId;
+   final Long id = KeyGeneratorConstants.KeyGeneratedIndicesId;
    private KeyIndices currentIndices;
 
    @EventListener(ContextRefreshedEvent.class)
    public void init() {
       currentIndices = findByUniqueId(id).block();
       if (currentIndices == null) {
-         throw new ResourceNotFoundException("Unable to fetch keyIndices of id: " + id + " from DB");
+         throw new ResourceNotFoundException(errorMessage);
       }
    }
 
    public synchronized Mono<KGSResponseDetail> getCurrentKey() {
       if (currentIndices != null) {
-         KeyGeneratorResponse currentHashKey = keyGeneratorDAO.getHashKeyInKGSResponse(currentIndices);
+         KeyGeneratorResponse currentHashKey = keyGeneratorDAO.getResponseFromKeyIndices(currentIndices);
          currentIndices = keyGeneratorDAO.getUpdatedIndices(currentIndices);
          return Mono.just(new KGSResponseDetail(currentHashKey, currentIndices));
       }
       return Mono.error(
-         new ResourceNotFoundException("unable to fetch keyIndices of id: " + id + " from DB"));
+         new ResourceNotFoundException(errorMessage));
    }
 
    @Override
@@ -75,7 +75,7 @@ public class KeyGeneratorService implements DbService<KeyIndices, Long> {
    public void delete(Long id) {
    }
 
-   public Mono<KeyIndices> updateIfGreater(KeyIndices keyIndices) {
+   public Mono<KeyIndices> updateKeyIndicesIfGreater(KeyIndices keyIndices) {
       return databaseClient.sql("UPDATE key_indices SET index1 = :index1, index2 = :index2, index3 = :index3, index4 = :index4, index5 = :index5, index6 = :index6 " +
             "WHERE id = :id AND (index6 * 100000 + index5 * 10000 + index4 * 1000 + index3 * 100 + index2 * 10 + index1) < " +
             "(:index6 * 100000 + :index5 * 10000 + :index4 * 1000 + :index3 * 100 + :index2 * 10 + :index1)")
@@ -93,7 +93,7 @@ public class KeyGeneratorService implements DbService<KeyIndices, Long> {
                if (row > 0)
                   return Mono.just(keyIndices);
                else
-                  return Mono.error(new GreaterIndicesFoundException(("Greater value already exist in db")));
+                  return Mono.empty();
             }
          );
    }
