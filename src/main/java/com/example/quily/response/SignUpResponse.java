@@ -7,6 +7,4 @@ public class SignUpResponse {
     public String email;
 
     public String creationTime;
-
-    public String message;
 }

@@ -2,8 +2,10 @@ package com.example.quily.converter;
 
 import com.example.quily.model.ShortLink;
 import com.example.quily.request.CreateShortLinkRequest;
+import com.example.quily.response.ResponseBody;
 import com.example.quily.response.ShortLinkResponse;
 import com.example.quily.util.CommonUtil;
+import com.example.quily.util.ShortLinkUtil;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -24,8 +26,14 @@ public class ShortLinkConverter implements Converter<CreateShortLinkRequest, Sho
    }
 
    @Override
-   public ShortLinkResponse convertModelToResponse(ShortLink shortLink) {
-      return new ShortLinkResponse(shortLink.getUserID(), shortLink.getOriginalLink(),
-         shortLink.getShortedLink(), shortLink.getExpiryDate(), shortLink.getCreationDate());
+   public ResponseBody<ShortLinkResponse> convertModelToResponse(ShortLink shortLink) {
+      final ShortLinkResponse shortLinkResponse = new ShortLinkResponse(
+         shortLink.getUserID(),
+         shortLink.getOriginalLink(),
+         shortLink.getShortedLink(),
+         shortLink.getExpiryDate(),
+         shortLink.getCreationDate());
+      final String message = ShortLinkUtil.SHORT_LINK_CREATED_MESSAGE;
+      return new ResponseBody<>(200, message, shortLinkResponse);
    }
 }

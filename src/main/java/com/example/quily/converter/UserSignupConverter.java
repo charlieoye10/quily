@@ -2,7 +2,10 @@ package com.example.quily.converter;
 
 import com.example.quily.model.User;
 import com.example.quily.request.SignUpRequest;
+import com.example.quily.response.ResponseBody;
 import com.example.quily.response.SignUpResponse;
+import com.example.quily.util.ShortLinkUtil;
+import com.example.quily.util.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -27,11 +30,12 @@ public class UserSignupConverter implements Converter<SignUpRequest, SignUpRespo
    }
 
    @Override
-   public SignUpResponse convertModelToResponse(User user) {
-      return new SignUpResponse(
-         user.getEmail(),
-         LocalDateTime.now().toString(),
-         ""
-      );
+   public ResponseBody<SignUpResponse> convertModelToResponse(User user) {
+      return null;
+   }
+
+   public ResponseBody<SignUpResponse> convertModelToResponse(SignUpResponse signUpResponse) {
+      final String message = UserUtil.USER_CREATED_MESSAGE;
+      return new ResponseBody<>(200, message, signUpResponse);
    }
 }

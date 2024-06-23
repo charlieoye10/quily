@@ -1,1 +1,0 @@
-RENAME TABLE EmailConfirmationToken TO email_confirmation_token;

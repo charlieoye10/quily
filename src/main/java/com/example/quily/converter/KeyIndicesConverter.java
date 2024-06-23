@@ -4,6 +4,7 @@ import com.example.quily.dao.KeyGeneratorDAO;
 import com.example.quily.model.KeyIndices;
 import com.example.quily.request.KeyGeneratorRequest;
 import com.example.quily.response.KeyGeneratorResponse;
+import com.example.quily.response.ResponseBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +24,9 @@ public class KeyIndicesConverter implements Converter<KeyGeneratorRequest, KeyGe
    }
 
    @Override
-   public KeyGeneratorResponse convertModelToResponse(KeyIndices keyIndices) {
-      return keyGeneratorDAO.getHashKeyInKGSResponse(keyIndices);
+   public ResponseBody<KeyGeneratorResponse> convertModelToResponse(KeyIndices keyIndices) {
+      final KeyGeneratorResponse keyGeneratorResponse =
+         keyGeneratorDAO.getHashKeyInKGSResponse(keyIndices);
+      return new ResponseBody<>(200, "", keyGeneratorResponse);
    }
 }

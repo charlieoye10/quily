@@ -35,10 +35,11 @@ public class ShortLinkDAO {
    }
 
    private Mono<ShortLink> handleCustomAlias(CreateShortLinkRequest request) {
+      final String errorMessage = ShortLinkUtil.CUSTOM_ALIAS_EXISTS_MESSAGE;
       return shortLinkService.isCustomAliasAvailable(request.getCustomAlias())
          .flatMap(available -> {
             if (!available) {
-               return Mono.error(new AlreadyExistEntityException("The custom alias is already present."));
+               return Mono.error(new AlreadyExistEntityException(errorMessage));
             }
             final ShortLink shortLink = getShortLink(request, request.getCustomAlias());
             return shortLinkService.createSortLinkAndUpdateIndices(shortLink, Optional.empty());

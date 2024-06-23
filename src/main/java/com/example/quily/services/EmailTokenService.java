@@ -31,8 +31,9 @@ public class EmailTokenService implements DbService<EmailConfirmationToken, Long
 
    @Override
    public Mono<EmailConfirmationToken> save(EmailConfirmationToken emailConfirmationToken) {
-      return dbClient.sql("INSERT IGNORE INTO email_confirmation_token (confirmation_token, created_time, user_email)" +
-            " VALUES (:confirmation_token, :created_time, :user_email)")
+      return dbClient.sql("INSERT INTO email_confirmation_token (confirmation_token, created_time, user_email)" +
+            " VALUES (:confirmation_token, :created_time, :user_email)" +
+            " ON DUPLICATE KEY UPDATE confirmation_token = :confirmation_token, created_time = :created_time")
          .bind("confirmation_token", emailConfirmationToken.getConfirmationToken())
          .bind("created_time", emailConfirmationToken.getCreatedTime())
          .bind("user_email", emailConfirmationToken.getUserEmail())
@@ -56,16 +57,16 @@ public class EmailTokenService implements DbService<EmailConfirmationToken, Long
          .bind("token", token)
          .map((row, metadata) -> new EmailConfirmationToken(
             row.get("confirmation_token", String.class),
-            row.get("created_time", String.class),
-            row.get("user_email", String.class)
+            row.get("user_email", String.class),
+            row.get("created_time", String.class)
          ))
          .one();
    }
 
-   public Mono<Void> deleteByToken(String token) {
+   public Mono<Long> deleteByToken(String token) {
       return dbClient.sql("DELETE FROM email_confirmation_token WHERE confirmation_token = :token")
          .bind("token", token)
          .fetch()
-         .first().map(Void.class::cast);
+         .rowsUpdated();
    }
 }

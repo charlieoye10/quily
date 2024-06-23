@@ -64,4 +64,9 @@ public class KeyGeneratorDAO {
         String hashKey = getSixLengthHash(keyIndices);
         return new KeyGeneratorResponse(indices, hashKey);
     }
+
+    public KeyIndices getKeyIndicesFromResponse(KeyGeneratorResponse keyGeneratorResponse) {
+        final int[] indices = keyGeneratorResponse.getIndices();
+        return new KeyIndices(1L, indices[0], indices[1], indices[2], indices[3], indices[4], indices[5]);
+    }
 }
