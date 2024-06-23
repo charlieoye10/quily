@@ -1,6 +1,6 @@
 package com.example.quily.util;
 
-public final class KGSUtil {
+public final class KeyGeneratorUtil {
 
     public static final int HashStringLength = 6;
 

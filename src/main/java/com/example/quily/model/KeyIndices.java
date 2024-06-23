@@ -1,6 +1,5 @@
 package com.example.quily.model;
 
-import com.example.quily.request.KGSRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -24,8 +23,4 @@ public class KeyIndices {
     private int index5;
 
     private int index6;
-
-    public KGSRequest toKGSRequest() {
-        return new KGSRequest(id, index1, index2, index3, index4, index5, index6);
-    }
 }
