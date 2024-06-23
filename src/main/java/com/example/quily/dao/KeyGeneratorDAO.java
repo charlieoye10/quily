@@ -3,19 +3,19 @@ package com.example.quily.dao;
 
 import com.example.quily.model.KeyIndices;
 import com.example.quily.response.KeyGeneratorResponse;
-import com.example.quily.util.KeyGeneratorUtil;
+import com.example.quily.constants.KeyGeneratorConstants;
 import org.springframework.stereotype.Component;
 
 @Component
 public class KeyGeneratorDAO {
-    final int hashStringLength = KeyGeneratorUtil.HashStringLength;
-    final int baseSize = KeyGeneratorUtil.BaseSize;
-    final String base62_1 = KeyGeneratorUtil.Base62_1;
-    final String base62_2 = KeyGeneratorUtil.Base62_2;
-    final String base62_3 = KeyGeneratorUtil.Base62_3;
-    final String base62_4 = KeyGeneratorUtil.Base62_4;
-    final String base62_5 = KeyGeneratorUtil.Base62_5;
-    final String base62_6 = KeyGeneratorUtil.Base62_6;
+    final int hashStringLength = KeyGeneratorConstants.HashStringLength;
+    final int baseSize = KeyGeneratorConstants.BaseSize;
+    final String base62_1 = KeyGeneratorConstants.Base62_1;
+    final String base62_2 = KeyGeneratorConstants.Base62_2;
+    final String base62_3 = KeyGeneratorConstants.Base62_3;
+    final String base62_4 = KeyGeneratorConstants.Base62_4;
+    final String base62_5 = KeyGeneratorConstants.Base62_5;
+    final String base62_6 = KeyGeneratorConstants.Base62_6;
 
     public int[] toArray(KeyIndices keyIndices) {
         int index1 = keyIndices.getIndex1();
@@ -59,9 +59,14 @@ public class KeyGeneratorDAO {
            base62_6.charAt(indexArray[5]);
     }
 
-    public KeyGeneratorResponse getHashKeyInKGSResponse(KeyIndices keyIndices) {
-        int[] indices = toArray(keyIndices);
-        String hashKey = getSixLengthHash(keyIndices);
+    public KeyGeneratorResponse getResponseFromKeyIndices(KeyIndices keyIndices) {
+        final int[] indices = toArray(keyIndices);
+        final String hashKey = getSixLengthHash(keyIndices);
         return new KeyGeneratorResponse(indices, hashKey);
+    }
+
+    public KeyIndices getKeyIndicesFromResponse(KeyGeneratorResponse keyGeneratorResponse) {
+        int[] indices = keyGeneratorResponse.getIndices();
+        return new KeyIndices(1L, indices[0], indices[1], indices[2], indices[3], indices[4], indices[5]);
     }
 }

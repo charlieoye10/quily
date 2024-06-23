@@ -1,9 +1,8 @@
 package com.example.quily.schedular;
 
+import com.example.quily.constants.ShortLinkConstants;
 import com.example.quily.services.ShortLinkService;
-import com.example.quily.util.ShortLinkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +19,7 @@ public class ShortLinkDeletionScheduler {
       this.shortLinkService = shortLinkService;
    }
 
-   @Scheduled(fixedDelay = ShortLinkUtil.Delay)
+   @Scheduled(fixedDelay = ShortLinkConstants.Delay)
    public void scheduleTaskWithFixedDelay() {
       LocalDateTime now = LocalDateTime.now();
       shortLinkService.deleteShortLink(now).map(count -> {
