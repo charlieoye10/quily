@@ -1,6 +1,7 @@
 package com.example.quily.model;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
