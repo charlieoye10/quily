@@ -1,7 +1,64 @@
 package com.example.quily.repositories;
 
+import com.example.quily.constants.ShortLinkConstants;
+import com.example.quily.exception.EntityAlreadyExistException;
 import com.example.quily.model.ShortLink;
-import org.springframework.data.r2dbc.repository.R2dbcRepository;
+import com.example.quily.util.ShortLinkUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.r2dbc.core.DatabaseClient;
+import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Mono;
 
-public interface ShortLinkRepository extends R2dbcRepository<ShortLink, Long> {
+@Repository
+public class ShortLinkRepository {
+   private final DatabaseClient client;
+   private static final String SqlQueryToCallGetShortLinkProcedure = "CALL get_short_link_by_url(:shortLink)";
+   private static final String SqlQueryToCallCreateShortLinkProcedure =
+      "CALL create_short_link(:user_id, :original_link, :shorted_link, :creation_date, :expiry_date, :is_active, :compare_link)";
+   private static final String UserId = "user_id";
+   private static final String OriginalLink = "original_link";
+   private static final String ShortedLink = "short_link";
+   private static final String CreatedTime = "created_time";
+   private static final String ExpiryDate = "expires_date";
+   private static final String IsActive = "is_active";
+
+   @Autowired
+   public ShortLinkRepository(DatabaseClient client) {
+      this.client = client;
+   }
+
+   public Mono<ShortLink> getShortLink(String shortLink) {
+      return client.sql(SqlQueryToCallGetShortLinkProcedure)
+         .bind("shortLink", shortLink)
+         .fetch()
+         .first()
+         .map(row -> new ShortLink(
+            (String) row.get(UserId),
+            (String) row.get(OriginalLink),
+            (String) row.get(ShortedLink),
+            (String) row.get(CreatedTime),
+            (String) row.get(ExpiryDate),
+            (Boolean) row.get(IsActive)
+         ));
+   }
+
+   public Mono<ShortLink> createShortLink(ShortLink shortLink) {
+      final String errorMessage = ShortLinkConstants.LINK_ALREADY_USED_MESSAGE;
+      return client.sql(SqlQueryToCallCreateShortLinkProcedure)
+         .bind("user_id", shortLink.getUserID())
+         .bind("compare_link", ShortLinkUtil.getOriginalLinkWithoutParams(shortLink))
+         .bind("original_link", shortLink.getOriginalLink())
+         .bind("shorted_link", shortLink.getShortedLink())
+         .bind("creation_date", shortLink.getCreationDate())
+         .bind("expiry_date", shortLink.getExpiryDate())
+         .bind("is_active", shortLink.isActive())
+         .fetch()
+         .rowsUpdated()
+         .flatMap(row -> {
+            if (row > 0)
+               return Mono.just(shortLink);
+            else
+               return Mono.error(new EntityAlreadyExistException(errorMessage));
+         });
+   }
 }
