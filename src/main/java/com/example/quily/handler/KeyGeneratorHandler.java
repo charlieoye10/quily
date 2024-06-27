@@ -30,7 +30,7 @@ public class KeyGeneratorHandler {
 
    public Mono<ServerResponse> updateKey(ServerRequest request) {
       return request.bodyToMono(KeyGeneratorRequest.class)
-         .flatMap(req -> keyGeneratorService.updateKeyIndicesIfGreater(keyIndicesConverter.getModelFromRequest(req)))
+         .flatMap(req -> keyGeneratorService.updateKeyIndices(keyIndicesConverter.getModelFromRequest(req)))
          .flatMap(updatedKeyIndices -> {
             final ResponseBody<KeyGeneratorResponse> response =
                keyIndicesConverter.getResponseFromModel(updatedKeyIndices);

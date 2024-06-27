@@ -94,7 +94,7 @@ public class ShortLinkService implements DbService<ShortLink, Long> {
    public Mono<ShortLink> createSortLinkAndUpdateIndices(ShortLink shortLink, Optional<KeyIndices> currentIndicesOpt) {
       final Mono<ShortLink> savedLink = saveShortLink(shortLink);
       final Mono<KeyIndices> updatedIndices = currentIndicesOpt
-         .map(KeyGeneratorService::updateKeyIndicesIfGreater)
+         .map(KeyGeneratorService::updateKeyIndices)
          .orElse(Mono.empty());
 
       return updatedIndices

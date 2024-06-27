@@ -1,19 +1,19 @@
 package com.example.quily.model;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Table;
-import lombok.*;
+import lombok.Data;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Data
 @RequiredArgsConstructor
 @Table(name = "EmailConfirmationToken")
 public class EmailConfirmationToken {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	@NonNull  private String confirmationToken;
+	@NonNull
+	private String confirmationToken;
 	@NonNull private String userEmail;
 	@NonNull private String createdTime;
 }
