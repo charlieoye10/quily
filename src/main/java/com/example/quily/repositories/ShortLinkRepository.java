@@ -17,7 +17,7 @@ public class ShortLinkRepository {
       "CALL create_short_link(:user_id, :original_link, :shorted_link, :creation_date, :expiry_date, :is_active, :compare_link)";
    private static final String UserId = "user_id";
    private static final String OriginalLink = "original_link";
-   private static final String ShortedLink = "short_link";
+   private static final String ShortedLink = "shorted_link";
    private static final String CreatedTime = "created_time";
    private static final String ExpiryDate = "expires_date";
    private static final String IsActive = "is_active";
@@ -38,7 +38,7 @@ public class ShortLinkRepository {
             (String) row.get(ShortedLink),
             (String) row.get(CreatedTime),
             (String) row.get(ExpiryDate),
-            (Boolean) row.get(IsActive)
+            convertByteToBoolean(row.get(IsActive))
          ));
    }
 
@@ -60,5 +60,12 @@ public class ShortLinkRepository {
             else
                return Mono.error(new EntityAlreadyExistException(errorMessage));
          });
+   }
+
+   private boolean convertByteToBoolean(Object isActiveObj) {
+      if (isActiveObj instanceof Boolean)
+         return (Boolean) isActiveObj;
+      else
+         return ((Byte) isActiveObj) != 0;
    }
 }
