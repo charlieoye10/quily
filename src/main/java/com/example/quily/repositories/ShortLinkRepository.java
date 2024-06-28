@@ -3,6 +3,7 @@ package com.example.quily.repositories;
 import com.example.quily.constants.ShortLinkConstants;
 import com.example.quily.exception.EntityAlreadyExistException;
 import com.example.quily.model.ShortLink;
+import com.example.quily.util.CommonUtil;
 import com.example.quily.util.ShortLinkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.r2dbc.core.DatabaseClient;
@@ -15,12 +16,6 @@ public class ShortLinkRepository {
    private static final String SqlQueryToCallGetShortLinkProcedure = "CALL get_short_link_by_url(:shortLink)";
    private static final String SqlQueryToCallCreateShortLinkProcedure =
       "CALL create_short_link(:user_id, :original_link, :shorted_link, :creation_date, :expiry_date, :is_active, :compare_link)";
-   private static final String UserId = "user_id";
-   private static final String OriginalLink = "original_link";
-   private static final String ShortedLink = "shorted_link";
-   private static final String CreatedTime = "created_time";
-   private static final String ExpiryDate = "expires_date";
-   private static final String IsActive = "is_active";
 
    @Autowired
    public ShortLinkRepository(DatabaseClient client) {
@@ -32,14 +27,7 @@ public class ShortLinkRepository {
          .bind("shortLink", shortLink)
          .fetch()
          .first()
-         .map(row -> new ShortLink(
-            (String) row.get(UserId),
-            (String) row.get(OriginalLink),
-            (String) row.get(ShortedLink),
-            (String) row.get(CreatedTime),
-            (String) row.get(ExpiryDate),
-            convertByteToBoolean(row.get(IsActive))
-         ));
+         .map(CommonUtil::parseShortLink);
    }
 
    public Mono<ShortLink> createShortLink(ShortLink shortLink) {
