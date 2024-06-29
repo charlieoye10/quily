@@ -9,4 +9,9 @@ public class ShortLinkConstants {
    public static final String SHORT_LINK_CREATED_MESSAGE = "Link shorted successfully";
    public static final String INVALID_URL_MESSAGE = "Looks like the short link is invalid";
    public static final String CUSTOM_ALIAS_EXISTS_MESSAGE = "Custom alias already exists";
+
+   public static final String SqlQueryToCallGetShortLinkProcedure = "CALL get_short_link_by_url(:shorted_link)";
+
+   public static final String SqlQueryToCallCreateShortLinkProcedure =
+      "CALL create_short_link(:user_id, :original_link, :shorted_link, :creation_date, :expiry_date, :is_active, :compare_link)";
 }

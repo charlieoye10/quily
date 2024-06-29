@@ -23,4 +23,9 @@ public final class KeyGeneratorConstants {
     public static final String GREATER_INDICES_FOUND_MESSAGE = "Greater Indices found! couldn't update key indices";
 
     public static final String KEY_NOT_FOUND_MESSAGE = "Unable to fetch keyIndices of from DB";
+
+    public static final String SqlQueryToCallUpdateProcedure =
+       "CALL update_key_indices_only_if_db_indices_is_smaller(:id, :index1, :index2, :index3, :index4, :index5, :index6)";
+
+    public static final String SqlQueryToCallGetProcedure = "CALL get_key_indices_by_id(:id)";
 }

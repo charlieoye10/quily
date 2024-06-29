@@ -7,13 +7,12 @@ import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
+import static com.example.quily.constants.ColumnNameConstants.*;
+import static com.example.quily.constants.EmailVerificationConstants.*;
+
 @Repository
 public class EmailTokenRepository {
    private final DatabaseClient client;
-   private final String SqlQueryToCallGetTokenProcedure = "CALL get_email_confirmation_token(:token)";
-   private final String SqlQueryToSaveTokenProcedure =
-      "CALL save_email_confirmation_token(:confirmation_token, :created_time, :user_email)";
-   private final String SqlQueryToDeleteTokenProcedure = "CALL delete_email_verification_token(:token)";
 
    @Autowired
    public EmailTokenRepository(DatabaseClient client) {
@@ -22,7 +21,7 @@ public class EmailTokenRepository {
 
    public Mono<EmailConfirmationToken> findByToken(String token) {
       return client.sql(SqlQueryToCallGetTokenProcedure)
-         .bind("token", token)
+         .bind(CONFIRMATION_TOKEN, token)
          .fetch()
          .first()
          .map(CommonUtil::parseEmailConfirmationToken);
@@ -30,16 +29,16 @@ public class EmailTokenRepository {
 
    public Mono<EmailConfirmationToken> saveToken(EmailConfirmationToken emailConfirmationToken) {
       return client.sql(SqlQueryToSaveTokenProcedure)
-         .bind("confirmation_token", emailConfirmationToken.getConfirmationToken())
-         .bind("created_time", emailConfirmationToken.getCreatedTime())
-         .bind("user_email", emailConfirmationToken.getUserEmail())
+         .bind(CONFIRMATION_TOKEN, emailConfirmationToken.getConfirmationToken())
+         .bind(CREATION_DATE, emailConfirmationToken.getCreatedTime())
+         .bind(EMAIL, emailConfirmationToken.getUserEmail())
          .fetch()
          .first().map(row -> emailConfirmationToken);
    }
 
    public Mono<Long> deleteByToken(String token) {
       return client.sql(SqlQueryToDeleteTokenProcedure)
-         .bind("token", token)
+         .bind(CONFIRMATION_TOKEN, token)
          .fetch()
          .rowsUpdated();
    }

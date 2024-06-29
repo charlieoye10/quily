@@ -7,12 +7,12 @@ import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
+import static com.example.quily.constants.ColumnNameConstants.*;
+import static com.example.quily.constants.UserConstants.*;
+
 @Repository
 public class UserRepository {
    private final DatabaseClient client;
-   private static final String SqlQueryToCallGetUserProcedure = "CALL get_user_by_email(:email)";
-   private static final String SqlQueryToCallCreateUserProcedure = "CALL create_user(:email, :user_name, :password, :is_active)";
-   private static final String SqlQueryToCallMakeUserActiveProcedure = "CALL make_user_active(:email)";
 
    @Autowired
    public UserRepository(DatabaseClient client) {
@@ -21,7 +21,7 @@ public class UserRepository {
 
    public Mono<User> findUserByEmail(String email) {
       return client.sql(SqlQueryToCallGetUserProcedure)
-         .bind("email", email)
+         .bind(EMAIL, email)
          .fetch()
          .first()
          .map(CommonUtil::parseUser);
@@ -29,10 +29,10 @@ public class UserRepository {
 
    public Mono<User> createUser(User user) {
       return client.sql(SqlQueryToCallCreateUserProcedure)
-         .bind("email", user.getEmail())
-         .bind("user_name", user.getUserName())
-         .bind("password", user.getPassword())
-         .bind("is_active", user.isActive())
+         .bind(EMAIL, user.getEmail())
+         .bind(USER_NAME, user.getUserName())
+         .bind(PASSWORD, user.getPassword())
+         .bind(IS_ACTIVE, user.isActive())
          .fetch()
          .rowsUpdated()
          .thenReturn(user);
@@ -40,7 +40,7 @@ public class UserRepository {
 
    public Mono<Long> makeUserActive(String email) {
       return client.sql(SqlQueryToCallMakeUserActiveProcedure)
-         .bind("email", email)
+         .bind(EMAIL, email)
          .fetch()
          .rowsUpdated();
    }
