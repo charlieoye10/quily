@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
@@ -44,7 +45,8 @@ public class ShortLinkService implements DbService<ShortLink, Long> {
    }
 
    @Override
-   public void delete(Long id) {}
+   public void delete(Long id) {
+   }
 
    @Override
    public Mono<ShortLink> save(ShortLink shortLink) {
@@ -77,11 +79,14 @@ public class ShortLinkService implements DbService<ShortLink, Long> {
    }
 
    public Mono<String> findOriginalLink(String shortLink) {
-      return databaseClient.sql("SELECT original_link FROM short_link WHERE shorted_link = :shortLink")
+      LocalDateTime now = LocalDateTime.now();
+
+      return databaseClient.sql("SELECT original_link FROM short_link " +
+            "WHERE shorted_link = :shortLink AND expiry_date > :currentTime")
          .bind("shortLink", shortLink)
-         .fetch()
-         .first()
-         .map(row -> (String) row.get("original_link"));
+         .bind("currentTime", now)
+         .map(row -> row.get("original_link", String.class))
+         .one();
    }
 
    public Mono<Boolean> isCustomAliasAvailable(String customAlias) {
@@ -105,8 +110,8 @@ public class ShortLinkService implements DbService<ShortLink, Long> {
 
    public Mono<Long> deleteShortLink(LocalDateTime now) {
       return databaseClient.sql("DELETE FROM short_link WHERE expiry_date < :now")
-              .bind("now", now)
-              .fetch()
-              .rowsUpdated();
+         .bind("now", now)
+         .fetch()
+         .rowsUpdated();
    }
 }

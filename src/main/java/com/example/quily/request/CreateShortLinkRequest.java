@@ -1,11 +1,12 @@
 package com.example.quily.request;
 
 import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class CreateShortLinkRequest {
-    private String userID;
-    private String originalLink;
-    private String expiryDate;
-    private String customAlias;
+   private String userID;
+   private String originalLink;
+   private ExpiryDateRequest expiryDate;
+   private String customAlias;
 }
