@@ -38,7 +38,7 @@ public class ShortLinkService {
       final String url = String.join("", ShortLinkConstants.LOCALHOST_URL, customAlias);
       return shortLinkRepository
          .getShortLink(url)
-         .map(link -> false)
+         .map(link -> true)
          .defaultIfEmpty(false);
    }
 
