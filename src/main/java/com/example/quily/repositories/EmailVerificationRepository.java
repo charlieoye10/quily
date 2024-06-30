@@ -11,11 +11,11 @@ import static com.example.quily.constants.ColumnNameConstants.*;
 import static com.example.quily.constants.EmailVerificationConstants.*;
 
 @Repository
-public class EmailTokenRepository {
+public class EmailVerificationRepository {
    private final DatabaseClient client;
 
    @Autowired
-   public EmailTokenRepository(DatabaseClient client) {
+   public EmailVerificationRepository(DatabaseClient client) {
       this.client = client;
    }
 

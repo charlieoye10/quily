@@ -1,34 +1,30 @@
 package com.example.quily.services;
 
 import com.example.quily.model.EmailConfirmationToken;
-import com.example.quily.repositories.EmailTokenRepository;
+import com.example.quily.repositories.EmailVerificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.Objects;
 
 @Service
 public class EmailTokenService {
-   private final EmailTokenRepository emailTokenRepository;
+   private final EmailVerificationRepository emailVerificationRepository;
 
    @Autowired
-   public EmailTokenService(EmailTokenRepository emailTokenRepository) {
-      this.emailTokenRepository = emailTokenRepository;
+   public EmailTokenService(EmailVerificationRepository emailVerificationRepository) {
+      this.emailVerificationRepository = emailVerificationRepository;
    }
 
 
    public Mono<EmailConfirmationToken> save(EmailConfirmationToken emailConfirmationToken) {
-      return emailTokenRepository.saveToken(emailConfirmationToken);
+      return emailVerificationRepository.saveToken(emailConfirmationToken);
    }
 
    public Mono<EmailConfirmationToken> findByToken(String token) {
-      return emailTokenRepository.findByToken(token);
+      return emailVerificationRepository.findByToken(token);
    }
 
    public Mono<Long> deleteByToken(String token) {
-      return emailTokenRepository.deleteByToken(token);
+      return emailVerificationRepository.deleteByToken(token);
    }
 }
