@@ -38,7 +38,7 @@ public class ShortLinkDAO {
       final String errorMessage = ShortLinkConstants.CUSTOM_ALIAS_EXISTS_MESSAGE;
       return shortLinkService.isCustomAliasAvailable(request.getCustomAlias())
          .flatMap(available -> {
-            if (available) {
+            if (!available) {
                return Mono.error(new EntityAlreadyExistException(errorMessage));
             }
             final ShortLink shortLink = getShortLink(request, request.getCustomAlias());
