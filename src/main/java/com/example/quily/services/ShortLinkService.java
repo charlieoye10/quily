@@ -1,106 +1,51 @@
 package com.example.quily.services;
 
 import com.example.quily.constants.ShortLinkConstants;
-import com.example.quily.exception.EntityAlreadyExistException;
 import com.example.quily.model.KeyIndices;
 import com.example.quily.model.ShortLink;
-import com.example.quily.util.ShortLinkUtil;
+import com.example.quily.repositories.ShortLinkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
 @Component
-public class ShortLinkService implements DbService<ShortLink, Long> {
-   private final DatabaseClient databaseClient;
+public class ShortLinkService {
    private final KeyGeneratorService KeyGeneratorService;
+   private final ShortLinkRepository shortLinkRepository;
 
    @Autowired
-   public ShortLinkService(DatabaseClient databaseClient, com.example.quily.services.KeyGeneratorService keyGeneratorService) {
-      this.databaseClient = databaseClient;
+   public ShortLinkService(KeyGeneratorService keyGeneratorService, ShortLinkRepository shortLinkRepository) {
       this.KeyGeneratorService = keyGeneratorService;
+      this.shortLinkRepository = shortLinkRepository;
    }
 
-   @Override
-   public Flux<ShortLink> findAll() {
-      return null;
-   }
-
-   @Override
-   public Mono<ShortLink> findByUniqueId(Long id) {
-      return null;
-   }
-
-   @Override
-   public Mono<ShortLink> update(ShortLink shortLink) {
-      return null;
-   }
-
-   @Override
-   public void delete(Long id) {
-   }
-
-   @Override
-   public Mono<ShortLink> save(ShortLink shortLink) {
-      return null;
-   }
-
-   public Mono<ShortLink> saveShortLink(ShortLink shortLink) {
-      final String errorMessage = ShortLinkConstants.LINK_ALREADY_USED_MESSAGE;
-      final String sql = "INSERT INTO short_link (user_id, original_link, shorted_link, creation_date, expiry_date, is_active) " +
-         "SELECT :user_id, :original_link, :shorted_link, :creation_date, :expiry_date, :is_active " +
-         "FROM dual WHERE NOT EXISTS (" +
-         "   SELECT 1 FROM short_link WHERE user_id = :user_id AND original_link Like  :compare_link" +
-         ")";
-      return databaseClient.sql(sql)
-         .bind("user_id", shortLink.getUserID())
-         .bind("compare_link", ShortLinkUtil.getOriginalLinkWithoutParams(shortLink))
-         .bind("original_link", shortLink.getOriginalLink())
-         .bind("shorted_link", shortLink.getShortedLink())
-         .bind("creation_date", shortLink.getCreationDate())
-         .bind("expiry_date", shortLink.getExpiryDate())
-         .bind("is_active", shortLink.isActive())
-         .fetch()
-         .rowsUpdated()
-         .flatMap(row -> {
-            if (row > 0)
-               return Mono.just(shortLink);
-            else
-               return Mono.error(new EntityAlreadyExistException(errorMessage));
-         });
+   public Mono<ShortLink> createShortLink(ShortLink shortLink) {
+      return shortLinkRepository.createShortLink(shortLink);
    }
 
    public Mono<String> findOriginalLink(String shortLink) {
-      LocalDateTime now = LocalDateTime.now();
-
-      return databaseClient.sql("SELECT original_link FROM short_link " +
-            "WHERE shorted_link = :shortLink AND expiry_date > :currentTime")
-         .bind("shortLink", shortLink)
-         .bind("currentTime", now)
-         .map(row -> row.get("original_link", String.class))
-         .one();
+      return shortLinkRepository
+         .getShortLink(shortLink)
+         .map(ShortLink::getOriginalLink);
    }
 
    public Mono<Boolean> isCustomAliasAvailable(String customAlias) {
-      return databaseClient.sql("SELECT shorted_link FROM short_link WHERE shorted_link = :customAlias")
-         .bind("customAlias", ShortLinkConstants.LOCALHOST_URL + customAlias)
-         .fetch()
-         .first().map(usedAlias -> false)
-         .switchIfEmpty(Mono.just(true));
+      final String url = String.join("", ShortLinkConstants.LOCALHOST_URL, customAlias);
+      return shortLinkRepository
+         .getShortLink(url)
+         .map(link -> false)
+         .defaultIfEmpty(false);
    }
 
    public Mono<ShortLink> createSortLinkAndUpdateIndices(ShortLink shortLink, Optional<KeyIndices> currentIndicesOpt) {
-      final Mono<ShortLink> savedLink = saveShortLink(shortLink);
+      final Mono<ShortLink> savedLink = createShortLink(shortLink);
       final Mono<KeyIndices> updatedIndices = currentIndicesOpt
-         .map(KeyGeneratorService::updateKeyIndicesIfGreater)
+         .map(KeyGeneratorService::updateKeyIndices)
          .orElse(Mono.empty());
 
       return updatedIndices
@@ -108,10 +53,5 @@ public class ShortLinkService implements DbService<ShortLink, Long> {
          .switchIfEmpty(savedLink);
    }
 
-   public Mono<Long> deleteShortLink(LocalDateTime now) {
-      return databaseClient.sql("DELETE FROM short_link WHERE expiry_date < :now")
-         .bind("now", now)
-         .fetch()
-         .rowsUpdated();
-   }
+
 }

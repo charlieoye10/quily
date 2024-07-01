@@ -1,20 +1,38 @@
 package com.example.quily.model;
 
-import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Data
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Table(name = "short_link")
 public class ShortLink {
     @Id
+    @NonNull
     private long id;
     @NonNull private String userID;
     @NonNull private String originalLink;
     @NonNull private String shortedLink;
-    @NonNull private String creationDate;
-    @NonNull private String expiryDate;
-    @NonNull private boolean isActive;
+    private String creationDate;
+    private String expiryDate;
+    private boolean isActive;
+
+    public ShortLink(
+       @NonNull String userID,
+       @NonNull String originalLink,
+       @NonNull String shortedLink,
+       String creationDate,
+       String expiryDate,
+       boolean isActive
+    ) {
+        this.userID = userID;
+        this.originalLink = originalLink;
+        this.shortedLink = shortedLink;
+        this.creationDate = creationDate;
+        this.expiryDate = expiryDate;
+        this.isActive = isActive;
+    }
 }
