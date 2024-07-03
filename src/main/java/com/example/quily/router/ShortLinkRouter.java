@@ -13,8 +13,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 public class ShortLinkRouter {
    private final ShortLinkHandler shortLinkHandler;
    private static final String CREATE_SHORT_LINK_URL = "/api/shortLink/create";
-   private static final String GET_ORIGINAL_LINK_URL = "/{id:.+}";
-
+  private static final String GET_ORIGINAL_LINK_URL = "/{id:(?!api).+}";
    @Autowired
    public ShortLinkRouter(ShortLinkHandler shortLinkHandler) {
       this.shortLinkHandler = shortLinkHandler;
