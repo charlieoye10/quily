@@ -37,5 +37,3 @@ jobs:
 
       - name: Run tests
         run: mvn -X test
-        env:
-          SPRING_PROFILES_ACTIVE: github
