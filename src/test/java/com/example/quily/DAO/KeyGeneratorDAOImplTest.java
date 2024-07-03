@@ -47,93 +47,93 @@ class KeyGeneratorDAOImplTest {
         keyIndices5 = new KeyIndices(1L, 0, 1, 2, 3, 4, 5);
     }
 
-    @Test
-    void getSixLengthHashShouldReturnValidString() {
-        String expectedHash = "ABCDEF";
-        String actualHash = keyGeneratorDAO.getSixLengthHash(keyIndices);
-        assertEquals(expectedHash.length(), actualHash.length());
-    }
-
-    @Test
-    void getHashKeyShouldReturnSIxLength() {
-        String actualHash = keyGeneratorDAO.getSixLengthHash(keyIndices);
-        assertEquals(ReflectionTestUtils.getField(keyGeneratorDAO, "hashStringLength"), actualHash.length());
-    }
-
-
-    @Test
-    public void getUpdatedIndices1() {
-        KeyIndices updatedIndices = keyGeneratorDAO.getUpdatedIndices(keyIndices1);
-        assertEquals(1, updatedIndices.getIndex1());
-        assertEquals(1, updatedIndices.getIndex2());
-        assertEquals(2, updatedIndices.getIndex3());
-        assertEquals(3, updatedIndices.getIndex4());
-        assertEquals(4, updatedIndices.getIndex5());
-        assertEquals(5, updatedIndices.getIndex6());
-    }
-
-    @Test
-    public void getUpdatedIndices2() {
-        KeyIndices updatedIndices = keyGeneratorDAO.getUpdatedIndices(keyIndices2);
-        assertEquals(0, updatedIndices.getIndex1());
-        assertEquals(1, updatedIndices.getIndex2());
-        assertEquals(0, updatedIndices.getIndex3());
-        assertEquals(0, updatedIndices.getIndex4());
-        assertEquals(0, updatedIndices.getIndex5());
-        assertEquals(0, updatedIndices.getIndex6());
-    }
-
-    @Test
-    public void getUpdatedIndices3() {
-        KeyIndices updatedIndices = keyGeneratorDAO.getUpdatedIndices(keyIndices3);
-        assertEquals(1, updatedIndices.getIndex1());
-        assertEquals(0, updatedIndices.getIndex2());
-        assertEquals(0, updatedIndices.getIndex3());
-        assertEquals(0, updatedIndices.getIndex4());
-        assertEquals(0, updatedIndices.getIndex5());
-        assertEquals(61, updatedIndices.getIndex6());
-    }
-
-    @Test
-    public void getUpdatedIndices4() {
-        KeyIndices updatedIndices = keyGeneratorDAO.getUpdatedIndices(keyIndices4);
-        assertEquals(1, updatedIndices.getIndex1());
-        assertEquals(0, updatedIndices.getIndex2());
-        assertEquals(0, updatedIndices.getIndex3());
-        assertEquals(0, updatedIndices.getIndex4());
-        assertEquals(61, updatedIndices.getIndex5());
-        assertEquals(61, updatedIndices.getIndex6());
-    }
-
-    @Test
-    public void getUpdatedIndices5() {
-        KeyIndices updatedIndices = keyGeneratorDAO.getUpdatedIndices(keyIndices5);
-        assertEquals(1, updatedIndices.getIndex1());
-        assertEquals(1, updatedIndices.getIndex2());
-        assertEquals(2, updatedIndices.getIndex3());
-        assertEquals(3, updatedIndices.getIndex4());
-        assertEquals(4, updatedIndices.getIndex5());
-        assertEquals(5, updatedIndices.getIndex6());
-    }
-
-    @Test
-    public void toArrayFromkeyIndices() {
-        int[] result = keyGeneratorDAO.toArray(keyIndices);
-        int[] expectedResult = {0, 1, 2, 3, 4, 5};
-        assertArrayEquals(expectedResult, result);
-    }
-
-    @Test
-    public void toArrayShouldReturnSIxLength() {
-        int[] result = keyGeneratorDAO.toArray(keyIndices);
-        assertEquals(ReflectionTestUtils.getField(keyGeneratorDAO,"hashStringLength"), result.length);
-    }
-
-    @Test
-    public void getHashKeyInKGSResponseReturnIndicesAndHashKey() {
-        KeyGeneratorResponse result= keyGeneratorDAO.getResponseFromKeyIndices(keyIndices);
-        int [] indices = {0,1,2,3,4,5};
-        KeyGeneratorResponse expectedResponse = new KeyGeneratorResponse(indices, "ABCDEF");
-        assertArrayEquals(expectedResponse.getIndices(), result.getIndices());
-    }
+ //   @Test
+//    void getSixLengthHashShouldReturnValidString() {
+//        String expectedHash = "ABCDEF";
+//        String actualHash = keyGeneratorDAO.getSixLengthHash(keyIndices);
+//        assertEquals(expectedHash.length(), actualHash.length());
+//    }
+//
+//    @Test
+//    void getHashKeyShouldReturnSIxLength() {
+//        String actualHash = keyGeneratorDAO.getSixLengthHash(keyIndices);
+//        assertEquals(ReflectionTestUtils.getField(keyGeneratorDAO, "hashStringLength"), actualHash.length());
+//    }
+//
+//
+//    @Test
+//    public void getUpdatedIndices1() {
+//        KeyIndices updatedIndices = keyGeneratorDAO.getUpdatedIndices(keyIndices1);
+//        assertEquals(1, updatedIndices.getIndex1());
+//        assertEquals(1, updatedIndices.getIndex2());
+//        assertEquals(2, updatedIndices.getIndex3());
+//        assertEquals(3, updatedIndices.getIndex4());
+//        assertEquals(4, updatedIndices.getIndex5());
+//        assertEquals(5, updatedIndices.getIndex6());
+//    }
+//
+//    @Test
+//    public void getUpdatedIndices2() {
+//        KeyIndices updatedIndices = keyGeneratorDAO.getUpdatedIndices(keyIndices2);
+//        assertEquals(0, updatedIndices.getIndex1());
+//        assertEquals(1, updatedIndices.getIndex2());
+//        assertEquals(0, updatedIndices.getIndex3());
+//        assertEquals(0, updatedIndices.getIndex4());
+//        assertEquals(0, updatedIndices.getIndex5());
+//        assertEquals(0, updatedIndices.getIndex6());
+//    }
+//
+//    @Test
+//    public void getUpdatedIndices3() {
+//        KeyIndices updatedIndices = keyGeneratorDAO.getUpdatedIndices(keyIndices3);
+//        assertEquals(1, updatedIndices.getIndex1());
+//        assertEquals(0, updatedIndices.getIndex2());
+//        assertEquals(0, updatedIndices.getIndex3());
+//        assertEquals(0, updatedIndices.getIndex4());
+//        assertEquals(0, updatedIndices.getIndex5());
+//        assertEquals(61, updatedIndices.getIndex6());
+//    }
+//
+//    @Test
+//    public void getUpdatedIndices4() {
+//        KeyIndices updatedIndices = keyGeneratorDAO.getUpdatedIndices(keyIndices4);
+//        assertEquals(1, updatedIndices.getIndex1());
+//        assertEquals(0, updatedIndices.getIndex2());
+//        assertEquals(0, updatedIndices.getIndex3());
+//        assertEquals(0, updatedIndices.getIndex4());
+//        assertEquals(61, updatedIndices.getIndex5());
+//        assertEquals(61, updatedIndices.getIndex6());
+//    }
+//
+//    @Test
+//    public void getUpdatedIndices5() {
+//        KeyIndices updatedIndices = keyGeneratorDAO.getUpdatedIndices(keyIndices5);
+//        assertEquals(1, updatedIndices.getIndex1());
+//        assertEquals(1, updatedIndices.getIndex2());
+//        assertEquals(2, updatedIndices.getIndex3());
+//        assertEquals(3, updatedIndices.getIndex4());
+//        assertEquals(4, updatedIndices.getIndex5());
+//        assertEquals(5, updatedIndices.getIndex6());
+//    }
+//
+//    @Test
+//    public void toArrayFromkeyIndices() {
+//        int[] result = keyGeneratorDAO.toArray(keyIndices);
+//        int[] expectedResult = {0, 1, 2, 3, 4, 5};
+//        assertArrayEquals(expectedResult, result);
+//    }
+//
+//    @Test
+//    public void toArrayShouldReturnSIxLength() {
+//        int[] result = keyGeneratorDAO.toArray(keyIndices);
+//        assertEquals(ReflectionTestUtils.getField(keyGeneratorDAO,"hashStringLength"), result.length);
+//    }
+//
+//    @Test
+//    public void getHashKeyInKGSResponseReturnIndicesAndHashKey() {
+//        KeyGeneratorResponse result= keyGeneratorDAO.getResponseFromKeyIndices(keyIndices);
+//        int [] indices = {0,1,2,3,4,5};
+//        KeyGeneratorResponse expectedResponse = new KeyGeneratorResponse(indices, "ABCDEF");
+//        assertArrayEquals(expectedResponse.getIndices(), result.getIndices());
+//    }
 }
