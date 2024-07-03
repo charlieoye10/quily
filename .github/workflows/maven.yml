@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        java-version: [17]
+        java-version: [ 17 ]
 
     steps:
       - name: Checkout code
@@ -37,3 +37,5 @@ jobs:
 
       - name: Run tests
         run: mvn -X test
+        env:
+          SPRING_PROFILES_ACTIVE: github
