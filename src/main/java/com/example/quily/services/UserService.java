@@ -9,6 +9,7 @@ import com.example.quily.repositories.UserRepository;
 import com.example.quily.response.SignUpResponse;
 import com.example.quily.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -17,12 +18,14 @@ public class UserService {
    private final UserRepository userRepository;
    private final EmailTokenService emailTokenService;
    private final EmailConfirmationTokenDAO emailConfirmationTokenDAO;
+   private final PasswordEncoder passwordEncoder;
 
    @Autowired
-   public UserService(UserRepository userRepository, EmailTokenService emailTokenService, EmailConfirmationTokenDAO emailConfirmationTokenDAO) {
+   public UserService(UserRepository userRepository, EmailTokenService emailTokenService, EmailConfirmationTokenDAO emailConfirmationTokenDAO, PasswordEncoder passwordEncoder) {
       this.userRepository = userRepository;
       this.emailTokenService = emailTokenService;
       this.emailConfirmationTokenDAO = emailConfirmationTokenDAO;
+      this.passwordEncoder = passwordEncoder;
    }
 
    public Mono<User> createUser(User user) {
@@ -57,5 +60,19 @@ public class UserService {
                   new SignUpResponse(confirmedToken.getUserEmail(), CommonUtil.getCurrentDateTimeInFormat())
                );
          });
+   }
+
+   public Mono<User> getUserByEmail(String email) {
+      return userRepository.findUserByEmail(email);
+   }
+
+   public Mono<User> getUserAndCheckCredentials(String email, String password) {
+      return getUserByEmail(email)
+         .filter(user -> {
+               String k = passwordEncoder.encode(password);
+               boolean p = passwordEncoder.matches(password, user.getPassword());
+               return p;
+            }
+         );
    }
 }

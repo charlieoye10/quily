@@ -1,12 +1,16 @@
 package com.example.quily.handler;
 
+import com.example.quily.constants.UserConstants;
 import com.example.quily.converter.UserSignupConverter;
 import com.example.quily.dao.UserDao;
 import com.example.quily.exception.BadRequestException;
+import com.example.quily.model.User;
+import com.example.quily.request.LoginRequest;
 import com.example.quily.request.SignUpRequest;
+import com.example.quily.response.LoginResponse;
 import com.example.quily.response.ResponseBody;
+import com.example.quily.security.JwtUtil;
 import com.example.quily.services.UserService;
-import com.example.quily.constants.UserConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,17 +21,21 @@ import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
+import static com.example.quily.constants.UserConstants.LOGIN_FAILED_MESSAGE;
+
 @Component
 public class UserHandler {
    private final UserService userService;
    private final UserDao userDao;
    private final UserSignupConverter userSignupConverter;
+   private final JwtUtil jwtUtil;
 
 	@Autowired
-   public UserHandler(UserService userService, UserDao userDao, UserSignupConverter userSignupConverter) {
+   public UserHandler(UserService userService, UserDao userDao, UserSignupConverter userSignupConverter, JwtUtil jwtUtil) {
       this.userService = userService;
       this.userDao = userDao;
       this.userSignupConverter = userSignupConverter;
+      this.jwtUtil = jwtUtil;
    }
 
    public Mono<ServerResponse> signUp(ServerRequest request) {
@@ -53,5 +61,33 @@ public class UserHandler {
                )))
          .orElseGet(() -> Mono.error(new BadRequestException(errorMessage)));
 
+   }
+
+   public Mono<ServerResponse> login(ServerRequest serverRequest) {
+      return serverRequest.bodyToMono(LoginRequest.class)
+         .flatMap(loginReq -> userService
+            .getUserAndCheckCredentials(loginReq.getUserEmail(), loginReq.getPassword()))
+         .flatMap(this::handleSuccessLogin)
+         .switchIfEmpty(handleFailedLogin());
+   }
+
+   private Mono<ServerResponse> handleFailedLogin() {
+      return ServerResponse.status(HttpStatus.UNAUTHORIZED)
+         .contentType(MediaType.APPLICATION_JSON)
+         .bodyValue(new ResponseBody<>(HttpStatus.UNAUTHORIZED.value(), LOGIN_FAILED_MESSAGE, null));
+   }
+
+   private Mono<ServerResponse> handleSuccessLogin(User user) {
+      LoginResponse l = new LoginResponse(jwtUtil.generateToken(user.getEmail()));
+      ResponseBody<LoginResponse> r = new ResponseBody<>(
+         HttpStatus.OK.value(),
+         "",
+         new LoginResponse(jwtUtil.generateToken(user.getEmail()))
+      );
+      Mono<ServerResponse> s = ServerResponse.ok()
+         .contentType(MediaType.APPLICATION_JSON)
+         .bodyValue(r);
+
+      return s;
    }
 }
