@@ -1,10 +1,13 @@
 package com.example.quily.security;
 
+import com.example.quily.exception.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+
+import static com.example.quily.constants.UserConstants.TOKEN_VALIDATION_FAILED_MESSAGE;
 
 @Component
 public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
@@ -23,6 +26,6 @@ public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
             userDetails.setUserAuthenticated();
             return (Authentication) userDetails;
          })
-         .switchIfEmpty(Mono.error(new RuntimeException("Invalid token.")));
+         .switchIfEmpty(Mono.error(new BadRequestException(TOKEN_VALIDATION_FAILED_MESSAGE)));
    }
 }

@@ -1,9 +1,8 @@
 package com.example.quily.security;
 
+import com.example.quily.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.web.server.authentication.ServerAuthenticationConverter;
@@ -12,6 +11,8 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;
+
+import static com.example.quily.constants.UserConstants.USER_NOT_FOUND_MESSAGE;
 
 @Component
 public class JwtServerAuthenticationConverter implements ServerAuthenticationConverter {
@@ -33,6 +34,7 @@ public class JwtServerAuthenticationConverter implements ServerAuthenticationCon
          .flatMap(token -> {
             String userEmail = jwtUtil.getEmailFromToken(token);
             return userDetailsService.findByUsername(userEmail)
+               .switchIfEmpty(Mono.error(new ResourceNotFoundException(USER_NOT_FOUND_MESSAGE)))
                .filter(userDetails -> jwtUtil.validateToken(token, userDetails.getUsername()))
                .map(userDetails -> new JwtToken(Collections.emptyList()));
          });
