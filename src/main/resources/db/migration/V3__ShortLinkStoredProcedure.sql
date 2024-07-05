@@ -6,7 +6,7 @@ DELIMITER $$
 USE `Quily`$$
 CREATE PROCEDURE `get_short_link_by_url`(IN url TEXT)
 BEGIN
-    SELECT * FROM Quily.short_link where shorted_link like  concat('%',url);
+    SELECT * FROM Quily.short_link where shorted_link = url;
 END$$
 
 DELIMITER ;
