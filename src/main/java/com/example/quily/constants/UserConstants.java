@@ -11,6 +11,12 @@ public class UserConstants {
    public static final String EMAIL_VERIFICATION_MESSAGE = "Email verification link sent on email %s please verify it to click it." +
       " If you didn't get verification link please check your email";
 
+   public static final String USER_NOT_FOUND_MESSAGE = "User not found on token validation";
+
+   public static final String TOKEN_VALIDATION_FAILED_MESSAGE = "The provided token is either expired or invalid. Please login again to obtain a new token.";
+
+   public static final String LOGIN_FAILED_MESSAGE = "Login failed";
+
    public static final String SqlQueryToCallGetUserProcedure = "CALL get_user_by_email(:email)";
 
    public static final String SqlQueryToCallCreateUserProcedure = "CALL create_user(:email, :user_name, :password, :is_active)";
