@@ -5,8 +5,8 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
 
-public class JwtToken extends AbstractAuthenticationToken {
-   public JwtToken(Collection<? extends GrantedAuthority> authorities) {
+public class AuthenticationToken extends AbstractAuthenticationToken {
+   public AuthenticationToken(Collection<? extends GrantedAuthority> authorities) {
       super(authorities);
    }
 

@@ -21,11 +21,12 @@ public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
    @Override
    public Mono<Authentication> authenticate(Authentication authentication) {
       return Mono.just(authentication)
-         .cast(JwtToken.class)
-         .map(userDetails -> {
-            userDetails.setUserAuthenticated();
-            return (Authentication) userDetails;
+         .cast(AuthenticationToken.class)
+         .map(authenticationToken -> {
+            authenticationToken.setUserAuthenticated();
+            return authenticationToken;
          })
+         .cast(Authentication.class)
          .switchIfEmpty(Mono.error(new BadRequestException(TOKEN_VALIDATION_FAILED_MESSAGE)));
    }
 }

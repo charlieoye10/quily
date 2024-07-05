@@ -66,7 +66,7 @@ public class UserHandler {
    public Mono<ServerResponse> login(ServerRequest serverRequest) {
       return serverRequest.bodyToMono(LoginRequest.class)
          .flatMap(loginReq -> userService
-            .getUserAndCheckCredentials(loginReq.getUserEmail(), loginReq.getPassword()))
+            .getUserAndCheckCredentials(loginReq.getEmail(), loginReq.getPassword()))
          .flatMap(this::handleSuccessLogin)
          .switchIfEmpty(handleFailedLogin());
    }
@@ -78,16 +78,14 @@ public class UserHandler {
    }
 
    private Mono<ServerResponse> handleSuccessLogin(User user) {
-      LoginResponse l = new LoginResponse(jwtUtil.generateToken(user.getEmail()));
-      ResponseBody<LoginResponse> r = new ResponseBody<>(
-         HttpStatus.OK.value(),
-         "",
-         new LoginResponse(jwtUtil.generateToken(user.getEmail()))
-      );
-      Mono<ServerResponse> s = ServerResponse.ok()
+      return ServerResponse.ok()
          .contentType(MediaType.APPLICATION_JSON)
-         .bodyValue(r);
-
-      return s;
+         .bodyValue(
+            new ResponseBody<>(
+               HttpStatus.OK.value(),
+               "",
+               new LoginResponse(jwtUtil.generateToken(user.getEmail()))
+            )
+         );
    }
 }

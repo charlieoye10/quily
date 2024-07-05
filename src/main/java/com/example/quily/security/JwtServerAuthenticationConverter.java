@@ -31,12 +31,14 @@ public class JwtServerAuthenticationConverter implements ServerAuthenticationCon
       return Mono.justOrEmpty(exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION))
          .filter(header -> header.startsWith(BEARER))
          .map(header -> header.substring(BEARER.length()))
-         .flatMap(token -> {
-            String userEmail = jwtUtil.getEmailFromToken(token);
-            return userDetailsService.findByUsername(userEmail)
-               .switchIfEmpty(Mono.error(new ResourceNotFoundException(USER_NOT_FOUND_MESSAGE)))
-               .filter(userDetails -> jwtUtil.validateToken(token, userDetails.getUsername()))
-               .map(userDetails -> new JwtToken(Collections.emptyList()));
-         });
+         .flatMap(this::authenticateToken);
+   }
+
+   public Mono<Authentication> authenticateToken(String token) {
+      String userEmail = jwtUtil.getEmailFromToken(token);
+      return userDetailsService.findByUsername(userEmail)
+         .switchIfEmpty(Mono.error(new ResourceNotFoundException(USER_NOT_FOUND_MESSAGE)))
+         .filter(userDetails -> jwtUtil.validateToken(token, userDetails.getUsername()))
+         .map(userDetails -> new AuthenticationToken(Collections.emptyList()));
    }
 }
