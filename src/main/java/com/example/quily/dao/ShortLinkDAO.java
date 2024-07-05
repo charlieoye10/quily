@@ -34,7 +34,6 @@ public class ShortLinkDAO {
 
    public Mono<ShortLink> createShortLink(CreateShortLinkRequest request) {
       if (request.getCustomAlias() != null) {
-
          return handleCustomAlias(request);
       }
       return handleGeneratedAlias(request);
