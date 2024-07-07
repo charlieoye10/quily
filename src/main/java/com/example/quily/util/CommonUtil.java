@@ -40,7 +40,7 @@ public class CommonUtil {
 
 	public static ShortLink parseShortLink(Map<String, Object> row) {
 		return new ShortLink(
-			(String) row.get("user_id"),
+			(String) row.get("user_email"),
 			(String) row.get("original_link"),
 			(String) row.get("shorted_link"),
 			(String) row.get("created_time"),
