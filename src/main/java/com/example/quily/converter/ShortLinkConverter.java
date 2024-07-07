@@ -15,9 +15,11 @@ public class ShortLinkConverter implements Converter<CreateShortLinkRequest, Sho
       return null;
    }
 
-   public ShortLink convertRequestToModel(CreateShortLinkRequest createShortLinkRequest, String shortLink) {
+   public ShortLink convertRequestToModel(CreateShortLinkRequest createShortLinkRequest,
+                                          String shortLink,
+                                          String userEmail) {
       return new ShortLink(
-         createShortLinkRequest.getUserID(),
+         userEmail,
          createShortLinkRequest.getOriginalLink(),
          shortLink,
          CommonUtil.getCurrentDateTimeInFormat(),
@@ -28,7 +30,7 @@ public class ShortLinkConverter implements Converter<CreateShortLinkRequest, Sho
    @Override
    public ResponseBody<ShortLinkResponse> getResponseFromModel(ShortLink shortLink) {
       final ShortLinkResponse shortLinkResponse = new ShortLinkResponse(
-         shortLink.getUserID(),
+         shortLink.getUserEmail(),
          shortLink.getOriginalLink(),
          shortLink.getShortedLink(),
          shortLink.getExpiryDate(),
