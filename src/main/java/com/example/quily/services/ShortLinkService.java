@@ -39,7 +39,7 @@ public class ShortLinkService {
       return shortLinkRepository
          .getShortLink(url)
          .map(link -> false)
-         .defaultIfEmpty(false);
+         .defaultIfEmpty(true);
    }
 
    public Mono<ShortLink> createSortLinkAndUpdateIndices(ShortLink shortLink, Optional<KeyIndices> currentIndicesOpt) {
