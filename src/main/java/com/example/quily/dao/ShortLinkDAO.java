@@ -16,8 +16,7 @@ import reactor.core.publisher.Mono;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import static com.example.quily.constants.ShortLinkConstants.CUSTOM_ALIAS_EXISTS_MESSAGE;
-import static com.example.quily.constants.ShortLinkConstants.CUSTOM_ALIAS_PATTERN_MESSAGE;
+import static com.example.quily.constants.ShortLinkConstants.*;
 
 @Component
 public class ShortLinkDAO {
@@ -69,7 +68,7 @@ public class ShortLinkDAO {
    }
 
    public Boolean isCustomAliasPatter(String customAliasPatter) {
-      return Pattern.compile(ShortLinkConstants.CUSTOM_ALIAS_PATTERN_REGEX)
+      return Pattern.compile(CUSTOM_ALIAS_PATTERN_REGEX)
               .matcher(customAliasPatter)
               .matches();
    }

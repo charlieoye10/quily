@@ -8,8 +8,9 @@ public class ShortLinkConstants {
    public static final String LINK_ALREADY_USED_MESSAGE = "Provided link already has been used.";
    public static final String SHORT_LINK_CREATED_MESSAGE = "Link shorted successfully";
    public static final String INVALID_URL_MESSAGE = "Looks like the short link is invalid";
+
    public static final String CUSTOM_ALIAS_EXISTS_MESSAGE = "Custom alias already exists";
-   public static final String CUSTOM_ALIAS_PATTERN_MESSAGE = "Custom alias pattern does not match";
+   public static final String CUSTOM_ALIAS_PATTERN_MESSAGE = "The characters `~,<>;\\':\"/\\\\[]^{}()=+!*@&$?%#| are not allowed";
    public static final String CUSTOM_ALIAS_PATTERN_REGEX = "^[0-9A-Za-z_-]+$";
 
    public static final String SqlQueryToCallGetShortLinkProcedure = "CALL get_short_link_by_url(:shorted_link)";
