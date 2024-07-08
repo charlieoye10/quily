@@ -68,6 +68,7 @@ public class UserService {
 
    public Mono<User> getUserAndCheckCredentials(String email, String password) {
       return getUserByEmail(email)
-         .filter(user -> passwordEncoder.matches(password, user.getPassword()));
+         .filter(user -> passwordEncoder.matches(password, user.getPassword()))
+         .filter(User::isActive);
    }
 }

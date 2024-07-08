@@ -15,7 +15,7 @@ public class UserConstants {
 
    public static final String TOKEN_VALIDATION_FAILED_MESSAGE = "The provided token is either expired or invalid. Please login again to obtain a new token.";
 
-   public static final String LOGIN_FAILED_MESSAGE = "Login failed";
+   public static final String LOGIN_FAILED_MESSAGE = "Email or password is incorrect. Try again.";
 
    public static final String SqlQueryToCallGetUserProcedure = "CALL get_user_by_email(:email)";
 

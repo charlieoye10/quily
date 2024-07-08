@@ -9,4 +9,10 @@ public class ResponseBody<T> {
    private int statusCode;
    private String message;
    private T data;
+
+   public ResponseBody(int statusCode, T data) {
+      this.statusCode = statusCode;
+      this.message = null;
+      this.data = data;
+   }
 }

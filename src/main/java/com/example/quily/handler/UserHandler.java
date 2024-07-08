@@ -43,7 +43,7 @@ public class UserHandler {
          .flatMap(userDao::processEmailVerification)
          .flatMap(resString -> {
             ResponseBody<String> responseBody =
-               new ResponseBody<>(HttpStatus.OK.value(), "", resString);
+               new ResponseBody<>(HttpStatus.OK.value(), resString);
             return ServerResponse.ok()
                .contentType(MediaType.APPLICATION_JSON)
                .bodyValue(responseBody);
@@ -83,7 +83,6 @@ public class UserHandler {
          .bodyValue(
             new ResponseBody<>(
                HttpStatus.OK.value(),
-               "",
                new LoginResponse(jwtUtil.generateToken(user.getEmail()))
             )
          );
