@@ -1,6 +1,5 @@
 package com.example.quily.repositories;
 
-import com.example.quily.constants.ShortLinkConstants;
 import com.example.quily.exception.EntityAlreadyExistException;
 import com.example.quily.model.ShortLink;
 import com.example.quily.util.CommonUtil;
@@ -32,7 +31,7 @@ public class ShortLinkRepository {
 
    public Mono<ShortLink> createShortLink(ShortLink shortLink) {
       return client.sql(SqlQueryToCallCreateShortLinkProcedure)
-         .bind(USER_ID, shortLink.getUserID())
+         .bind(USER_EMAIL, shortLink.getUserEmail())
          .bind(COMPARE_LINK, ShortLinkUtil.getOriginalLinkWithoutParams(shortLink))
          .bind(ORIGINAL_LINK, shortLink.getOriginalLink())
          .bind(SHORTED_LINK, shortLink.getShortedLink())
