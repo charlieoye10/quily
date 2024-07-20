@@ -35,7 +35,7 @@ public class ShortLinkHandler {
       this.shortLinkService = shortLinkService;
       this.shortLinkConverter = shortLinkConverter;
 
-      Bandwidth limit = Bandwidth.classic(195, Refill.intervally(195, Duration.ofMinutes(1)));
+      Bandwidth limit = Bandwidth.classic(200, Refill.intervally(200, Duration.ofMinutes(1)));
       this.bucket = Bucket4j.builder()
          .addLimit(limit)
          .build();
