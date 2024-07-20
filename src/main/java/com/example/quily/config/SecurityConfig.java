@@ -13,6 +13,8 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
 import org.springframework.security.web.server.authentication.ServerAuthenticationConverter;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableWebFluxSecurity
 class SecurityConfig {
@@ -26,6 +28,7 @@ class SecurityConfig {
 
       return http
          .authorizeExchange(exchanges -> exchanges
+            .pathMatchers(HttpMethod.OPTIONS).permitAll()
             .pathMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/signup").permitAll()
             .pathMatchers(HttpMethod.GET, "/api/auth/confirm-account").permitAll()
             .anyExchange().authenticated()
@@ -34,7 +37,7 @@ class SecurityConfig {
          .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
          .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
          .csrf(ServerHttpSecurity.CsrfSpec::disable)
-         .cors(ServerHttpSecurity.CorsSpec::disable)
+         .cors(withDefaults())
          .build();
    }
 
