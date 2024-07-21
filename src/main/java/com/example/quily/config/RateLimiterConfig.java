@@ -14,7 +14,7 @@ public class RateLimiterConfig {
 
    @Bean
    public Bucket createShortLinkBucket() {
-      Refill refill = Refill.intervally(200, Duration.ofMinutes(1)); // 200 tokens per second
+      Refill refill = Refill.intervally(200, Duration.ofSeconds(1)); // 200 tokens per second
       Bandwidth limit = Bandwidth.classic(200, refill);
       return Bucket4j.builder().addLimit(limit).build();
    }
