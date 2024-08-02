@@ -3,6 +3,8 @@ package com.example.quily.constants;
 public class UserConstants {
    public static final String USER_CREATED_MESSAGE = "User registered successfully";
 
+   public static final String RESEND_VERIFICATION_LINK_MESSAGE = "verification token is expired or invalid, we have send you mail with new verification token";
+
    public static final String INVALID_EMAIL_FORMAT_MESSAGE =
       "Email format is not acceptable. Please provide an email with the correct format, e.g., user_name@(gmail or domain_name).com";
 

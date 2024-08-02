@@ -2,10 +2,12 @@ package com.example.quily.dao;
 
 import com.example.quily.constants.ShortLinkConstants;
 import com.example.quily.model.User;
+import com.example.quily.services.KeyGeneratorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -13,10 +15,13 @@ import java.security.NoSuchAlgorithmException;
 @Component
 public class EmailConfirmationTokenDAO {
    private final JavaMailSender javaMailSender;
+   private final KeyGeneratorService keyGeneratorService;
 
    @Autowired
-   public EmailConfirmationTokenDAO(JavaMailSender javaMailSender) {
+   public EmailConfirmationTokenDAO(JavaMailSender javaMailSender,
+                                    KeyGeneratorService keyGeneratorService) {
       this.javaMailSender = javaMailSender;
+      this.keyGeneratorService  = keyGeneratorService;
    }
 
    public void sendEmail(User user, String token) {
@@ -46,7 +51,8 @@ public class EmailConfirmationTokenDAO {
       return sb.toString();
    }
 
-   public String getConfirmationToken(User user) {
-      return generateMD5Hash(user.getEmail());
+   public Mono<String> getConfirmationToken(User user) {
+      return keyGeneratorService.getCurrentKey()
+         .map(responseDetail -> responseDetail.getKeyGeneratorResponse().getHashKey());
    }
 }
