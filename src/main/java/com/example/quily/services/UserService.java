@@ -2,6 +2,7 @@ package com.example.quily.services;
 
 import com.example.quily.constants.UserConstants;
 import com.example.quily.dao.EmailConfirmationTokenDAO;
+import com.example.quily.exception.BadRequestException;
 import com.example.quily.exception.EntityAlreadyExistException;
 import com.example.quily.model.EmailConfirmationToken;
 import com.example.quily.model.User;
@@ -77,7 +78,7 @@ public class UserService {
                )
                .switchIfEmpty(Mono.just(new SignUpResponse(confirmedToken.getUserEmail(), CommonUtil.getCurrentDateTimeInFormat(), false)));
 
-         });
+         }).switchIfEmpty(Mono.error(new BadRequestException(UserConstants.VERIFICATION_FAILED_MESSAGE)));
    }
 
    public Mono<User> getUserByEmail(String email) {
