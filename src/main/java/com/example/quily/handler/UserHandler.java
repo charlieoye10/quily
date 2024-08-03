@@ -83,7 +83,7 @@ public class UserHandler {
          .bodyValue(
             new ResponseBody<>(
                HttpStatus.OK.value(),
-               new LoginResponse(jwtUtil.generateToken(user.getEmail()))
+                    new LoginResponse(jwtUtil.generateToken(user.getEmail()), user.getUserName(), user.getEmail())
             )
          );
    }
