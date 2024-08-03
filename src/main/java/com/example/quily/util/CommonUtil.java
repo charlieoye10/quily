@@ -52,7 +52,6 @@ public class CommonUtil {
    }
 
    public static EmailConfirmationToken parseEmailConfirmationToken(Map<String, Object> row) {
-      Map<String, Object> x = row;
       return new EmailConfirmationToken(
          (String) row.get("confirmation_token"),
          (String) row.get("user_email"),
