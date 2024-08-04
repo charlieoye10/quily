@@ -1,6 +1,6 @@
 package com.example.quily.response;
 
-import com.example.quily.MetaData.LoginResponseData;
+import com.example.quily.metadata.LoginResponseData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

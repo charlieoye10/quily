@@ -1,4 +1,4 @@
-package com.example.quily.MetaData;
+package com.example.quily.metadata;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

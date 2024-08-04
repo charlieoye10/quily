@@ -1,6 +1,6 @@
 package com.example.quily.handler;
 
-import com.example.quily.MetaData.LoginResponseData;
+import com.example.quily.metadata.LoginResponseData;
 import com.example.quily.constants.UserConstants;
 import com.example.quily.converter.UserSignupConverter;
 import com.example.quily.dao.UserDao;
