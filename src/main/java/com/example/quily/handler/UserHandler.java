@@ -1,5 +1,6 @@
 package com.example.quily.handler;
 
+import com.example.quily.MetaData.LoginResponseData;
 import com.example.quily.constants.UserConstants;
 import com.example.quily.converter.UserSignupConverter;
 import com.example.quily.dao.UserDao;
@@ -78,12 +79,13 @@ public class UserHandler {
    }
 
    private Mono<ServerResponse> handleSuccessLogin(User user) {
+      LoginResponseData loginResponseData = new LoginResponseData(user.getUserName(),user.getEmail());
       return ServerResponse.ok()
          .contentType(MediaType.APPLICATION_JSON)
          .bodyValue(
             new ResponseBody<>(
                HttpStatus.OK.value(),
-                    new LoginResponse(jwtUtil.generateToken(user.getEmail()), user.getUserName(), user.getEmail())
+                    new LoginResponse(jwtUtil.generateToken(user.getEmail()), loginResponseData)
             )
          );
    }
