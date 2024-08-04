@@ -1,5 +1,6 @@
 package com.example.quily.response;
 
+import com.example.quily.metadata.LoginResponseData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -7,4 +8,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class LoginResponse {
    private String token;
+   private LoginResponseData user;
 }
