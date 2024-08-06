@@ -34,7 +34,7 @@ public class UserSignupConverter implements Converter<SignUpRequest, SignUpRespo
 
    public ResponseBody<SignUpResponse> getResponseFromModel(SignUpResponse signUpResponse) {
       if(signUpResponse.isResendMail)
-         return new ResponseBody<>(200,RESEND_VERIFICATION_LINK_MESSAGE, signUpResponse);
+         return new ResponseBody<>(200, RESEND_VERIFICATION_LINK_MESSAGE, signUpResponse);
       else
        return new ResponseBody<>(200, USER_CREATED_MESSAGE, signUpResponse);
    }

@@ -43,26 +43,24 @@ public class UserService {
       }
 
    public Mono<String> sendEmailVerificationLink(User user) {
-     return createUser(user).flatMap(
+     return createUser(user)
+        .flatMap(
          signUpUser ->
-            emailConfirmationTokenDAO.getConfirmationToken().
-               flatMap(token ->
-                  {
+            emailConfirmationTokenDAO.getConfirmationToken()
+               .flatMap(token -> {
                      final EmailConfirmationToken confirmationToken = new EmailConfirmationToken(token, user.getEmail());
                      final String message = String.format(UserConstants.EMAIL_VERIFICATION_MESSAGE, user.getEmail());
                      Mono<EmailConfirmationToken> saveToken = emailTokenService.save(confirmationToken);
                      Mono<Void> sentEmail = Mono.fromRunnable(() -> emailConfirmationTokenDAO.sendEmail(user, token));
                      return Mono.when(saveToken, sentEmail)
                         .then(Mono.fromCallable(() -> message));
-                  }
-               )
-      );
+                  }));
    }
 
    public Mono<SignUpResponse> verifyTokenAndSaveUser(String token) {
       return emailTokenService.findByToken(token)
          .flatMap(confirmedToken -> {
-            if( Duration.between (confirmedToken.getUpdateTime(),ZonedDateTime.now()).toHours() > 24)
+            if( Duration.between (confirmedToken.getUpdateTime(),ZonedDateTime.now()).toMinutes() > 5)
             {
              return userRepository.findUserByEmail(confirmedToken.getUserEmail()).flatMap(
                  this::sendEmailVerificationLink
