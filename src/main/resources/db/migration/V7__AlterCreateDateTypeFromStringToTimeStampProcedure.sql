@@ -1,6 +1,4 @@
-
-ALTER TABLE email_confirmation_token
-ADD COLUMN updated_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+UPDATE Quily.email_confirmation_token SET created_time = STR_TO_DATE(created_time, '%h:%i%p on %d %M %Y') where created_time <> '';
 
 ALTER TABLE email_confirmation_token
 MODIFY COLUMN created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
