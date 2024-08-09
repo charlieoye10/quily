@@ -3,6 +3,9 @@ UPDATE Quily.email_confirmation_token SET created_time = STR_TO_DATE(created_tim
 ALTER TABLE email_confirmation_token
 MODIFY COLUMN created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
+ALTER TABLE email_confirmation_token
+ADD COLUMN updated_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
 
 USE `Quily`;
 DROP PROCEDURE IF EXISTS `save_email_confirmation_token`;
