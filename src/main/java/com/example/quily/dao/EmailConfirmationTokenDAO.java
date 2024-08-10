@@ -51,8 +51,7 @@ public class EmailConfirmationTokenDAO {
       return sb.toString();
    }
 
-   public Mono<String> getConfirmationToken() {
-      return keyGeneratorService.getCurrentKey()
-         .map(responseDetail -> responseDetail.getKeyGeneratorResponse().getHashKey());
+   public Mono<KeyGeneratorService.KGSResponseDetail> getConfirmationToken() {
+      return keyGeneratorService.getCurrentKey();
    }
 }
