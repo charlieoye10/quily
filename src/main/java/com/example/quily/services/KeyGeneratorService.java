@@ -56,10 +56,7 @@ public class KeyGeneratorService {
          keyIndices.getIndex4(),
          keyIndices.getIndex5(),
          keyIndices.getIndex6()
-      ).flatMap(updatedRows -> {
-         if (updatedRows > 0) return Mono.just(keyIndices);
-         else return Mono.empty();
-      });
+      ).map(updatedRows -> keyIndices);
    }
 
    @Getter

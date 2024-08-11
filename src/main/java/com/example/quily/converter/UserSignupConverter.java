@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import static com.example.quily.constants.UserConstants.USER_CREATED_MESSAGE;
+import static com.example.quily.constants.UserConstants.*;
 
 @Component
 public class UserSignupConverter implements Converter<SignUpRequest, SignUpResponse, User> {
@@ -33,6 +33,10 @@ public class UserSignupConverter implements Converter<SignUpRequest, SignUpRespo
    }
 
    public ResponseBody<SignUpResponse> getResponseFromModel(SignUpResponse signUpResponse) {
-      return new ResponseBody<>(200, USER_CREATED_MESSAGE, signUpResponse);
+      if(signUpResponse.isResendMail)
+         return new ResponseBody<>(200, RESEND_VERIFICATION_LINK_MESSAGE, signUpResponse);
+      else
+       return new ResponseBody<>(200, USER_CREATED_MESSAGE, signUpResponse);
    }
+
 }
