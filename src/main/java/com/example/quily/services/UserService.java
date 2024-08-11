@@ -16,11 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
 
 import static com.example.quily.constants.CommonConstants.COMMON_INTERNAL_SERVER_MESSAGE;
+import static com.example.quily.constants.CommonConstants.EMAIL_VERIFICATION_TOKEN_AGE;
 
 @Service
 public class UserService {
@@ -44,12 +46,12 @@ public class UserService {
    }
 
    private Mono<String> saveKeyIndicesAndSendEmail(String tokenKey, KeyIndices keyIndices, User user) {
-      return keyGeneratorService
-         .updateKeyIndices(keyIndices)
-         .flatMap(updatedKeyIndices ->
-            Mono.fromRunnable(() -> emailConfirmationTokenDAO.sendEmail(user, tokenKey))
-               .then(Mono.fromCallable(() ->
-                  String.format(UserConstants.EMAIL_VERIFICATION_MESSAGE, user.getEmail()))));
+      Mono<KeyIndices> updatedKeyIndices = keyGeneratorService.updateKeyIndices(keyIndices);
+      Mono<String> sentEmail = Mono.fromRunnable(() -> emailConfirmationTokenDAO.sendEmail(user, tokenKey))
+         .then(Mono.fromCallable(() ->
+            String.format(UserConstants.EMAIL_VERIFICATION_MESSAGE, user.getEmail())));
+      return Mono.zip(updatedKeyIndices, sentEmail)
+         .map(Tuple2::getT2);
    }
 
    private Mono<SignUpResponse> processVerificationEmail(String token, EmailConfirmationToken emailConfirmationToken) {
@@ -90,7 +92,7 @@ public class UserService {
          .flatMap(confirmedToken -> {
             Duration tokenAge = Duration.between(confirmedToken.getUpdateTime(), ZonedDateTime.now());
 
-            if (tokenAge.toMinutes() > 5) {
+            if (tokenAge.toMinutes() > EMAIL_VERIFICATION_TOKEN_AGE) {
                return userRepository.findUserByEmail(confirmedToken.getUserEmail())
                   .flatMap(this::sendEmailVerificationLink)
                   .map(result -> createSignUpResponse(confirmedToken.getUserEmail(), true));
