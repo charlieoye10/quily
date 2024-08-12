@@ -10,6 +10,10 @@ public class UserConstants {
 
    public static final String VERIFICATION_FAILED_MESSAGE = "Email verification failed, token did not match either it was invalid or empty";
 
+   public static final String CURRENT_PASSWORD_INCORRECT_MESSAGE = "The current password you have entered is incorrect, please try again with correct password";
+
+   public static final String PASSWORD_RESET_SUCCESSFULLY = "Password reset successfully";
+
    public static final String EMAIL_VERIFICATION_MESSAGE = "Email verification link sent on email %s please verify it to click it." +
       " If you didn't get verification link please check your email";
 
@@ -24,5 +28,7 @@ public class UserConstants {
    public static final String SqlQueryToCallCreateUserProcedure = "CALL create_user(:email, :user_name, :password, :is_active)";
 
    public static final String SqlQueryToCallMakeUserActiveProcedure = "CALL make_user_active(:email)";
+
+   public static final String SqlQueryToResetPassword = "CALL reset_password(:email, :password)";
 
 }

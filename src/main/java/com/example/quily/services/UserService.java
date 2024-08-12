@@ -2,7 +2,6 @@ package com.example.quily.services;
 
 import com.example.quily.constants.UserConstants;
 import com.example.quily.dao.EmailConfirmationTokenDAO;
-import com.example.quily.dao.KeyGeneratorDAO;
 import com.example.quily.exception.BadRequestException;
 import com.example.quily.exception.EntityAlreadyExistException;
 import com.example.quily.exception.InternalServerError;
@@ -10,7 +9,9 @@ import com.example.quily.model.EmailConfirmationToken;
 import com.example.quily.model.KeyIndices;
 import com.example.quily.model.User;
 import com.example.quily.repositories.UserRepository;
+import com.example.quily.request.ResetPasswordRequest;
 import com.example.quily.response.SignUpResponse;
+import com.example.quily.security.UserDetailsServiceImpl;
 import com.example.quily.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,14 +32,23 @@ public class UserService {
    private final EmailConfirmationTokenDAO emailConfirmationTokenDAO;
    private final PasswordEncoder passwordEncoder;
    private final KeyGeneratorService keyGeneratorService;
+   private final UserDetailsServiceImpl userDetailsService;
+
 
    @Autowired
-   public UserService(UserRepository userRepository, EmailTokenService emailTokenService, EmailConfirmationTokenDAO emailConfirmationTokenDAO, PasswordEncoder passwordEncoder, KeyGeneratorService keyGeneratorService, KeyGeneratorDAO keyGeneratorDAO) {
+   public UserService(UserRepository userRepository,
+                      EmailTokenService emailTokenService,
+                      EmailConfirmationTokenDAO emailConfirmationTokenDAO,
+                      PasswordEncoder passwordEncoder,
+                      KeyGeneratorService keyGeneratorService,
+                      UserDetailsServiceImpl userDetailsService) {
       this.userRepository = userRepository;
       this.emailTokenService = emailTokenService;
       this.emailConfirmationTokenDAO = emailConfirmationTokenDAO;
       this.passwordEncoder = passwordEncoder;
       this.keyGeneratorService = keyGeneratorService;
+      this.userDetailsService = userDetailsService;
+
    }
 
    private SignUpResponse createSignUpResponse(String email, boolean isVerificationLinkResent) {
@@ -71,7 +81,7 @@ public class UserService {
             else return Mono.just(dbUser);
          })
          .switchIfEmpty(userRepository.createUser(user));
-      }
+   }
 
    public Mono<String> sendEmailVerificationLink(User user) {
       return createUser(user)
@@ -108,7 +118,21 @@ public class UserService {
 
    public Mono<User> getUserAndCheckCredentials(String email, String password) {
       return getUserByEmail(email)
-         .filter(user -> passwordEncoder.matches(password, user.getPassword()))
+         .filter(user -> passwordEncoder.matches(password, user.getPassword().split(" ")[0]))
          .filter(User::isActive);
    }
+
+   public Mono<String> resetPassword(ResetPasswordRequest req) {
+      return userDetailsService.getLoggedInUser()
+         .flatMap(user -> {
+            if (passwordEncoder.matches(req.getCurrentPassword(), user.getPassword().split(" ")[0])) {
+               return userRepository.resetPasswordByEmail(user.getUsername(), passwordEncoder.encode(req.getNewPassword()))
+                  .flatMap(updatePassword -> Mono.just(UserConstants.PASSWORD_RESET_SUCCESSFULLY))
+                  .switchIfEmpty(Mono.error(new InternalServerError(COMMON_INTERNAL_SERVER_MESSAGE)));
+            } else {
+               return Mono.error(new BadRequestException(UserConstants.CURRENT_PASSWORD_INCORRECT_MESSAGE));
+            }
+         });
+   }
+
 }

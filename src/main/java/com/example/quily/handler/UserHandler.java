@@ -7,6 +7,7 @@ import com.example.quily.dao.UserDao;
 import com.example.quily.exception.BadRequestException;
 import com.example.quily.model.User;
 import com.example.quily.request.LoginRequest;
+import com.example.quily.request.ResetPasswordRequest;
 import com.example.quily.request.SignUpRequest;
 import com.example.quily.response.LoginResponse;
 import com.example.quily.response.ResponseBody;
@@ -89,4 +90,17 @@ public class UserHandler {
             )
          );
    }
+
+   public Mono<ServerResponse> resetPassword(ServerRequest req) {
+      return req.bodyToMono(ResetPasswordRequest.class)
+         .flatMap(resetPasswordRequest ->
+            userService.resetPassword(resetPasswordRequest)
+               .flatMap(message ->
+                  ServerResponse.ok()
+                     .contentType(MediaType.APPLICATION_JSON)
+                     .bodyValue(new ResponseBody<>(HttpStatus.OK.value(), message, null))
+               )
+         );
+   }
+
 }

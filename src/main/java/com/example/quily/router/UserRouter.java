@@ -15,6 +15,8 @@ public class UserRouter {
    private static final String SIGNUP_URL = "/api/auth/signup";
    private static final String CONFIRM_ACCOUNT_URL = "/api/auth/confirm-account";
    private static final String LOGIN_URL = "/api/auth/login";
+   private static final String RESET_PASSWORD = "/api/auth/resetPassword";
+   private static final String FORGET_PASSWORD = "/api/auth/forgetPassword";
 
    @Autowired
    public UserRouter(UserHandler userHandler) {
@@ -26,6 +28,7 @@ public class UserRouter {
       return RouterFunctions
          .route(RequestPredicates.POST(SIGNUP_URL), userHandler::signUp)
          .andRoute(RequestPredicates.GET(CONFIRM_ACCOUNT_URL), userHandler::verifyUser)
-         .andRoute(RequestPredicates.POST(LOGIN_URL), userHandler::login);
+         .andRoute(RequestPredicates.POST(LOGIN_URL), userHandler::login)
+         .andRoute(RequestPredicates.POST(RESET_PASSWORD), userHandler::resetPassword);
    }
 }
