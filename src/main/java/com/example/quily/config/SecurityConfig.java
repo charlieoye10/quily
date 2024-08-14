@@ -29,7 +29,7 @@ class SecurityConfig {
       return http
          .authorizeExchange(exchanges -> exchanges
             .pathMatchers(HttpMethod.OPTIONS).permitAll()
-            .pathMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/signup").permitAll()
+            .pathMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/signup", "/api/auth/sendForgotPasswordVerifyEmail", "api/auth/resetForgotPassword").permitAll()
             .pathMatchers(HttpMethod.GET, "/api/auth/confirm-account").permitAll()
             .anyExchange().authenticated()
          )

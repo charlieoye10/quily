@@ -17,7 +17,14 @@ public class UserConstants {
    public static final String EMAIL_VERIFICATION_MESSAGE = "Email verification link sent on email %s please verify it to click it." +
       " If you didn't get verification link please check your email";
 
+   public static final String FORGOT_PASSWORD_VERIFICATION_MESSAGE = "Forgot Password verification link sent on email %s please verify it to click it." +
+      " If you didn't get verification link please check your email";
+
+   public static final String USER_DOES_NOT_EXIST_MESSAGE = "User does not exist with %s email";
+
    public static final String USER_NOT_FOUND_MESSAGE = "User not found on token validation";
+
+   public static final String TOKEN_DOES_NOT_EXIST = "The token does not exist";
 
    public static final String TOKEN_VALIDATION_FAILED_MESSAGE = "The provided token is either expired or invalid. Please login again to obtain a new token.";
 
@@ -30,5 +37,7 @@ public class UserConstants {
    public static final String SqlQueryToCallMakeUserActiveProcedure = "CALL make_user_active(:email)";
 
    public static final String SqlQueryToResetPassword = "CALL reset_password(:email, :password)";
+
+   public static final String SqlQueryToForgotPassword = "CALL forgot_password(:email, :password)";
 
 }

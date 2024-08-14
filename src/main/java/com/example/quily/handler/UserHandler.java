@@ -6,9 +6,7 @@ import com.example.quily.converter.UserSignupConverter;
 import com.example.quily.dao.UserDao;
 import com.example.quily.exception.BadRequestException;
 import com.example.quily.model.User;
-import com.example.quily.request.LoginRequest;
-import com.example.quily.request.ResetPasswordRequest;
-import com.example.quily.request.SignUpRequest;
+import com.example.quily.request.*;
 import com.example.quily.response.LoginResponse;
 import com.example.quily.response.ResponseBody;
 import com.example.quily.security.JwtUtil;
@@ -101,6 +99,25 @@ public class UserHandler {
                      .bodyValue(new ResponseBody<>(HttpStatus.OK.value(), message, null))
                )
          );
+   }
+
+   public Mono<ServerResponse> resetForgotPassword(ServerRequest serverRequest) {
+      return serverRequest.bodyToMono(ForgetPasswordRequest.class)
+         .flatMap(req -> userService.resetForgotPassword(req)
+            .flatMap(message->
+               ServerResponse.ok()
+                   .contentType(MediaType.APPLICATION_JSON)
+               .bodyValue(new ResponseBody<>(HttpStatus.OK.value(), message, null))));
+   }
+
+   public Mono<ServerResponse> verifyEmailForForgotPassword(ServerRequest serverRequest) {
+      return serverRequest.bodyToMono(VerifyEmailForgetPasswordRequest.class)
+          .flatMap(req -> userService.sendVerificationLinkForForgotPassword(req)
+             .flatMap(
+                message ->   ServerResponse.ok()
+                   .contentType(MediaType.APPLICATION_JSON)
+                   .bodyValue(new ResponseBody<>(HttpStatus.OK.value(), message, null))));
+
    }
 
 }
