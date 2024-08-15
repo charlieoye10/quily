@@ -20,17 +20,28 @@ import static org.springframework.security.config.Customizer.withDefaults;
 class SecurityConfig {
 
    @Bean
-   SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http,
-                                                    ReactiveAuthenticationManager authenticationManager,
-                                                    ServerAuthenticationConverter authenticationConverter) {
+   SecurityWebFilterChain springSecurityFilterChain(
+      ServerHttpSecurity http,
+      ReactiveAuthenticationManager authenticationManager,
+      ServerAuthenticationConverter authenticationConverter) {
+
       AuthenticationWebFilter authenticationWebFilter = new AuthenticationWebFilter(authenticationManager);
       authenticationWebFilter.setServerAuthenticationConverter(authenticationConverter);
+
+      String[] postRoutes = {
+         "/api/auth/login",
+         "/api/auth/signup",
+         "/api/auth/sendForgotPasswordVerifyEmail",
+         "/api/auth/forgotPassword"
+      };
+
+      String[] getRoutes = {"/api/auth/confirm-account"};
 
       return http
          .authorizeExchange(exchanges -> exchanges
             .pathMatchers(HttpMethod.OPTIONS).permitAll()
-            .pathMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/signup", "/api/auth/sendForgotPasswordVerifyEmail", "api/auth/forgotPassword").permitAll()
-            .pathMatchers(HttpMethod.GET, "/api/auth/confirm-account").permitAll()
+            .pathMatchers(HttpMethod.POST, postRoutes).permitAll()
+            .pathMatchers(HttpMethod.GET, getRoutes).permitAll()
             .anyExchange().authenticated()
          )
          .addFilterAt(authenticationWebFilter, SecurityWebFiltersOrder.AUTHENTICATION)

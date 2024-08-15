@@ -162,12 +162,12 @@ public class UserService {
       return userDetailsService.getLoggedInUser()
          .flatMap(user -> {
             if (passwordEncoder.matches(req.getCurrentPassword(), user.getPassword())) {
-               return userRepository.resetPasswordByEmail(user.getUsername(), passwordEncoder.encode(req.getNewPassword()))
+               return userRepository.resetPasswordByEmail(
+                     user.getUsername(), passwordEncoder.encode(req.getNewPassword()))
                   .flatMap(updatePassword -> Mono.just(UserConstants.PASSWORD_RESET_SUCCESSFULLY))
                   .switchIfEmpty(Mono.error(new InternalServerError(COMMON_INTERNAL_SERVER_MESSAGE)));
-            } else {
-               return Mono.error(new BadRequestException(UserConstants.CURRENT_PASSWORD_INCORRECT_MESSAGE));
             }
+            return Mono.error(new BadRequestException(UserConstants.CURRENT_PASSWORD_INCORRECT_MESSAGE));
          });
    }
 
