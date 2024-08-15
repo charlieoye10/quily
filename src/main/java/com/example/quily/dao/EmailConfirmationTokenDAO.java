@@ -24,12 +24,12 @@ public class EmailConfirmationTokenDAO {
       this.keyGeneratorService  = keyGeneratorService;
    }
 
-   public void sendEmail(User user, String token) {
+   public void sendEmail(User user, String token, String subject, String text, String link) {
       SimpleMailMessage mailMessage = new SimpleMailMessage();
       mailMessage.setTo(user.getEmail());
-      mailMessage.setSubject("Complete Registration!");
-      mailMessage.setText("To confirm your account, please click here : "
-         + ShortLinkConstants.EMAIL_VERIFICATION_URL + token);
+      mailMessage.setSubject(subject);
+      mailMessage.setText(text +
+         link + token);
       javaMailSender.send(mailMessage);
    }
 

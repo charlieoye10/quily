@@ -3,7 +3,9 @@ package com.example.quily.constants;
 public class ShortLinkConstants {
    public static final String BASE_URL = "https://quily/";
    public static final String LOCALHOST_URL = "http://localhost:8081/";
+   public static final String FE_LOCALHOST_URL = "http://localhost:3000/";
    public static final String EMAIL_VERIFICATION_URL = String.join("", LOCALHOST_URL, "api/auth/confirm-account?token=");
+   public static final String PASSWORD_VERIFICATION_URL = String.join("", FE_LOCALHOST_URL, "api/auth/confirm-forgot-password?token=");
 
    public static final String LINK_ALREADY_USED_MESSAGE = "Provided link already has been used.";
    public static final String SHORT_LINK_CREATED_MESSAGE = "Link shorted successfully";

@@ -1,8 +1,8 @@
 package com.example.quily.services;
 
+import com.example.quily.constants.ShortLinkConstants;
 import com.example.quily.constants.UserConstants;
 import com.example.quily.dao.EmailConfirmationTokenDAO;
-import com.example.quily.dao.KeyGeneratorDAO;
 import com.example.quily.exception.BadRequestException;
 import com.example.quily.exception.EntityAlreadyExistException;
 import com.example.quily.exception.InternalServerError;
@@ -10,7 +10,11 @@ import com.example.quily.model.EmailConfirmationToken;
 import com.example.quily.model.KeyIndices;
 import com.example.quily.model.User;
 import com.example.quily.repositories.UserRepository;
+import com.example.quily.request.ForgetPasswordRequest;
+import com.example.quily.request.ResetPasswordRequest;
+import com.example.quily.request.VerifyEmailForgetPasswordRequest;
 import com.example.quily.response.SignUpResponse;
+import com.example.quily.security.UserDetailsServiceImpl;
 import com.example.quily.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,27 +35,69 @@ public class UserService {
    private final EmailConfirmationTokenDAO emailConfirmationTokenDAO;
    private final PasswordEncoder passwordEncoder;
    private final KeyGeneratorService keyGeneratorService;
+   private final UserDetailsServiceImpl userDetailsService;
+
 
    @Autowired
-   public UserService(UserRepository userRepository, EmailTokenService emailTokenService, EmailConfirmationTokenDAO emailConfirmationTokenDAO, PasswordEncoder passwordEncoder, KeyGeneratorService keyGeneratorService, KeyGeneratorDAO keyGeneratorDAO) {
+   public UserService(UserRepository userRepository,
+                      EmailTokenService emailTokenService,
+                      EmailConfirmationTokenDAO emailConfirmationTokenDAO,
+                      PasswordEncoder passwordEncoder,
+                      KeyGeneratorService keyGeneratorService,
+                      UserDetailsServiceImpl userDetailsService) {
       this.userRepository = userRepository;
       this.emailTokenService = emailTokenService;
       this.emailConfirmationTokenDAO = emailConfirmationTokenDAO;
       this.passwordEncoder = passwordEncoder;
       this.keyGeneratorService = keyGeneratorService;
+      this.userDetailsService = userDetailsService;
+
    }
 
    private SignUpResponse createSignUpResponse(String email, boolean isVerificationLinkResent) {
       return new SignUpResponse(email, CommonUtil.getCurrentDateTimeInFormat(), isVerificationLinkResent);
    }
 
-   private Mono<String> saveKeyIndicesAndSendEmail(String tokenKey, KeyIndices keyIndices, User user) {
+   private Mono<String> saveKeyIndicesAndSendEmail(String tokenKey, KeyIndices keyIndices, User user, Boolean isRegistration) {
       Mono<KeyIndices> updatedKeyIndices = keyGeneratorService.updateKeyIndices(keyIndices);
-      Mono<String> sentEmail = Mono.fromRunnable(() -> emailConfirmationTokenDAO.sendEmail(user, tokenKey))
-         .then(Mono.fromCallable(() ->
-            String.format(UserConstants.EMAIL_VERIFICATION_MESSAGE, user.getEmail())));
+
+      Mono<String> sentEmail = Mono.fromRunnable(() -> {
+         if (isRegistration) {
+            sendEmailForRegistrationVerification(user, tokenKey);
+         } else {
+            sendEmailForPasswordVerification(user, tokenKey);
+         }
+      }).then(Mono.fromCallable(() -> {
+         String message = isRegistration
+            ? UserConstants.EMAIL_VERIFICATION_MESSAGE
+            : UserConstants.FORGOT_PASSWORD_VERIFICATION_MESSAGE;
+         return String.format(message, user.getEmail());
+      }));
+
       return Mono.zip(updatedKeyIndices, sentEmail)
          .map(Tuple2::getT2);
+   }
+
+   private Void sendEmailForRegistrationVerification(User user, String tokenKey) {
+      emailConfirmationTokenDAO.sendEmail(
+         user,
+         tokenKey,
+         UserConstants.SUBJECT_FOR_REGISTRATION,
+         UserConstants.TEXT_FOR_REGISTRATION_EMAIL,
+         ShortLinkConstants.EMAIL_VERIFICATION_URL
+      );
+      return null;
+   }
+
+   private Void sendEmailForPasswordVerification(User user, String tokenKey) {
+      emailConfirmationTokenDAO.sendEmail(
+         user,
+         tokenKey,
+         UserConstants.SUBJECT_FOR_FORGOT_EMAIL_VERIFY,
+         UserConstants.TEXT_FOR_FORGOT_PASSWORD_EMAIL,
+         ShortLinkConstants.PASSWORD_VERIFICATION_URL
+      );
+      return null;
    }
 
    private Mono<SignUpResponse> processVerificationEmail(String token, EmailConfirmationToken emailConfirmationToken) {
@@ -71,7 +117,7 @@ public class UserService {
             else return Mono.just(dbUser);
          })
          .switchIfEmpty(userRepository.createUser(user));
-      }
+   }
 
    public Mono<String> sendEmailVerificationLink(User user) {
       return createUser(user)
@@ -82,7 +128,7 @@ public class UserService {
                      new EmailConfirmationToken(token.getKeyGeneratorResponse().getHashKey(), user.getEmail());
                   return emailTokenService.save(confirmationToken)
                      .flatMap(savedOrUpdatedToken ->
-                        saveKeyIndicesAndSendEmail(token.getKeyGeneratorResponse().getHashKey(), token.getNextIndices(), user));
+                        saveKeyIndicesAndSendEmail(token.getKeyGeneratorResponse().getHashKey(), token.getNextIndices(), user, true));
                })
          );
    }
@@ -110,5 +156,55 @@ public class UserService {
       return getUserByEmail(email)
          .filter(user -> passwordEncoder.matches(password, user.getPassword()))
          .filter(User::isActive);
+   }
+
+   public Mono<String> resetPassword(ResetPasswordRequest req) {
+      return userDetailsService.getLoggedInUser()
+         .flatMap(user -> {
+            if (passwordEncoder.matches(req.getCurrentPassword(), user.getPassword())) {
+               return userRepository.resetPasswordByEmail(
+                     user.getUsername(), passwordEncoder.encode(req.getNewPassword()))
+                  .flatMap(updatePassword -> Mono.just(UserConstants.PASSWORD_RESET_SUCCESSFULLY))
+                  .switchIfEmpty(Mono.error(new InternalServerError(COMMON_INTERNAL_SERVER_MESSAGE)));
+            }
+            return Mono.error(new BadRequestException(UserConstants.CURRENT_PASSWORD_INCORRECT_MESSAGE));
+         });
+   }
+
+   public Mono<String> forgotPassword(ForgetPasswordRequest req) {
+      return emailTokenService.findByToken(req.getToken())
+         .flatMap(token -> userRepository
+            .resetPasswordByEmail(token.getUserEmail(), passwordEncoder.encode(req.getPassword()))
+            .flatMap(updatePassword -> emailTokenService.deleteByToken(req.getToken())
+               .flatMap(deletedToken -> Mono.just(UserConstants.PASSWORD_RESET_SUCCESSFULLY))
+               .switchIfEmpty(Mono.error(new InternalServerError(COMMON_INTERNAL_SERVER_MESSAGE)))
+            )
+            .switchIfEmpty(Mono.error(new InternalServerError(COMMON_INTERNAL_SERVER_MESSAGE)))
+         )
+         .switchIfEmpty(Mono.error(new BadRequestException(UserConstants.TOKEN_DOES_NOT_EXIST)));
+   }
+
+   public Mono<String> sendVerificationLinkForForgotPassword(VerifyEmailForgetPasswordRequest req) {
+      return userRepository.findUserByEmail(req.getEmail())
+         .filter(User::isActive)
+         .flatMap(user -> emailConfirmationTokenDAO.getConfirmationToken()
+            .flatMap(token -> {
+               EmailConfirmationToken confirmationToken = new EmailConfirmationToken(
+                  token.getKeyGeneratorResponse().getHashKey(), user.getEmail()
+               );
+               return emailTokenService.save(confirmationToken)
+                  .flatMap(savedOrUpdatedToken ->
+                     saveKeyIndicesAndSendEmail(
+                        token.getKeyGeneratorResponse().getHashKey(),
+                        token.getNextIndices(),
+                        user,
+                        false
+                     )
+                  ).switchIfEmpty(Mono.error(new InternalServerError(COMMON_INTERNAL_SERVER_MESSAGE)));
+            })
+         )
+         .switchIfEmpty(Mono.error(new BadRequestException(
+            String.format(UserConstants.USER_DOES_NOT_EXIST_MESSAGE, req.getEmail())
+         )));
    }
 }
