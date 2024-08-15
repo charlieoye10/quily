@@ -15,7 +15,7 @@ public class UserRouter {
    public static final String SIGNUP_URL = "/api/auth/signup";
    public static final String CONFIRM_ACCOUNT_URL = "/api/auth/confirm-account";
    public static final String LOGIN_URL = "/api/auth/login";
-   private static final String RESET_PASSWORD_URL = "/api/auth/resetPassword";
+   public static final String RESET_PASSWORD_URL = "/api/auth/resetPassword";
    public static final String SEND_FORGET_PASSWORD_URL = "/api/auth/sendForgotPasswordVerificationEmail";
    public static final String FORGOT_PASSWORD_URL = "api/auth/forgotPassword";
 
@@ -30,9 +30,9 @@ public class UserRouter {
          .route(RequestPredicates.POST(SIGNUP_URL), userHandler::signUp)
          .andRoute(RequestPredicates.GET(CONFIRM_ACCOUNT_URL), userHandler::verifyUser)
          .andRoute(RequestPredicates.POST(LOGIN_URL), userHandler::login)
-         .andRoute(RequestPredicates.POST(RESET_PASSWORD_URL), userHandler::resetPassword)
+         .andRoute(RequestPredicates.PUT(RESET_PASSWORD_URL), userHandler::resetPassword)
          .andRoute(RequestPredicates.POST(SEND_FORGET_PASSWORD_URL), userHandler::verifyEmailForForgotPassword)
-         .andRoute(RequestPredicates.POST(FORGOT_PASSWORD_URL), userHandler::forgotPassword);
+         .andRoute(RequestPredicates.PUT(FORGOT_PASSWORD_URL), userHandler::forgotPassword);
 
    }
 }

@@ -186,6 +186,7 @@ public class UserService {
 
    public Mono<String> sendVerificationLinkForForgotPassword(VerifyEmailForgetPasswordRequest req) {
       return userRepository.findUserByEmail(req.getEmail())
+         .filter(User::isActive)
          .flatMap(user -> emailConfirmationTokenDAO.getConfirmationToken()
             .flatMap(token -> {
                EmailConfirmationToken confirmationToken = new EmailConfirmationToken(

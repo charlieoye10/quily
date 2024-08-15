@@ -32,7 +32,10 @@ class SecurityConfig {
       String[] postRoutes = {
          SIGNUP_URL,
          LOGIN_URL,
-         SEND_FORGET_PASSWORD_URL,
+         SEND_FORGET_PASSWORD_URL
+      };
+
+      String[] putRoutes = {
          FORGOT_PASSWORD_URL
       };
 
@@ -42,6 +45,7 @@ class SecurityConfig {
          .authorizeExchange(exchanges -> exchanges
             .pathMatchers(HttpMethod.OPTIONS).permitAll()
             .pathMatchers(HttpMethod.POST, postRoutes).permitAll()
+            .pathMatchers(HttpMethod.PUT, putRoutes).permitAll()
             .pathMatchers(HttpMethod.GET, getRoutes).permitAll()
             .anyExchange().authenticated()
          )
