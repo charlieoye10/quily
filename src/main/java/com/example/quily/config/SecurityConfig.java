@@ -13,6 +13,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
 import org.springframework.security.web.server.authentication.ServerAuthenticationConverter;
 
+import static com.example.quily.router.UserRouter.*;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
@@ -29,13 +30,13 @@ class SecurityConfig {
       authenticationWebFilter.setServerAuthenticationConverter(authenticationConverter);
 
       String[] postRoutes = {
-         "/api/auth/login",
-         "/api/auth/signup",
-         "/api/auth/sendForgotPasswordVerifyEmail",
-         "/api/auth/forgotPassword"
+         SIGNUP_URL,
+         LOGIN_URL,
+         SEND_FORGET_PASSWORD_URL,
+         FORGOT_PASSWORD_URL
       };
 
-      String[] getRoutes = {"/api/auth/confirm-account"};
+      String[] getRoutes = {CONFIRM_ACCOUNT_URL};
 
       return http
          .authorizeExchange(exchanges -> exchanges
