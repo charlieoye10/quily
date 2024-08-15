@@ -17,7 +17,7 @@ public class UserRouter {
    private static final String LOGIN_URL = "/api/auth/login";
    private static final String RESET_PASSWORD = "/api/auth/resetPassword";
    private static final String SEND_FORGET_PASSWORD = "/api/auth/sendForgotPasswordVerifyEmail";
-   private static final String RESET_FORGOT_PASSWORD = "api/auth/resetForgotPassword";
+   private static final String FORGOT_PASSWORD = "api/auth/forgotPassword";
 
    @Autowired
    public UserRouter(UserHandler userHandler) {
@@ -32,7 +32,7 @@ public class UserRouter {
          .andRoute(RequestPredicates.POST(LOGIN_URL), userHandler::login)
          .andRoute(RequestPredicates.POST(RESET_PASSWORD), userHandler::resetPassword)
          .andRoute(RequestPredicates.POST(SEND_FORGET_PASSWORD), userHandler::verifyEmailForForgotPassword)
-         .andRoute(RequestPredicates.POST(RESET_FORGOT_PASSWORD), userHandler::resetForgotPassword);
+         .andRoute(RequestPredicates.POST(FORGOT_PASSWORD), userHandler::forgotPassword);
 
    }
 }

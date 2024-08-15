@@ -101,9 +101,9 @@ public class UserHandler {
          );
    }
 
-   public Mono<ServerResponse> resetForgotPassword(ServerRequest serverRequest) {
+   public Mono<ServerResponse> forgotPassword(ServerRequest serverRequest) {
       return serverRequest.bodyToMono(ForgetPasswordRequest.class)
-         .flatMap(req -> userService.resetForgotPassword(req)
+         .flatMap(req -> userService.forgotPassword(req)
             .flatMap(message->
                ServerResponse.ok()
                    .contentType(MediaType.APPLICATION_JSON)
@@ -113,8 +113,7 @@ public class UserHandler {
    public Mono<ServerResponse> verifyEmailForForgotPassword(ServerRequest serverRequest) {
       return serverRequest.bodyToMono(VerifyEmailForgetPasswordRequest.class)
           .flatMap(req -> userService.sendVerificationLinkForForgotPassword(req)
-             .flatMap(
-                message ->   ServerResponse.ok()
+             .flatMap(message ->ServerResponse.ok()
                    .contentType(MediaType.APPLICATION_JSON)
                    .bodyValue(new ResponseBody<>(HttpStatus.OK.value(), message, null))));
 

@@ -30,6 +30,14 @@ public class UserConstants {
 
    public static final String LOGIN_FAILED_MESSAGE = "Email or password is incorrect. Try again.";
 
+   public static final String SUBJECT_FOR_FORGOT_EMAIL_VERIFY = "Verify Email For Forgot Password!";
+
+   public static final String SUBJECT_FOR_REGISTRATION = "Complete Registration!";
+
+   public static final String TEXT_FOR_REGISTRATION_EMAIL = "To confirm your account, please click on the link below.\n";
+
+   public static final String TEXT_FOR_FORGOT_PASSWORD_EMAIL = "A password change has been requested for your account. If this was you, please use the link below to reset your password.\n";
+
    public static final String SqlQueryToCallGetUserProcedure = "CALL get_user_by_email(:email)";
 
    public static final String SqlQueryToCallCreateUserProcedure = "CALL create_user(:email, :user_name, :password, :is_active)";
@@ -37,12 +45,4 @@ public class UserConstants {
    public static final String SqlQueryToCallMakeUserActiveProcedure = "CALL make_user_active(:email)";
 
    public static final String SqlQueryToResetPassword = "CALL reset_password(:email, :password)";
-
-   public static final String SUBJECTFORFORGOTEMAILVERIFY = "Verify Email For Forgot Password!";
-
-   public static final String SUBJECTFORREGISTRATION = "Complete Registration!";
-
-   public static final String TEXTFORREGISTRATIONEMAIL = "To confirm your account, please click here:";
-
-   public static final String TEXTFORFORGOTPASSWORDEMAIL = "A password change has been requested for your account. If this was you, please use the link below to reset your password.";
 }

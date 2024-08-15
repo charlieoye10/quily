@@ -82,8 +82,8 @@ public class UserService {
       emailConfirmationTokenDAO.sendEmail(
          user,
          tokenKey,
-         UserConstants.SUBJECTFORREGISTRATION,
-         UserConstants.TEXTFORREGISTRATIONEMAIL,
+         UserConstants.SUBJECT_FOR_REGISTRATION,
+         UserConstants.TEXT_FOR_REGISTRATION_EMAIL,
          ShortLinkConstants.EMAIL_VERIFICATION_URL
       );
       return null;
@@ -93,13 +93,12 @@ public class UserService {
       emailConfirmationTokenDAO.sendEmail(
          user,
          tokenKey,
-         UserConstants.SUBJECTFORFORGOTEMAILVERIFY,
-         UserConstants.TEXTFORFORGOTPASSWORDEMAIL,
+         UserConstants.SUBJECT_FOR_FORGOT_EMAIL_VERIFY,
+         UserConstants.TEXT_FOR_FORGOT_PASSWORD_EMAIL,
          ShortLinkConstants.PASSWORD_VERIFICATION_URL
       );
       return null;
    }
-
 
    private Mono<SignUpResponse> processVerificationEmail(String token, EmailConfirmationToken emailConfirmationToken) {
       Mono<Long> activatedUser = userRepository.makeUserActive(emailConfirmationToken.getUserEmail());
@@ -172,11 +171,14 @@ public class UserService {
          });
    }
 
-   public Mono<String> resetForgotPassword(ForgetPasswordRequest req) {
+   public Mono<String> forgotPassword(ForgetPasswordRequest req) {
       return emailTokenService.findByToken(req.getToken())
          .flatMap(token -> userRepository
             .resetPasswordByEmail(token.getUserEmail(), passwordEncoder.encode(req.getPassword()))
-            .flatMap(updatePassword -> Mono.just(UserConstants.PASSWORD_RESET_SUCCESSFULLY))
+            .flatMap(updatePassword -> emailTokenService.deleteByToken(req.getToken())
+               .flatMap(deletedToken -> Mono.just(UserConstants.PASSWORD_RESET_SUCCESSFULLY))
+               .switchIfEmpty(Mono.error(new InternalServerError(COMMON_INTERNAL_SERVER_MESSAGE)))
+            )
             .switchIfEmpty(Mono.error(new InternalServerError(COMMON_INTERNAL_SERVER_MESSAGE)))
          )
          .switchIfEmpty(Mono.error(new BadRequestException(UserConstants.TOKEN_DOES_NOT_EXIST)));
@@ -197,7 +199,7 @@ public class UserService {
                         user,
                         false
                      )
-                  );
+                  ).switchIfEmpty(Mono.error(new InternalServerError(COMMON_INTERNAL_SERVER_MESSAGE)));
             })
          )
          .switchIfEmpty(Mono.error(new BadRequestException(

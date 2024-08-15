@@ -28,7 +28,8 @@ public class EmailConfirmationTokenDAO {
       SimpleMailMessage mailMessage = new SimpleMailMessage();
       mailMessage.setTo(user.getEmail());
       mailMessage.setSubject(subject);
-      mailMessage.setText(link + token);
+      mailMessage.setText(text +
+         link + token);
       javaMailSender.send(mailMessage);
    }
 
