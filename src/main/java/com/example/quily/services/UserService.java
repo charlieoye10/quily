@@ -137,7 +137,6 @@ public class UserService {
       return emailTokenService.findByToken(token)
          .flatMap(confirmedToken -> {
             Duration tokenAge = Duration.between(confirmedToken.getUpdateTime(), ZonedDateTime.now());
-
             if (tokenAge.toMinutes() > EMAIL_VERIFICATION_TOKEN_AGE) {
                return userRepository.findUserByEmail(confirmedToken.getUserEmail())
                   .flatMap(this::sendEmailVerificationLink)

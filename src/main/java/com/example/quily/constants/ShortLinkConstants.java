@@ -4,6 +4,7 @@ public class ShortLinkConstants {
    public static final String BASE_URL = "https://quily/";
    public static final String LOCALHOST_URL = "http://localhost:8081/";
    public static final String FE_LOCALHOST_URL = "http://localhost:3000/";
+   public static final String FE_LOGIN_URL = FE_LOCALHOST_URL + "login";
    public static final String EMAIL_VERIFICATION_URL = String.join("", LOCALHOST_URL, "api/auth/confirm-account?token=");
    public static final String PASSWORD_VERIFICATION_URL = String.join("", FE_LOCALHOST_URL, "api/auth/confirm-forgot-password?token=");
 
