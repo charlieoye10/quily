@@ -82,8 +82,8 @@ public class UserService {
       emailConfirmationTokenDAO.sendEmail(
          user,
          tokenKey,
-         "Complete Registration!",
-         "To confirm your account, please click here:",
+         UserConstants.SUBJECTFORREGISTRATION,
+         UserConstants.TEXTFORREGISTRATIONEMAIL,
          ShortLinkConstants.EMAIL_VERIFICATION_URL
       );
       return null;
@@ -93,8 +93,8 @@ public class UserService {
       emailConfirmationTokenDAO.sendEmail(
          user,
          tokenKey,
-         "Verify Email For Forgot Password!",
-         "A password change has been requested for your account. If this was you, please use the link below to reset your password.",
+         UserConstants.SUBJECTFORFORGOTEMAILVERIFY,
+         UserConstants.TEXTFORFORGOTPASSWORDEMAIL,
          ShortLinkConstants.PASSWORD_VERIFICATION_URL
       );
       return null;

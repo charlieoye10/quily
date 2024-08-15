@@ -38,6 +38,11 @@ public class UserConstants {
 
    public static final String SqlQueryToResetPassword = "CALL reset_password(:email, :password)";
 
-   public static final String SqlQueryToForgotPassword = "CALL forgot_password(:email, :password)";
+   public static final String SUBJECTFORFORGOTEMAILVERIFY = "Verify Email For Forgot Password!";
 
+   public static final String SUBJECTFORREGISTRATION = "Complete Registration!";
+
+   public static final String TEXTFORREGISTRATIONEMAIL = "To confirm your account, please click here:";
+
+   public static final String TEXTFORFORGOTPASSWORDEMAIL = "A password change has been requested for your account. If this was you, please use the link below to reset your password.";
 }

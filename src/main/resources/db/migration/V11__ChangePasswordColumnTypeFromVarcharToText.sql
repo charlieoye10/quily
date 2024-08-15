@@ -1,1 +1,0 @@
-ALTER TABLE Quily.users MODIFY COLUMN password TEXT;
