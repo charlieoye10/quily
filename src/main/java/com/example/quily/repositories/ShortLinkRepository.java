@@ -1,5 +1,6 @@
 package com.example.quily.repositories;
 
+import com.example.quily.exception.BadRequestException;
 import com.example.quily.exception.EntityAlreadyExistException;
 import com.example.quily.model.ShortLink;
 import com.example.quily.util.CommonUtil;
@@ -47,4 +48,18 @@ public class ShortLinkRepository {
                return Mono.error(new EntityAlreadyExistException(LINK_ALREADY_USED_MESSAGE));
          });
    }
+
+   public Mono<String> deleteShortLink(String shortedLink, String userEmail) {
+      return client.sql(SqlQueryToCallDeletedShortLinkProcedure)
+         .bind(SHORTED_LINK, shortedLink)
+         .bind(USER_EMAIL, userEmail)
+         .fetch()
+         .rowsUpdated()
+         .flatMap(rowsUpdated ->
+            rowsUpdated > 0
+               ? Mono.just(SHORT_LINK_DELETED_MESSAGE)
+               : Mono.error(new BadRequestException(SHORT_LINK_DOES_NOT_EXIST_MESSAGE))
+         );
+   }
+
 }

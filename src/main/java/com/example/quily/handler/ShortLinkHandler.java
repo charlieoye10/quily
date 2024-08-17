@@ -67,4 +67,13 @@ public class ShortLinkHandler {
             new ResponseBody<>(HttpStatus.BAD_REQUEST.value(), errorMessage, null)
          );
    }
+
+   public Mono<ServerResponse> deleteShortLink(ServerRequest serverRequest)
+   {
+      String shortLink = serverRequest.pathVariable("shortLink");
+      return shortLinkService.deleteShortLink(shortLink)
+         .flatMap(message ->ServerResponse.ok()
+         .contentType(MediaType.APPLICATION_JSON)
+         .bodyValue(new ResponseBody<>(HttpStatus.OK.value(), message, null)));
+   }
 }
