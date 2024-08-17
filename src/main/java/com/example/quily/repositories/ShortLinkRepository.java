@@ -58,7 +58,7 @@ public class ShortLinkRepository {
          .flatMap(rowsUpdated ->
             rowsUpdated > 0
                ? Mono.just(SHORT_LINK_DELETED_MESSAGE)
-               : Mono.error(new BadRequestException(SHORT_LINK_DOES_NOT_EXIST_MESSAGE))
+               : Mono.error(new ResourceNotFoundException(SHORT_LINK_DOES_NOT_EXIST_MESSAGE))
          );
    }
 
