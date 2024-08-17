@@ -1,8 +1,10 @@
 package com.example.quily.handler;
 
 import com.example.quily.constants.ShortLinkConstants;
+import com.example.quily.constants.UserConstants;
 import com.example.quily.converter.ShortLinkConverter;
 import com.example.quily.dao.ShortLinkDAO;
+import com.example.quily.exception.BadRequestException;
 import com.example.quily.request.CreateShortLinkRequest;
 import com.example.quily.response.ResponseBody;
 import com.example.quily.response.ShortLinkResponse;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 @Component
 public class ShortLinkHandler {
@@ -69,10 +73,14 @@ public class ShortLinkHandler {
    }
 
    public Mono<ServerResponse> deleteShortLink(ServerRequest serverRequest) {
-      String shortLink = serverRequest.pathVariable("shortLink");
-      return shortLinkService.deleteShortLink(shortLink)
+    final Optional<String> shortLinkUrlOpt = serverRequest.queryParam("shortLink");
+      final String errorMessage = ShortLinkConstants.SHORT_LINK_DOES_NOT_PASSED;
+      return shortLinkUrlOpt.map(shortLink ->
+         shortLinkService.deleteShortLink(shortLink)
          .flatMap(message -> ServerResponse.ok()
          .contentType(MediaType.APPLICATION_JSON)
-         .bodyValue(new ResponseBody<>(HttpStatus.OK.value(), message, null)));
+         .bodyValue(new ResponseBody<>(HttpStatus.OK.value(), message, null))))
+         .orElseGet(() -> Mono.error(new BadRequestException(errorMessage)));
+
    }
 }

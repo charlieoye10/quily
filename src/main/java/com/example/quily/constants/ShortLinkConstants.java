@@ -16,6 +16,7 @@ public class ShortLinkConstants {
    public static final String CUSTOM_ALIAS_PATTERN_REGEX = "^[0-9A-Za-z_-]+$";
    public static final String SHORT_LINK_DELETED_MESSAGE = "Link Deleted Successfully";
    public static final String SHORT_LINK_DOES_NOT_EXIST_MESSAGE = "Short Link does not exist";
+   public static final String SHORT_LINK_DOES_NOT_PASSED = "Short link does not passed in parameter";
 
    public static final String SqlQueryToCallGetShortLinkProcedure = "CALL get_short_link_by_url(:shorted_link)";
 
