@@ -25,6 +25,6 @@ public class ShortLinkRouter {
       return RouterFunctions
          .route(RequestPredicates.POST(CREATE_SHORT_LINK_URL), shortLinkHandler::createShortLink)
          .andRoute(RequestPredicates.GET(GET_ORIGINAL_LINK_URL), shortLinkHandler::getOriginalLink)
-         .andRoute(RequestPredicates.DELETE(DELETE_ORIGINAL_LINK_URL),shortLinkHandler::deleteShortLink);
+         .andRoute(RequestPredicates.DELETE(DELETE_ORIGINAL_LINK_URL), shortLinkHandler::deleteShortLink);
    }
 }
