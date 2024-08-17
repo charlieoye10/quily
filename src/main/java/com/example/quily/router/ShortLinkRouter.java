@@ -14,7 +14,7 @@ public class ShortLinkRouter {
    private final ShortLinkHandler shortLinkHandler;
    private static final String CREATE_SHORT_LINK_URL = "/api/shortLink/create";
    private static final String GET_ORIGINAL_LINK_URL = "/{id:(?!api).+}";
-   private static final String DELETE_ORIGINAL_LINK_URL = "/api/deleteShortLink/{shortLink}";
+   private static final String DELETE_ORIGINAL_LINK_URL = "/api/shortLink/deleteShortLink/{shortLink}";
    @Autowired
    public ShortLinkRouter(ShortLinkHandler shortLinkHandler) {
       this.shortLinkHandler = shortLinkHandler;
