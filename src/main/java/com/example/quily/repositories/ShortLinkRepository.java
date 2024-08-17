@@ -2,6 +2,7 @@ package com.example.quily.repositories;
 
 import com.example.quily.exception.BadRequestException;
 import com.example.quily.exception.EntityAlreadyExistException;
+import com.example.quily.exception.ResourceNotFoundException;
 import com.example.quily.model.ShortLink;
 import com.example.quily.util.CommonUtil;
 import com.example.quily.util.ShortLinkUtil;

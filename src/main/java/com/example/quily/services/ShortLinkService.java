@@ -1,7 +1,6 @@
 package com.example.quily.services;
 
 import com.example.quily.constants.ShortLinkConstants;
-import com.example.quily.exception.InternalServerError;
 import com.example.quily.model.KeyIndices;
 import com.example.quily.model.ShortLink;
 import com.example.quily.repositories.ShortLinkRepository;
@@ -11,10 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
-
 import java.util.Optional;
 
-import static com.example.quily.constants.CommonConstants.COMMON_INTERNAL_SERVER_MESSAGE;
 
 @Service
 @Component
@@ -67,7 +64,6 @@ public class ShortLinkService {
       return userDetailsService.getLoggedInUser()
          .flatMap(userDetails ->
             shortLinkRepository.deleteShortLink(shortedLink, userDetails.getUsername())
-               .switchIfEmpty(Mono.error(new InternalServerError(COMMON_INTERNAL_SERVER_MESSAGE)))
          );
    }
 
