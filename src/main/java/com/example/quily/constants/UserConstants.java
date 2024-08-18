@@ -22,6 +22,8 @@ public class UserConstants {
 
    public static final String USER_DOES_NOT_EXIST_MESSAGE = "User does not exist with %s email";
 
+   public static final String USER_EXIST_WITH_EMAIL = "User with email %s already exists. Please check in your email";
+
    public static final String USER_NOT_FOUND_MESSAGE = "User not found on token validation";
 
    public static final String TOKEN_DOES_NOT_EXIST = "The token does not exist";
