@@ -27,6 +27,7 @@ import java.time.ZonedDateTime;
 
 import static com.example.quily.constants.CommonConstants.COMMON_INTERNAL_SERVER_MESSAGE;
 import static com.example.quily.constants.CommonConstants.EMAIL_VERIFICATION_TOKEN_AGE;
+import static com.example.quily.constants.UserConstants.USER_EXIST_WITH_EMAIL;
 
 @Service
 public class UserService {
@@ -109,13 +110,9 @@ public class UserService {
          .switchIfEmpty(Mono.error(new InternalServerError(COMMON_INTERNAL_SERVER_MESSAGE)));
    }
 
-   public Mono<User> createUser(User user) {
+   public Mono<Object> createUser(User user) {
       return userRepository.findUserByEmail(user.getEmail())
-         .flatMap(dbUser -> {
-            if (dbUser.isActive())
-               return Mono.error(new EntityAlreadyExistException("User with email " + user.getEmail() + " already exist"));
-            else return Mono.just(dbUser);
-         })
+         .flatMap(dbUser -> Mono.error(new EntityAlreadyExistException(String.format(USER_EXIST_WITH_EMAIL,user.getEmail()))))
          .switchIfEmpty(userRepository.createUser(user));
    }
 
