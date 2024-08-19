@@ -2,9 +2,11 @@ package com.example.quily.repositories;
 
 import com.example.quily.exception.BadRequestException;
 import com.example.quily.exception.EntityAlreadyExistException;
+import com.example.quily.exception.InternalServerError;
 import com.example.quily.exception.ResourceNotFoundException;
 import com.example.quily.model.ShortLink;
 import com.example.quily.response.ShortLinkResponse;
+import com.example.quily.request.UpdateShortLinkRequest;
 import com.example.quily.util.CommonUtil;
 import com.example.quily.util.ShortLinkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static com.example.quily.constants.ColumnNameConstants.*;
+import static com.example.quily.constants.CommonConstants.COMMON_INTERNAL_SERVER_MESSAGE;
 import static com.example.quily.constants.ShortLinkConstants.*;
 import static com.example.quily.util.CommonUtil.parseToShortLinkResponse;
 
@@ -74,4 +77,17 @@ public class ShortLinkRepository {
          .all()
          .map(CommonUtil::parseToShortLinkResponse);
    }
+
+   public Mono<String> updateShortLink(Long id, String shortedLink, String originalLink) {
+      return client.sql(SqlQueryToUpdateShortLinkProcedure)
+         .bind("id", id)
+         .bind("shorted_link", shortedLink)
+         .bind("original_link", originalLink)
+         .fetch()
+         .rowsUpdated()
+         .flatMap(result -> result > 0
+            ? Mono.just(shortedLink)
+            : Mono.error(new InternalServerError(COMMON_INTERNAL_SERVER_MESSAGE)));
+   }
+
 }
