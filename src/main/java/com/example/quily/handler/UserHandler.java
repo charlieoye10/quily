@@ -9,6 +9,7 @@ import com.example.quily.model.User;
 import com.example.quily.request.*;
 import com.example.quily.response.LoginResponse;
 import com.example.quily.response.ResponseBody;
+import com.example.quily.response.SignUpResponse;
 import com.example.quily.security.JwtUtil;
 import com.example.quily.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,10 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
 import java.util.Optional;
 
+import static com.example.quily.constants.ShortLinkConstants.FE_LOGIN_URL;
 import static com.example.quily.constants.UserConstants.LOGIN_FAILED_MESSAGE;
 
 @Component
@@ -36,6 +39,19 @@ public class UserHandler {
       this.userDao = userDao;
       this.userSignupConverter = userSignupConverter;
       this.jwtUtil = jwtUtil;
+   }
+
+   private Mono<ServerResponse> handleSignupResponseAfterEmailValidation(SignUpResponse signUpResponse) {
+      if (signUpResponse.isResendMail) {
+         return ServerResponse.ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(
+               userSignupConverter.getResponseFromModel(signUpResponse)
+            );
+      }
+      return ServerResponse.status(HttpStatus.FOUND)
+         .location(URI.create(FE_LOGIN_URL))
+         .build();
    }
 
    public Mono<ServerResponse> signUp(ServerRequest request) {
@@ -54,13 +70,8 @@ public class UserHandler {
       final String errorMessage = UserConstants.VERIFICATION_FAILED_MESSAGE;
       final Optional<String> tokenOpt = serverRequest.queryParam("token");
       return tokenOpt.map(token -> userService.verifyTokenAndSaveUser(token)
-            .flatMap(signUpResponse -> ServerResponse.ok()
-               .contentType(MediaType.APPLICATION_JSON)
-               .bodyValue(
-                  userSignupConverter.getResponseFromModel(signUpResponse)
-               )))
+            .flatMap(this::handleSignupResponseAfterEmailValidation))
          .orElseGet(() -> Mono.error(new BadRequestException(errorMessage)));
-
    }
 
    public Mono<ServerResponse> login(ServerRequest serverRequest) {
