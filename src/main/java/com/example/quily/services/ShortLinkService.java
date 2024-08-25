@@ -1,6 +1,7 @@
 package com.example.quily.services;
 
 import com.example.quily.constants.ShortLinkConstants;
+import com.example.quily.exception.EntityAlreadyExistException;
 import com.example.quily.exception.InternalServerError;
 import com.example.quily.exception.ResourceNotFoundException;
 import com.example.quily.model.KeyIndices;
@@ -16,10 +17,11 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
+
 import java.util.Optional;
 
 import static com.example.quily.constants.CommonConstants.COMMON_INTERNAL_SERVER_MESSAGE;
-import static com.example.quily.constants.ShortLinkConstants.SHORT_LINK_DOES_NOT_EXIST_MESSAGE;
+import static com.example.quily.constants.ShortLinkConstants.*;
 
 
 @Service
@@ -55,6 +57,13 @@ public class ShortLinkService {
          .defaultIfEmpty(true);
    }
 
+   public Mono<Boolean> isOriginalLinkAvailableForTeam(String originalLink, String email) {
+      return shortLinkRepository
+         .getShortLinkByOriginalLinkAndEmail(originalLink, email)
+         .map(link -> false)
+         .defaultIfEmpty(true);
+   }
+
    public Mono<ShortLink> createSortLinkAndUpdateIndices(ShortLink shortLink, Optional<KeyIndices> currentIndicesOpt) {
       final Mono<ShortLink> savedLink = createShortLink(shortLink);
       final Mono<KeyIndices> updatedIndices = currentIndicesOpt
@@ -82,20 +91,45 @@ public class ShortLinkService {
    public Mono<ShortLinkResponse> updateShortLink(UpdateShortLinkRequest req) {
       return shortLinkRepository.getShortLink(req.getShortedLink())
          .flatMap(shortLink -> {
-            String shortedLink = req.getCustomAlias() != null ? req.getCustomAlias() : req.getShortedLink();
-            String originalLink = req.getOriginalLink() != null ? req.getOriginalLink() : shortLink.getOriginalLink();
+            if (req.getCustomAlias() != null) {
+               return handleShortLinkUpdate(shortLink, req.getCustomAlias());
+            }
+            return handleOriginalLinkUpdate(shortLink, req.getOriginalLink());
+         }).switchIfEmpty(Mono.error(new ResourceNotFoundException(SHORT_LINK_DOES_NOT_EXIST_MESSAGE)));
+   }
 
-            return shortLinkRepository.updateShortLink(shortLink.getId(), shortedLink, originalLink)
-               .flatMap(
-                  updatedShortLink ->
-                     Mono.just(new ShortLinkResponse(
-                        shortLink.getUserEmail(),
-                        originalLink,
-                        shortedLink,
-                        shortLink.getExpiryDate(),
-                        shortLink.getCreationDate()
-                     )));
-         })
-         .switchIfEmpty(Mono.error(new ResourceNotFoundException(SHORT_LINK_DOES_NOT_EXIST_MESSAGE)));
+   private Mono<ShortLinkResponse> handleShortLinkUpdate(ShortLink shortLink, String customAlias) {
+       final String url = String.join("", ShortLinkConstants.LOCALHOST_URL, customAlias);
+      return isCustomAliasAvailable(customAlias)
+         .flatMap(isAvailable -> {
+            if (!isAvailable) {
+               return Mono.error(new EntityAlreadyExistException(CUSTOM_ALIAS_EXISTS_MESSAGE));
+            }
+            return shortLinkRepository.updateShortLink(shortLink.getId(), url, shortLink.getOriginalLink())
+               .map(updatedShortLink -> new ShortLinkResponse(
+                  shortLink.getUserEmail(),
+                  shortLink.getOriginalLink(),
+                  url,
+                  shortLink.getExpiryDate(),
+                  shortLink.getCreationDate()
+               ));
+         });
+   }
+
+   private Mono<ShortLinkResponse> handleOriginalLinkUpdate(ShortLink shortLink, String originalLink) {
+      return isOriginalLinkAvailableForTeam(originalLink, shortLink.getUserEmail())
+         .flatMap(isAvailable -> {
+            if (!isAvailable) {
+               return Mono.error(new EntityAlreadyExistException(LINK_ALREADY_USED_MESSAGE));
+            }
+            return shortLinkRepository.updateShortLink(shortLink.getId(), shortLink.getShortedLink(), originalLink)
+               .map(updatedShortLink -> new ShortLinkResponse(
+                  shortLink.getUserEmail(),
+                  originalLink,
+                  shortLink.getShortedLink(),
+                  shortLink.getExpiryDate(),
+                  shortLink.getCreationDate()
+               ));
+         });
    }
 }
