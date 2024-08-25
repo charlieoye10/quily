@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ShortLinkResponse {
-    private String userID;
+    private String userEmail;
     private String originalLink;
     private String shortedLink;
     private String expiryDate;

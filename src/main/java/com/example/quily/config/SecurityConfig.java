@@ -13,28 +13,47 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
 import org.springframework.security.web.server.authentication.ServerAuthenticationConverter;
 
+import static com.example.quily.router.UserRouter.*;
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableWebFluxSecurity
 class SecurityConfig {
 
    @Bean
-   SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http,
-                                                    ReactiveAuthenticationManager authenticationManager,
-                                                    ServerAuthenticationConverter authenticationConverter) {
+   SecurityWebFilterChain springSecurityFilterChain(
+      ServerHttpSecurity http,
+      ReactiveAuthenticationManager authenticationManager,
+      ServerAuthenticationConverter authenticationConverter) {
+
       AuthenticationWebFilter authenticationWebFilter = new AuthenticationWebFilter(authenticationManager);
       authenticationWebFilter.setServerAuthenticationConverter(authenticationConverter);
 
+      String[] postRoutes = {
+         SIGNUP_URL,
+         LOGIN_URL,
+         SEND_FORGET_PASSWORD_URL
+      };
+
+      String[] putRoutes = {
+         FORGOT_PASSWORD_URL
+      };
+
+      String[] getRoutes = {CONFIRM_ACCOUNT_URL};
+
       return http
          .authorizeExchange(exchanges -> exchanges
-            .pathMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/signup").permitAll()
-            .pathMatchers(HttpMethod.GET, "/api/auth/confirm-account").permitAll()
+            .pathMatchers(HttpMethod.OPTIONS).permitAll()
+            .pathMatchers(HttpMethod.POST, postRoutes).permitAll()
+            .pathMatchers(HttpMethod.PUT, putRoutes).permitAll()
+            .pathMatchers(HttpMethod.GET, getRoutes).permitAll()
             .anyExchange().authenticated()
          )
          .addFilterAt(authenticationWebFilter, SecurityWebFiltersOrder.AUTHENTICATION)
          .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
          .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
          .csrf(ServerHttpSecurity.CsrfSpec::disable)
-         .cors(ServerHttpSecurity.CorsSpec::disable)
+         .cors(withDefaults())
          .build();
    }
 

@@ -4,10 +4,11 @@ import com.example.quily.model.User;
 import com.example.quily.request.SignUpRequest;
 import com.example.quily.response.ResponseBody;
 import com.example.quily.response.SignUpResponse;
-import com.example.quily.constants.UserConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import static com.example.quily.constants.UserConstants.*;
 
 @Component
 public class UserSignupConverter implements Converter<SignUpRequest, SignUpResponse, User> {
@@ -32,7 +33,10 @@ public class UserSignupConverter implements Converter<SignUpRequest, SignUpRespo
    }
 
    public ResponseBody<SignUpResponse> getResponseFromModel(SignUpResponse signUpResponse) {
-      final String message = UserConstants.USER_CREATED_MESSAGE;
-      return new ResponseBody<>(200, message, signUpResponse);
+      if(signUpResponse.isResendMail)
+         return new ResponseBody<>(200, RESEND_VERIFICATION_LINK_MESSAGE, signUpResponse);
+      else
+       return new ResponseBody<>(200, USER_CREATED_MESSAGE, signUpResponse);
    }
+
 }

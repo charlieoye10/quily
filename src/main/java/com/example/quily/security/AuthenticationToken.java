@@ -6,8 +6,11 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 
 public class AuthenticationToken extends AbstractAuthenticationToken {
-   public AuthenticationToken(Collection<? extends GrantedAuthority> authorities) {
+   private final Object principal;
+
+   public AuthenticationToken(Collection<? extends GrantedAuthority> authorities, Object principal) {
       super(authorities);
+      this.principal = principal;
    }
 
    public void setUserAuthenticated() {
@@ -21,6 +24,6 @@ public class AuthenticationToken extends AbstractAuthenticationToken {
 
    @Override
    public Object getPrincipal() {
-      return null;
+      return principal;
    }
 }

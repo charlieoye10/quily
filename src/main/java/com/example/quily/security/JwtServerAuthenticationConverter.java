@@ -39,6 +39,6 @@ public class JwtServerAuthenticationConverter implements ServerAuthenticationCon
       return userDetailsService.findByUsername(userEmail)
          .switchIfEmpty(Mono.error(new ResourceNotFoundException(USER_NOT_FOUND_MESSAGE)))
          .filter(userDetails -> jwtUtil.validateToken(token, userDetails.getUsername()))
-         .map(userDetails -> new AuthenticationToken(Collections.emptyList()));
+         .map(userDetails -> new AuthenticationToken(Collections.emptyList(), userDetails));
    }
 }

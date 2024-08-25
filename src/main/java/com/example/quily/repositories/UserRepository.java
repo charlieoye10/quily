@@ -38,6 +38,14 @@ public class UserRepository {
          .thenReturn(user);
    }
 
+   public Mono<Long> resetPasswordByEmail(String email, String password) {
+      return client.sql(SqlQueryToResetPassword)
+         .bind(EMAIL, email)
+         .bind(PASSWORD,password)
+         .fetch()
+         .rowsUpdated();
+   }
+
    public Mono<Long> makeUserActive(String email) {
       return client.sql(SqlQueryToCallMakeUserActiveProcedure)
          .bind(EMAIL, email)

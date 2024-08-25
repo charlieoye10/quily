@@ -6,7 +6,6 @@ import com.example.quily.request.KeyGeneratorRequest;
 import com.example.quily.response.KeyGeneratorResponse;
 import com.example.quily.response.ResponseBody;
 import com.example.quily.services.KeyGeneratorService;
-import com.example.quily.constants.KeyGeneratorConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,6 +13,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+
+import static com.example.quily.constants.KeyGeneratorConstants.GREATER_INDICES_FOUND_MESSAGE;
 
 @Component
 public class KeyGeneratorHandler {
@@ -55,12 +56,11 @@ public class KeyGeneratorHandler {
    }
 
    private Mono<ServerResponse> handleIfGreaterIndicesFound() {
-      final String errorMessage = KeyGeneratorConstants.GREATER_INDICES_FOUND_MESSAGE;
       return ServerResponse.badRequest()
          .contentType(MediaType.APPLICATION_JSON)
          .bodyValue(new ResponseBody<>(
-            HttpStatus.BAD_REQUEST.value()
-            , errorMessage,
+            HttpStatus.BAD_REQUEST.value(),
+            GREATER_INDICES_FOUND_MESSAGE,
             null
          ));
    }

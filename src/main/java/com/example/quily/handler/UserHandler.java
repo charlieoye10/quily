@@ -1,14 +1,15 @@
 package com.example.quily.handler;
 
+import com.example.quily.metadata.LoginResponseData;
 import com.example.quily.constants.UserConstants;
 import com.example.quily.converter.UserSignupConverter;
 import com.example.quily.dao.UserDao;
 import com.example.quily.exception.BadRequestException;
 import com.example.quily.model.User;
-import com.example.quily.request.LoginRequest;
-import com.example.quily.request.SignUpRequest;
+import com.example.quily.request.*;
 import com.example.quily.response.LoginResponse;
 import com.example.quily.response.ResponseBody;
+import com.example.quily.response.SignUpResponse;
 import com.example.quily.security.JwtUtil;
 import com.example.quily.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,10 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
 import java.util.Optional;
 
+import static com.example.quily.constants.ShortLinkConstants.FE_LOGIN_URL;
 import static com.example.quily.constants.UserConstants.LOGIN_FAILED_MESSAGE;
 
 @Component
@@ -38,12 +41,25 @@ public class UserHandler {
       this.jwtUtil = jwtUtil;
    }
 
+   private Mono<ServerResponse> handleSignupResponseAfterEmailValidation(SignUpResponse signUpResponse) {
+      if (signUpResponse.isResendMail) {
+         return ServerResponse.ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(
+               userSignupConverter.getResponseFromModel(signUpResponse)
+            );
+      }
+      return ServerResponse.status(HttpStatus.FOUND)
+         .location(URI.create(FE_LOGIN_URL))
+         .build();
+   }
+
    public Mono<ServerResponse> signUp(ServerRequest request) {
       return request.bodyToMono(SignUpRequest.class)
          .flatMap(userDao::processEmailVerification)
          .flatMap(resString -> {
             ResponseBody<String> responseBody =
-               new ResponseBody<>(HttpStatus.OK.value(), "", resString);
+               new ResponseBody<>(HttpStatus.OK.value(), resString);
             return ServerResponse.ok()
                .contentType(MediaType.APPLICATION_JSON)
                .bodyValue(responseBody);
@@ -54,13 +70,8 @@ public class UserHandler {
       final String errorMessage = UserConstants.VERIFICATION_FAILED_MESSAGE;
       final Optional<String> tokenOpt = serverRequest.queryParam("token");
       return tokenOpt.map(token -> userService.verifyTokenAndSaveUser(token)
-            .flatMap(signUpResponse -> ServerResponse.ok()
-               .contentType(MediaType.APPLICATION_JSON)
-               .bodyValue(
-                  userSignupConverter.getResponseFromModel(signUpResponse)
-               )))
+            .flatMap(this::handleSignupResponseAfterEmailValidation))
          .orElseGet(() -> Mono.error(new BadRequestException(errorMessage)));
-
    }
 
    public Mono<ServerResponse> login(ServerRequest serverRequest) {
@@ -78,14 +89,45 @@ public class UserHandler {
    }
 
    private Mono<ServerResponse> handleSuccessLogin(User user) {
+      LoginResponseData loginResponseData = new LoginResponseData(user.getUserName(),user.getEmail());
       return ServerResponse.ok()
          .contentType(MediaType.APPLICATION_JSON)
          .bodyValue(
             new ResponseBody<>(
                HttpStatus.OK.value(),
-               "",
-               new LoginResponse(jwtUtil.generateToken(user.getEmail()))
+                    new LoginResponse(jwtUtil.generateToken(user.getEmail()), loginResponseData)
             )
          );
    }
+
+   public Mono<ServerResponse> resetPassword(ServerRequest req) {
+      return req.bodyToMono(ResetPasswordRequest.class)
+         .flatMap(resetPasswordRequest ->
+            userService.resetPassword(resetPasswordRequest)
+               .flatMap(message ->
+                  ServerResponse.ok()
+                     .contentType(MediaType.APPLICATION_JSON)
+                     .bodyValue(new ResponseBody<>(HttpStatus.OK.value(), message, null))
+               )
+         );
+   }
+
+   public Mono<ServerResponse> forgotPassword(ServerRequest serverRequest) {
+      return serverRequest.bodyToMono(ForgetPasswordRequest.class)
+         .flatMap(req -> userService.forgotPassword(req)
+            .flatMap(message->
+               ServerResponse.ok()
+                   .contentType(MediaType.APPLICATION_JSON)
+               .bodyValue(new ResponseBody<>(HttpStatus.OK.value(), message, null))));
+   }
+
+   public Mono<ServerResponse> verifyEmailForForgotPassword(ServerRequest serverRequest) {
+      return serverRequest.bodyToMono(VerifyEmailForgetPasswordRequest.class)
+          .flatMap(req -> userService.sendVerificationLinkForForgotPassword(req)
+             .flatMap(message ->ServerResponse.ok()
+                   .contentType(MediaType.APPLICATION_JSON)
+                   .bodyValue(new ResponseBody<>(HttpStatus.OK.value(), message, null))));
+
+   }
+
 }

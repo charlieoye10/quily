@@ -30,7 +30,6 @@ public class EmailVerificationRepository {
    public Mono<EmailConfirmationToken> saveToken(EmailConfirmationToken emailConfirmationToken) {
       return client.sql(SqlQueryToSaveTokenProcedure)
          .bind(CONFIRMATION_TOKEN, emailConfirmationToken.getConfirmationToken())
-         .bind(CREATION_DATE, emailConfirmationToken.getCreatedTime())
          .bind(EMAIL, emailConfirmationToken.getUserEmail())
          .fetch()
          .first().map(row -> emailConfirmationToken);

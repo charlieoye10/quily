@@ -9,7 +9,7 @@ public class ColumnNameConstants {
    public static final String INDEX5 = "index5";
    public static final String INDEX6 = "index6";
 
-   public static final String USER_ID = "user_id";
+   public static final String USER_EMAIL = "user_email";
    public static final String ORIGINAL_LINK = "original_link";
    public static final String SHORTED_LINK = "shorted_link";
    public static final String CREATION_DATE = "creation_date";
