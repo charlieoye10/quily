@@ -31,4 +31,6 @@ public class ShortLinkConstants {
 
    public static final String SqlQueryToUpdateShortLinkProcedure =
       "CALL update_short_link(:id, :shorted_link, :original_link)";
+
+   public static final String SqlQueryToCallGetShortLinkByOriginalLinkAndEmailProcedure = "CALL get_short_link_by_original_link_and_email(:original_link, :user_email)";
 }

@@ -90,4 +90,12 @@ public class ShortLinkRepository {
             : Mono.error(new InternalServerError(COMMON_INTERNAL_SERVER_MESSAGE)));
    }
 
+   public Mono<ShortLink> getShortLinkByOriginalLinkAndEmail(String originalLink, String email) {
+      return client.sql(SqlQueryToCallGetShortLinkByOriginalLinkAndEmailProcedure)
+         .bind(ORIGINAL_LINK, originalLink)
+         .bind(USER_EMAIL, email)
+         .fetch()
+         .first()
+         .map(CommonUtil::parseShortLink);
+   }
 }
