@@ -8,6 +8,8 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 @EnableR2dbcRepositories
 public class QuilyApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(QuilyApplication.class, args);
+		SpringApplication app = new SpringApplication(QuilyApplication.class);
+		app.setAdditionalProfiles("github");
+		app.run(args);
 	}
 }
