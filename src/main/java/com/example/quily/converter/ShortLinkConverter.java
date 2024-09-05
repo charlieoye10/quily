@@ -29,13 +29,13 @@ public class ShortLinkConverter implements Converter<CreateShortLinkRequest, Sho
    }
 
    @Override
-   public ResponseBody<ShortLinkResponse> getResponseFromModel(ShortLink shortLink) {
+   public ResponseBody<ShortLinkResponse> getResponseFromModel(ShortLink shortLink, int statusCode, String message) {
       final ShortLinkResponse shortLinkResponse = new ShortLinkResponse(
          shortLink.getUserEmail(),
          shortLink.getOriginalLink(),
          shortLink.getShortedLink(),
          shortLink.getExpiryDate(),
          shortLink.getCreationDate());
-      return new ResponseBody<>(200, SHORT_LINK_CREATED_MESSAGE, shortLinkResponse);
+      return new ResponseBody<>(statusCode, message, shortLinkResponse);
    }
 }

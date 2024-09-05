@@ -110,9 +110,15 @@ public class UserService {
          .switchIfEmpty(Mono.error(new InternalServerError(COMMON_INTERNAL_SERVER_MESSAGE)));
    }
 
-   public Mono<Object> createUser(User user) {
+   public Mono<User> createUser(User user) {
       return userRepository.findUserByEmail(user.getEmail())
-         .flatMap(dbUser -> Mono.error(new EntityAlreadyExistException(String.format(USER_EXIST_WITH_EMAIL,user.getEmail()))))
+         .flatMap(dbUser -> {
+            if (dbUser.isActive()) {
+               return Mono.error(new EntityAlreadyExistException(String.format(USER_EXIST_WITH_EMAIL, user.getEmail())));
+            } else {
+               return Mono.just(dbUser);
+            }
+         })
          .switchIfEmpty(userRepository.createUser(user));
    }
 
@@ -134,7 +140,6 @@ public class UserService {
       return emailTokenService.findByToken(token)
          .flatMap(confirmedToken -> {
             Duration tokenAge = Duration.between(confirmedToken.getUpdateTime(), ZonedDateTime.now());
-
             if (tokenAge.toMinutes() > EMAIL_VERIFICATION_TOKEN_AGE) {
                return userRepository.findUserByEmail(confirmedToken.getUserEmail())
                   .flatMap(this::sendEmailVerificationLink)

@@ -24,4 +24,6 @@ public class ColumnNameConstants {
    public static final String CONFIRMATION_TOKEN = "confirmation_token";
 
    public static final String ROW_UPDATED = "rows_updated";
+   public static final String PAGE_NUMBER = "page_number";
+   public static final String PAGE_SIZE = "page_size";
 }

@@ -4,6 +4,7 @@ import com.example.quily.model.EmailConfirmationToken;
 import com.example.quily.model.KeyIndices;
 import com.example.quily.model.ShortLink;
 import com.example.quily.model.User;
+import com.example.quily.response.ShortLinkResponse;
 
 
 import java.time.LocalDateTime;
@@ -64,5 +65,15 @@ public class CommonUtil {
          return (Boolean) isActiveObj;
       else
          return ((Byte) isActiveObj) != 0;
+   }
+
+   public static ShortLinkResponse parseToShortLinkResponse(Map<String, Object> row) {
+      return new ShortLinkResponse(
+         (String) row.get("user_email"),
+         (String) row.get("original_link"),
+         (String) row.get("shorted_link"),
+         (String) row.get("expiry_date"),
+         (String) row.get("created_time")
+      );
    }
 }
