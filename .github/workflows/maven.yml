@@ -39,6 +39,11 @@ jobs:
       - name: Run Flyway Migrations
         run: mvn flyway:migrate
 
+      - name: Start Spring Boot Application
+        run: mvn spring-boot:run
+        env:
+          SPRING_PROFILES_ACTIVE: github
+
       - name: Run tests
         run: mvn -X test
 
