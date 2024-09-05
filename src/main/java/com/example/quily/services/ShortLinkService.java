@@ -91,6 +91,9 @@ public class ShortLinkService {
    public Mono<ShortLinkResponse> updateShortLink(UpdateShortLinkRequest req) {
       return shortLinkRepository.getShortLink(req.getShortedLink())
          .flatMap(shortLink -> {
+            if (req.getCustomAlias() != null && req.getOriginalLink() != null) {
+               return handleShortLinkAndOriginalLinkUpdate(shortLink, req.getOriginalLink(), req.getCustomAlias());
+            }
             if (req.getCustomAlias() != null) {
                return handleShortLinkUpdate(shortLink, req.getCustomAlias());
             }
@@ -98,8 +101,32 @@ public class ShortLinkService {
          }).switchIfEmpty(Mono.error(new ResourceNotFoundException(SHORT_LINK_DOES_NOT_EXIST_MESSAGE)));
    }
 
+   private Mono<ShortLinkResponse> handleShortLinkAndOriginalLinkUpdate(ShortLink shortLink, String originalLink, String customAlias) {
+      final String url = String.join("", ShortLinkConstants.LOCALHOST_URL, customAlias);
+      return shortLinkRepository.getShortLinkByOriginalLinkCustomAliasAndEmail(originalLink, url, shortLink.getUserEmail())
+         .flatMap(existingShortLink -> {
+            if (existingShortLink.getShortedLink().equals(url) && existingShortLink.getOriginalLink().equals(originalLink)) {
+               return Mono.error(new EntityAlreadyExistException(CUSTOM_ALIAS_AND_SHORT_LINK_EXISTS_MESSAGE));
+            } else if (existingShortLink.getShortedLink().equals(url)) {
+               return Mono.error(new EntityAlreadyExistException(CUSTOM_ALIAS_EXISTS_MESSAGE));
+            } else {
+               return Mono.error(new EntityAlreadyExistException(LINK_ALREADY_USED_MESSAGE));
+            }
+         }).cast(ShortLinkResponse.class)
+         .switchIfEmpty(
+            shortLinkRepository.updateShortLink(shortLink.getId(), url, originalLink)
+               .map(updatedShortLink -> new ShortLinkResponse(
+                  shortLink.getUserEmail(),
+                  originalLink,
+                  customAlias,
+                  shortLink.getExpiryDate(),
+                  shortLink.getCreationDate()
+               ))
+         );
+   }
+
    private Mono<ShortLinkResponse> handleShortLinkUpdate(ShortLink shortLink, String customAlias) {
-       final String url = String.join("", ShortLinkConstants.LOCALHOST_URL, customAlias);
+      final String url = String.join("", ShortLinkConstants.LOCALHOST_URL, customAlias);
       return isCustomAliasAvailable(customAlias)
          .flatMap(isAvailable -> {
             if (!isAvailable) {

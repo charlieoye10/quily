@@ -98,4 +98,14 @@ public class ShortLinkRepository {
          .first()
          .map(CommonUtil::parseShortLink);
    }
+
+   public Mono<ShortLink> getShortLinkByOriginalLinkCustomAliasAndEmail(String originalLink, String customAlias, String email) {
+      return client.sql(SqlQueryToCallGetShortLinkByOriginalLinkAndEmailProcedure)
+         .bind(ORIGINAL_LINK, originalLink)
+         .bind(SHORTED_LINK, customAlias)
+         .bind(USER_EMAIL, email)
+         .fetch()
+         .first()
+         .map(CommonUtil::parseShortLink);
+   }
 }
