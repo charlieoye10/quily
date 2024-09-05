@@ -4,15 +4,18 @@ import com.example.quily.exception.BadRequestException;
 import com.example.quily.exception.EntityAlreadyExistException;
 import com.example.quily.exception.ResourceNotFoundException;
 import com.example.quily.model.ShortLink;
+import com.example.quily.response.ShortLinkResponse;
 import com.example.quily.util.CommonUtil;
 import com.example.quily.util.ShortLinkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static com.example.quily.constants.ColumnNameConstants.*;
 import static com.example.quily.constants.ShortLinkConstants.*;
+import static com.example.quily.util.CommonUtil.parseToShortLinkResponse;
 
 @Repository
 public class ShortLinkRepository {
@@ -37,7 +40,6 @@ public class ShortLinkRepository {
          .bind(COMPARE_LINK, ShortLinkUtil.getOriginalLinkWithoutParams(shortLink))
          .bind(ORIGINAL_LINK, shortLink.getOriginalLink())
          .bind(SHORTED_LINK, shortLink.getShortedLink())
-         .bind(CREATION_DATE, shortLink.getCreationDate())
          .bind(EXPIRY_DATE, shortLink.getExpiryDate())
          .bind(IS_ACTIVE, shortLink.isActive())
          .fetch()
@@ -63,4 +65,13 @@ public class ShortLinkRepository {
          );
    }
 
+   public Flux<ShortLinkResponse> getShortLinks(int pageSize, int pageNumber, String userEmail) {
+      return client.sql(SqlQueryToGetShortLinksProcedure)
+         .bind(PAGE_NUMBER, pageNumber)
+         .bind(PAGE_SIZE, pageSize)
+         .bind(USER_EMAIL, userEmail)
+         .fetch()
+         .all()
+         .map(CommonUtil::parseToShortLinkResponse);
+   }
 }

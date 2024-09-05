@@ -28,7 +28,7 @@ public class UserSignupConverter implements Converter<SignUpRequest, SignUpRespo
    }
 
    @Override
-   public ResponseBody<SignUpResponse> getResponseFromModel(User user) {
+   public ResponseBody<SignUpResponse> getResponseFromModel(User user, int statusCode, String message) {
       return null;
    }
 

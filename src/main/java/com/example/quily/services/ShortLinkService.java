@@ -4,10 +4,12 @@ import com.example.quily.constants.ShortLinkConstants;
 import com.example.quily.model.KeyIndices;
 import com.example.quily.model.ShortLink;
 import com.example.quily.repositories.ShortLinkRepository;
+import com.example.quily.response.ShortLinkResponse;
 import com.example.quily.security.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 import java.util.Optional;
@@ -33,10 +35,9 @@ public class ShortLinkService {
       return shortLinkRepository.createShortLink(shortLink);
    }
 
-   public Mono<String> findOriginalLink(String shortLink) {
+   public Mono<ShortLink> findOriginalLink(String shortLink) {
       return shortLinkRepository
-         .getShortLink(shortLink)
-         .map(ShortLink::getOriginalLink);
+         .getShortLink(shortLink);
    }
 
    public Mono<Boolean> isCustomAliasAvailable(String customAlias) {
@@ -67,4 +68,7 @@ public class ShortLinkService {
          );
    }
 
+   public Flux<ShortLinkResponse> getShortLinks(int pageSize, int pageNumber, String userEmail) {
+      return shortLinkRepository.getShortLinks(pageSize, pageNumber, userEmail);
+   }
 }

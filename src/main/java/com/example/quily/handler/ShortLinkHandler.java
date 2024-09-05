@@ -1,7 +1,6 @@
 package com.example.quily.handler;
 
 import com.example.quily.constants.ShortLinkConstants;
-import com.example.quily.constants.UserConstants;
 import com.example.quily.converter.ShortLinkConverter;
 import com.example.quily.dao.ShortLinkDAO;
 import com.example.quily.exception.BadRequestException;
@@ -18,6 +17,9 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
+
+import static com.example.quily.constants.CommonConstants.PARAMS_VALUE_NOT_PRESENT;
+import static com.example.quily.constants.ShortLinkConstants.SHORT_LINK_CREATED_MESSAGE;
 
 @Component
 public class ShortLinkHandler {
@@ -38,7 +40,7 @@ public class ShortLinkHandler {
             shortLinkDAO.createShortLink(req)
                .flatMap(createdShortLink -> {
                      ResponseBody<ShortLinkResponse> responseBody =
-                        shortLinkConverter.getResponseFromModel(createdShortLink);
+                        shortLinkConverter.getResponseFromModel(createdShortLink, 200, SHORT_LINK_CREATED_MESSAGE);
                      return ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(responseBody);
@@ -50,12 +52,8 @@ public class ShortLinkHandler {
    public Mono<ServerResponse> getOriginalLink(ServerRequest serverRequest) {
       return shortLinkService
          .findOriginalLink(serverRequest.uri().toString())
-         .flatMap(originalLink -> {
-            final ResponseBody<String> responseBody = new ResponseBody<>(
-               HttpStatus.OK.value(),
-               "",
-               originalLink
-            );
+         .flatMap(shortLink -> {
+            final ResponseBody<ShortLinkResponse> responseBody = shortLinkConverter.getResponseFromModel(shortLink, 200, null);
             return ServerResponse.ok()
                .contentType(MediaType.APPLICATION_JSON)
                .bodyValue(responseBody);
@@ -82,5 +80,21 @@ public class ShortLinkHandler {
          .bodyValue(new ResponseBody<>(HttpStatus.OK.value(), message, null))))
          .orElseGet(() -> Mono.error(new BadRequestException(errorMessage)));
 
+   }
+
+   public Mono<ServerResponse> getShortLinks(ServerRequest serverRequest) {
+      final Optional<Integer> pageSize = serverRequest.queryParam("page_size").map(Integer::parseInt);
+      final Optional<Integer> pageNumber = serverRequest.queryParam("page_number").map(Integer::parseInt);
+      final Optional<String> userEmail = serverRequest.queryParam("user_email");
+      boolean allPresent = pageSize.isPresent() && pageNumber.isPresent() && userEmail.isPresent();
+      if (allPresent) {
+         return shortLinkService.getShortLinks(pageSize.get(), pageNumber.get(), userEmail.get())
+            .collectList()
+            .flatMap(shortLinkList -> ServerResponse.ok()
+               .contentType(MediaType.APPLICATION_JSON)
+               .bodyValue(new ResponseBody<>(HttpStatus.OK.value(), null, shortLinkList)));
+      } else {
+         return Mono.error(new BadRequestException(PARAMS_VALUE_NOT_PRESENT));
+      }
    }
 }
