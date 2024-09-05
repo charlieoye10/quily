@@ -37,6 +37,17 @@ jobs:
         env:
           SPRING_PROFILES_ACTIVE: github
 
+      - name: Start Spring Boot Application
+        run: mvn spring-boot:run
+        env:
+          SPRING_PROFILES_ACTIVE: github
+        continue-on-error: false
+
+      - name: Verify Build
+        run: mvn verify -DskipTests=false
+        env:
+          SPRING_PROFILES_ACTIVE: github
+
       - name: Run tests
         run: mvn -X test
 
