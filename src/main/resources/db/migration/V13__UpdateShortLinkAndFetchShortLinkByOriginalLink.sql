@@ -40,10 +40,11 @@ DROP procedure IF EXISTS `get_short_link_by_original_link_custom_alias_and_email
 DELIMITER $$
 USE `Quily`$$
 CREATE PROCEDURE `get_short_link_by_original_link_custom_alias_and_email`(IN original_link_value TEXT,
-IN short_link_value TEXT
+IN short_link_value TEXT,
 IN email_value VARCHAR(255))
 BEGIN
-    SELECT * FROM Quily.short_link where original_link = original_link_value and user_email = email_value or short_link_value = short_link;
+    SELECT * FROM Quily.short_link
+             where original_link = original_link_value and user_email = email_value or shorted_link =  short_link_value;
 END$$
 
 DELIMITER ;
