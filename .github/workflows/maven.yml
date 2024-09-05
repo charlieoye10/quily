@@ -43,6 +43,7 @@ jobs:
         run: mvn spring-boot:run
         env:
           SPRING_PROFILES_ACTIVE: github
+        continue-on-error: false
 
       - name: Run tests
         run: mvn -X test
