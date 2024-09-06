@@ -36,6 +36,8 @@ jobs:
         run: mvn -B package --file pom.xml
         env:
           SPRING_PROFILES_ACTIVE: github
+      - name: Run Flyway Migrations
+        run: mvn flyway:migrate
 
       - name: Run tests
         run: mvn -X test

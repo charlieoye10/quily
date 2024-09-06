@@ -8,6 +8,7 @@ import com.example.quily.response.ShortLinkResponse;
 
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -46,9 +47,10 @@ public class CommonUtil {
          (String) row.get("user_email"),
          (String) row.get("original_link"),
          (String) row.get("shorted_link"),
-         (String) row.get("created_time"),
-         (String) row.get("expiry_date"),
-         convertByteToBoolean(row.get("is_active"))
+         convertUTCToKolkataTimeZone((ZonedDateTime) row.get("creation_date"), "cre"),
+         convertUTCToKolkataTimeZone((ZonedDateTime) row.get("expiry_date"), "exp"),
+         convertByteToBoolean(row.get("is_active")),
+         convertUTCToKolkataTimeZone((ZonedDateTime) row.get("update_time"), "upd")
       );
    }
 
@@ -72,8 +74,24 @@ public class CommonUtil {
          (String) row.get("user_email"),
          (String) row.get("original_link"),
          (String) row.get("shorted_link"),
-         (String) row.get("expiry_date"),
-         (String) row.get("created_time")
+         convertUTCToKolkataTimeZone((ZonedDateTime) row.get("expiry_date"), "ex"),
+         convertUTCToKolkataTimeZone((ZonedDateTime) row.get("creation_date"), "cr"),
+         convertUTCToKolkataTimeZone((ZonedDateTime) row.get("update_time"), "up")
       );
+   }
+
+   public static LocalDateTime convertStringToLocalTimeDate(String dateTime) {
+      if (dateTime == null) {
+         return LocalDateTime.MIN;
+      }
+      return LocalDateTime.parse(dateTime + "T00:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+   }
+
+   public static LocalDateTime convertUTCToKolkataTimeZone(ZonedDateTime utcDateTime, String flag) {
+      if (utcDateTime == null) {
+         return LocalDateTime.MIN;
+      }
+      return utcDateTime.withZoneSameInstant(ZoneId.of("Asia/Kolkata"))
+         .toLocalDateTime();
    }
 }
