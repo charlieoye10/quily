@@ -107,8 +107,8 @@
 				<groupId>org.flywaydb</groupId>
 				<artifactId>flyway-maven-plugin</artifactId>
 				<configuration>
-					<url>jdbc:mysql://localhost:3306/Quily</url>
-					<user>root</user>
+					<url>jdbc:mysql://quily.cdom0k06o7zp.us-east-2.rds.amazonaws.com:3306/Quily</url>
+					<user>admin</user>
 					<password>Nisar#123#</password>
 				</configuration>
 			</plugin>

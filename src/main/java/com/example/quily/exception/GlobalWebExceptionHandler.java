@@ -21,7 +21,6 @@ public class GlobalWebExceptionHandler implements WebExceptionHandler {
 
    @Override
    public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
-      System.out.println(ex.getClass().getSimpleName());
       HttpStatus status =
          switch (ex.getClass().getSimpleName()) {
             case "ResourceNotFoundException" -> HttpStatus.NOT_FOUND;
@@ -32,8 +31,6 @@ public class GlobalWebExceptionHandler implements WebExceptionHandler {
             case "ExpiredJwtException" -> HttpStatus.FORBIDDEN;
             default -> HttpStatus.INTERNAL_SERVER_ERROR;
          };
-
-      System.out.println("error: " + ex);
 
       ResponseBody<String> response = new ResponseBody<>(
          status.value(),
@@ -48,13 +45,11 @@ public class GlobalWebExceptionHandler implements WebExceptionHandler {
 
    private Mono<Void> handleResponse(ServerWebExchange exchange, Throwable ex, ResponseBody<String> response) {
       try {
-         // Add headers to the response
          HttpHeaders headers = exchange.getResponse().getHeaders();
          headers.setAccessControlAllowOrigin("http://localhost:3000");
          headers.setAccessControlAllowMethods(List.of(HttpMethod.GET, HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PATCH)); // Allow specific methods
          headers.setAccessControlAllowHeaders(List.of("Content-Type", "Authorization", "X-Requested-With"));
 
-         // Write the response body
          return exchange.getResponse().writeWith(
             Mono.just(exchange.getResponse().bufferFactory().wrap(
                new ObjectMapper().writeValueAsBytes(response)
