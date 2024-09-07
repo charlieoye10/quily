@@ -12,7 +12,8 @@ BEGIN
 
     UPDATE short_link
     SET shorted_link = shorted_link_value,
-        original_link = original_link_value
+        original_link = original_link_value,
+        update_time = NOW()
     WHERE id = id_value;
 
 END$$
