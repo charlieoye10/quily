@@ -39,9 +39,6 @@ jobs:
       - name: Run Flyway Migrations
         run: mvn flyway:migrate
 
-      - name: Run Flyway Migrations
-        run: mvn flyway:migrate
-
       - name: Run tests
         run: mvn -X test
 

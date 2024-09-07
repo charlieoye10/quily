@@ -80,9 +80,9 @@ public class ShortLinkRepository {
 
    public Mono<String> updateShortLink(Long id, String shortedLink, String originalLink) {
       return client.sql(SqlQueryToUpdateShortLinkProcedure)
-         .bind("id", id)
-         .bind("shorted_link", shortedLink)
-         .bind("original_link", originalLink)
+         .bind(ID, id)
+         .bind(SHORTED_LINK, shortedLink)
+         .bind(ORIGINAL_LINK, originalLink)
          .fetch()
          .rowsUpdated()
          .flatMap(result -> result > 0
