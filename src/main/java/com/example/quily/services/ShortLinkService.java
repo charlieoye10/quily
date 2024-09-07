@@ -118,7 +118,7 @@ public class ShortLinkService {
                .map(updatedShortLink -> new ShortLinkResponse(
                   shortLink.getUserEmail(),
                   originalLink,
-                  customAlias,
+                  url,
                   shortLink.getExpiryDate(),
                   shortLink.getCreationDate()
                ))

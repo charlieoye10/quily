@@ -100,7 +100,7 @@ public class ShortLinkRepository {
    }
 
    public Mono<ShortLink> getShortLinkByOriginalLinkCustomAliasAndEmail(String originalLink, String customAlias, String email) {
-      return client.sql(SqlQueryToCallGetShortLinkByOriginalLinkAndEmailProcedure)
+      return client.sql(SqlQueryToCallGetShortLinkByOriginalLinkCustomerAliasAndEmailProcedure)
          .bind(ORIGINAL_LINK, originalLink)
          .bind(SHORTED_LINK, customAlias)
          .bind(USER_EMAIL, email)
