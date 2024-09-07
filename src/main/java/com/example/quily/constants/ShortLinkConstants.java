@@ -13,11 +13,13 @@ public class ShortLinkConstants {
    public static final String INVALID_URL_MESSAGE = "Looks like the short link is invalid";
 
    public static final String CUSTOM_ALIAS_EXISTS_MESSAGE = "Custom alias already exists";
+   public static final String CUSTOM_ALIAS_AND_SHORT_LINK_EXISTS_MESSAGE = "Custom alias and Short Link already exists";
    public static final String CUSTOM_ALIAS_PATTERN_MESSAGE = "The characters `~,<>;\\':\"/\\\\[]^{}()=+!*@&$?%#| are not allowed";
    public static final String CUSTOM_ALIAS_PATTERN_REGEX = "^[0-9A-Za-z_-]+$";
    public static final String SHORT_LINK_DELETED_MESSAGE = "Link Deleted Successfully";
    public static final String SHORT_LINK_DOES_NOT_EXIST_MESSAGE = "Short Link does not exist";
    public static final String SHORT_LINK_DOES_NOT_PASSED = "Short link does not passed in parameter";
+   public static final String SHORT_LINK_UPDATED_MESSAGE = "Short link updated successfully";
 
    public static final String SqlQueryToCallGetShortLinkProcedure = "CALL get_short_link_by_url(:shorted_link)";
 
@@ -27,4 +29,11 @@ public class ShortLinkConstants {
    public static final String SqlQueryToCallDeletedShortLinkProcedure =
       "CALL delete_short_link(:user_email, :shorted_link)";
    public static final String SqlQueryToGetShortLinksProcedure = "CALL get_short_links(:page_number, :page_size, :user_email)";
+
+   public static final String SqlQueryToUpdateShortLinkProcedure =
+      "CALL update_short_link(:id, :shorted_link, :original_link)";
+
+   public static final String SqlQueryToCallGetShortLinkByOriginalLinkAndEmailProcedure = "CALL get_short_link_by_original_link_and_email(:original_link, :user_email)";
+
+   public static final String SqlQueryToCallGetShortLinkByOriginalLinkCustomerAliasAndEmailProcedure = "CALL get_short_link_by_original_link_custom_alias_and_email(:original_link, :shorted_link, :user_email)";
 }

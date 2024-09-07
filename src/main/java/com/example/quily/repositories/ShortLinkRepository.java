@@ -2,9 +2,11 @@ package com.example.quily.repositories;
 
 import com.example.quily.exception.BadRequestException;
 import com.example.quily.exception.EntityAlreadyExistException;
+import com.example.quily.exception.InternalServerError;
 import com.example.quily.exception.ResourceNotFoundException;
 import com.example.quily.model.ShortLink;
 import com.example.quily.response.ShortLinkResponse;
+import com.example.quily.request.UpdateShortLinkRequest;
 import com.example.quily.util.CommonUtil;
 import com.example.quily.util.ShortLinkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static com.example.quily.constants.ColumnNameConstants.*;
+import static com.example.quily.constants.CommonConstants.COMMON_INTERNAL_SERVER_MESSAGE;
 import static com.example.quily.constants.ShortLinkConstants.*;
 import static com.example.quily.util.CommonUtil.parseToShortLinkResponse;
 
@@ -73,5 +76,36 @@ public class ShortLinkRepository {
          .fetch()
          .all()
          .map(CommonUtil::parseToShortLinkResponse);
+   }
+
+   public Mono<String> updateShortLink(Long id, String shortedLink, String originalLink) {
+      return client.sql(SqlQueryToUpdateShortLinkProcedure)
+         .bind(ID, id)
+         .bind(SHORTED_LINK, shortedLink)
+         .bind(ORIGINAL_LINK, originalLink)
+         .fetch()
+         .rowsUpdated()
+         .flatMap(result -> result > 0
+            ? Mono.just(shortedLink)
+            : Mono.error(new InternalServerError(COMMON_INTERNAL_SERVER_MESSAGE)));
+   }
+
+   public Mono<ShortLink> getShortLinkByOriginalLinkAndEmail(String originalLink, String email) {
+      return client.sql(SqlQueryToCallGetShortLinkByOriginalLinkAndEmailProcedure)
+         .bind(ORIGINAL_LINK, originalLink)
+         .bind(USER_EMAIL, email)
+         .fetch()
+         .first()
+         .map(CommonUtil::parseShortLink);
+   }
+
+   public Mono<ShortLink> getShortLinkByOriginalLinkCustomAliasAndEmail(String originalLink, String customAlias, String email) {
+      return client.sql(SqlQueryToCallGetShortLinkByOriginalLinkCustomerAliasAndEmailProcedure)
+         .bind(ORIGINAL_LINK, originalLink)
+         .bind(SHORTED_LINK, customAlias)
+         .bind(USER_EMAIL, email)
+         .fetch()
+         .first()
+         .map(CommonUtil::parseShortLink);
    }
 }

@@ -1,10 +1,12 @@
 package com.example.quily.handler;
 
 import com.example.quily.constants.ShortLinkConstants;
+import com.example.quily.constants.UserConstants;
 import com.example.quily.converter.ShortLinkConverter;
 import com.example.quily.dao.ShortLinkDAO;
 import com.example.quily.exception.BadRequestException;
 import com.example.quily.request.CreateShortLinkRequest;
+import com.example.quily.request.UpdateShortLinkRequest;
 import com.example.quily.response.ResponseBody;
 import com.example.quily.response.ShortLinkResponse;
 import com.example.quily.services.ShortLinkService;
@@ -21,6 +23,8 @@ import java.util.Optional;
 import static com.example.quily.constants.ColumnNameConstants.*;
 import static com.example.quily.constants.CommonConstants.PARAMS_VALUE_NOT_PRESENT;
 import static com.example.quily.constants.ShortLinkConstants.SHORT_LINK_CREATED_MESSAGE;
+import static com.example.quily.constants.ShortLinkConstants.SHORT_LINK_UPDATED_MESSAGE;
+
 
 @Component
 public class ShortLinkHandler {
@@ -97,5 +101,14 @@ public class ShortLinkHandler {
       } else {
          return Mono.error(new BadRequestException(PARAMS_VALUE_NOT_PRESENT));
       }
+   }
+
+   public Mono<ServerResponse> updateShortLink(ServerRequest serverRequest) {
+      return serverRequest.bodyToMono(UpdateShortLinkRequest.class)
+         .flatMap(req ->
+            shortLinkService.updateShortLink(req)
+               .flatMap(shortLinkResponse -> ServerResponse.ok()
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .bodyValue(new ResponseBody<>(HttpStatus.OK.value(),SHORT_LINK_UPDATED_MESSAGE ,shortLinkResponse ))));
    }
 }
