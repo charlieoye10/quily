@@ -22,8 +22,9 @@ public class ShortLinkConstants {
    public static final String SqlQueryToCallGetShortLinkProcedure = "CALL get_short_link_by_url(:shorted_link)";
 
    public static final String SqlQueryToCallCreateShortLinkProcedure =
-      "CALL create_short_link(:user_email, :original_link, :shorted_link, :creation_date, :expiry_date, :is_active, :compare_link)";
+      "CALL create_short_link(:user_email, :original_link, :shorted_link, :expiry_date, :is_active, :compare_link)";
 
    public static final String SqlQueryToCallDeletedShortLinkProcedure =
       "CALL delete_short_link(:user_email, :shorted_link)";
+   public static final String SqlQueryToGetShortLinksProcedure = "CALL get_short_links(:page_number, :page_size, :user_email)";
 }

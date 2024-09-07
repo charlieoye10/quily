@@ -4,10 +4,11 @@ import com.example.quily.model.ShortLink;
 import com.example.quily.request.CreateShortLinkRequest;
 import com.example.quily.response.ResponseBody;
 import com.example.quily.response.ShortLinkResponse;
-import com.example.quily.util.CommonUtil;
 import org.springframework.stereotype.Component;
 
-import static com.example.quily.constants.ShortLinkConstants.SHORT_LINK_CREATED_MESSAGE;
+import java.time.LocalDateTime;
+
+import static com.example.quily.util.CommonUtil.convertStringToLocalTimeDate;
 
 @Component
 public class ShortLinkConverter implements Converter<CreateShortLinkRequest, ShortLinkResponse, ShortLink> {
@@ -23,19 +24,21 @@ public class ShortLinkConverter implements Converter<CreateShortLinkRequest, Sho
          userEmail,
          createShortLinkRequest.getOriginalLink(),
          shortLink,
-         CommonUtil.getCurrentDateTimeInFormat(),
-         createShortLinkRequest.getExpiryDate(),
-         true);
+         LocalDateTime.now(),
+         convertStringToLocalTimeDate(createShortLinkRequest.getExpiryDate()),
+         true,
+         LocalDateTime.now());
    }
 
    @Override
-   public ResponseBody<ShortLinkResponse> getResponseFromModel(ShortLink shortLink) {
+   public ResponseBody<ShortLinkResponse> getResponseFromModel(ShortLink shortLink, int statusCode, String message) {
       final ShortLinkResponse shortLinkResponse = new ShortLinkResponse(
          shortLink.getUserEmail(),
          shortLink.getOriginalLink(),
          shortLink.getShortedLink(),
          shortLink.getExpiryDate(),
-         shortLink.getCreationDate());
-      return new ResponseBody<>(200, SHORT_LINK_CREATED_MESSAGE, shortLinkResponse);
+         shortLink.getCreationDate(),
+         shortLink.getUpdatedTime());
+      return new ResponseBody<>(statusCode, message, shortLinkResponse);
    }
 }

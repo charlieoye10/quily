@@ -13,8 +13,10 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 public class ShortLinkRouter {
    private final ShortLinkHandler shortLinkHandler;
    private static final String CREATE_SHORT_LINK_URL = "/api/shortLink/create";
-   private static final String GET_ORIGINAL_LINK_URL = "/{id:(?!api).+}";
+   private static final String GET_LINK_DETAIL = "/{id:(?!api).+}";
    private static final String DELETE_ORIGINAL_LINK_URL = "/api/shortLink/deleteShortLink";
+   private static final String GET_SHORT_LINK_LIST =
+      "/api/shortLink/getShortLink";
    @Autowired
    public ShortLinkRouter(ShortLinkHandler shortLinkHandler) {
       this.shortLinkHandler = shortLinkHandler;
@@ -24,7 +26,8 @@ public class ShortLinkRouter {
    public RouterFunction<ServerResponse> ShortLinkRoutes() {
       return RouterFunctions
          .route(RequestPredicates.POST(CREATE_SHORT_LINK_URL), shortLinkHandler::createShortLink)
-         .andRoute(RequestPredicates.GET(GET_ORIGINAL_LINK_URL), shortLinkHandler::getOriginalLink)
-         .andRoute(RequestPredicates.DELETE(DELETE_ORIGINAL_LINK_URL), shortLinkHandler::deleteShortLink);
+         .andRoute(RequestPredicates.GET(GET_LINK_DETAIL), shortLinkHandler::getOriginalLink)
+         .andRoute(RequestPredicates.DELETE(DELETE_ORIGINAL_LINK_URL), shortLinkHandler::deleteShortLink)
+         .andRoute(RequestPredicates.GET(GET_SHORT_LINK_LIST), shortLinkHandler::getShortLinks);
    }
 }

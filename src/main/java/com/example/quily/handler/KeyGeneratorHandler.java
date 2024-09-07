@@ -34,7 +34,7 @@ public class KeyGeneratorHandler {
          .flatMap(req -> keyGeneratorService.updateKeyIndices(keyIndicesConverter.getModelFromRequest(req)))
          .flatMap(updatedKeyIndices -> {
             final ResponseBody<KeyGeneratorResponse> response =
-               keyIndicesConverter.getResponseFromModel(updatedKeyIndices);
+               keyIndicesConverter.getResponseFromModel(updatedKeyIndices, HttpStatus.OK.value(), null);
             return ServerResponse.ok()
                .contentType(MediaType.APPLICATION_JSON)
                .bodyValue(response);
@@ -49,7 +49,9 @@ public class KeyGeneratorHandler {
             .contentType(MediaType.APPLICATION_JSON)
                .bodyValue(
                   keyIndicesConverter.getResponseFromModel(
-                     keyGeneratorDAO.getKeyIndicesFromResponse(keyDetail.getKeyGeneratorResponse())
+                     keyGeneratorDAO.getKeyIndicesFromResponse(keyDetail.getKeyGeneratorResponse()),
+                     HttpStatus.OK.value(),
+                     null
                   )
                ));
 
