@@ -16,6 +16,7 @@ public class ColumnNameConstants {
    public static final String EXPIRY_DATE = "expiry_date";
    public static final String COMPARE_LINK = "compare_link";
    public static final String IS_ACTIVE = "is_active";
+   public static final String UPDATED_TIME = "update_time";
 
    public static final String EMAIL = "email";
    public static final String USER_NAME = "user_name";

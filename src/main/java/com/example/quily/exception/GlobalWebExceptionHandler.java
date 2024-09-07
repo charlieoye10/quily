@@ -47,7 +47,7 @@ public class GlobalWebExceptionHandler implements WebExceptionHandler {
       try {
          HttpHeaders headers = exchange.getResponse().getHeaders();
          headers.setAccessControlAllowOrigin("http://localhost:3000");
-         headers.setAccessControlAllowMethods(List.of(HttpMethod.GET, HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PATCH)); // Allow specific methods
+         headers.setAccessControlAllowMethods(List.of(HttpMethod.GET, HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PATCH));
          headers.setAccessControlAllowHeaders(List.of("Content-Type", "Authorization", "X-Requested-With"));
 
          return exchange.getResponse().writeWith(
