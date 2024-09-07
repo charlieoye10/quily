@@ -35,5 +35,5 @@ public class ShortLinkConstants {
 
    public static final String SqlQueryToCallGetShortLinkByOriginalLinkAndEmailProcedure = "CALL get_short_link_by_original_link_and_email(:original_link, :user_email)";
 
-   public static final String SqlQueryToCallGetShortLinkByOriginalLinkCustomerAliasAndEmailProcedure = "CALL get_short_link_by_original_link_custom_alias_and_email(:original_link,:customAlias, :user_email,)";
+   public static final String SqlQueryToCallGetShortLinkByOriginalLinkCustomerAliasAndEmailProcedure = "CALL get_short_link_by_original_link_custom_alias_and_email(:original_link, :shorted_link, :user_email)";
 }

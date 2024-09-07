@@ -33,20 +33,24 @@ END$$
 
 DELIMITER ;
 
-# Get short link by original url custom alias and email
 USE `Quily`;
-DROP procedure IF EXISTS `get_short_link_by_original_link_custom_alias_and_email`;
+DROP PROCEDURE IF EXISTS `get_short_link_by_original_link_custom_alias_and_email`;
 
 DELIMITER $$
-USE `Quily`$$
-CREATE PROCEDURE `get_short_link_by_original_link_custom_alias_and_email`(IN original_link_value TEXT,
-IN short_link_value TEXT,
-IN email_value VARCHAR(255))
+
+CREATE PROCEDURE `get_short_link_by_original_link_custom_alias_and_email`(
+    IN original_link_value TEXT,
+    IN shorted_link_value TEXT,
+    IN email_value VARCHAR(255)
+)
 BEGIN
-    SELECT * FROM Quily.short_link
-             where original_link = original_link_value and user_email = email_value or shorted_link =  short_link_value;
+    SELECT *
+    FROM Quily.short_link
+    WHERE (original_link = original_link_value AND user_email = email_value)
+       OR shorted_link = shorted_link_value;
 END$$
 
 DELIMITER ;
+
 
 
