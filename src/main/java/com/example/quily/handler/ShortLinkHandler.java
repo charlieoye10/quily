@@ -18,6 +18,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
+import static com.example.quily.constants.ColumnNameConstants.*;
 import static com.example.quily.constants.CommonConstants.PARAMS_VALUE_NOT_PRESENT;
 import static com.example.quily.constants.ShortLinkConstants.SHORT_LINK_CREATED_MESSAGE;
 
@@ -40,7 +41,7 @@ public class ShortLinkHandler {
             shortLinkDAO.createShortLink(req)
                .flatMap(createdShortLink -> {
                      ResponseBody<ShortLinkResponse> responseBody =
-                        shortLinkConverter.getResponseFromModel(createdShortLink, 200, SHORT_LINK_CREATED_MESSAGE);
+                        shortLinkConverter.getResponseFromModel(createdShortLink, HttpStatus.OK.value(), SHORT_LINK_CREATED_MESSAGE);
                      return ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(responseBody);
@@ -53,7 +54,7 @@ public class ShortLinkHandler {
       return shortLinkService
          .findOriginalLink(serverRequest.uri().toString())
          .flatMap(shortLink -> {
-            final ResponseBody<ShortLinkResponse> responseBody = shortLinkConverter.getResponseFromModel(shortLink, 200, null);
+            final ResponseBody<ShortLinkResponse> responseBody = shortLinkConverter.getResponseFromModel(shortLink, HttpStatus.OK.value(), null);
             return ServerResponse.ok()
                .contentType(MediaType.APPLICATION_JSON)
                .bodyValue(responseBody);
@@ -83,9 +84,9 @@ public class ShortLinkHandler {
    }
 
    public Mono<ServerResponse> getShortLinks(ServerRequest serverRequest) {
-      final Optional<Integer> pageSize = serverRequest.queryParam("page_size").map(Integer::parseInt);
-      final Optional<Integer> pageNumber = serverRequest.queryParam("page_number").map(Integer::parseInt);
-      final Optional<String> userEmail = serverRequest.queryParam("user_email");
+      final Optional<Integer> pageSize = serverRequest.queryParam(PAGE_SIZE).map(Integer::parseInt);
+      final Optional<Integer> pageNumber = serverRequest.queryParam(PAGE_NUMBER).map(Integer::parseInt);
+      final Optional<String> userEmail = serverRequest.queryParam(USER_EMAIL);
       boolean allPresent = pageSize.isPresent() && pageNumber.isPresent() && userEmail.isPresent();
       if (allPresent) {
          return shortLinkService.getShortLinks(pageSize.get(), pageNumber.get(), userEmail.get())

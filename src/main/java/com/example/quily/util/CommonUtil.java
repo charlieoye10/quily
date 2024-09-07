@@ -14,6 +14,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Map;
 
+import static com.example.quily.constants.ColumnNameConstants.*;
+
 public class CommonUtil {
    public static String getCurrentDateTimeInFormat() {
       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mma 'on' dd MMMM yyyy", Locale.ENGLISH);
@@ -24,40 +26,40 @@ public class CommonUtil {
 
    public static User parseUser(Map<String, Object> row) {
       return new User(
-         (String) row.get("email"),
-         (String) row.get("user_name"),
-         (String) row.get("password"),
-         convertByteToBoolean(row.get("is_active"))
+         (String) row.get(EMAIL),
+         (String) row.get(USER_NAME),
+         (String) row.get(PASSWORD),
+         convertByteToBoolean(row.get(IS_ACTIVE))
       );
    }
 
    public static KeyIndices parseKeyIndices(Map<String, Object> row) {
       return new KeyIndices(
-         (Long) (row.get("id")),
-         (Integer) row.get("index1"),
-         (Integer) row.get("index2"),
-         (Integer) row.get("index3"),
-         (Integer) row.get("index4"),
-         (Integer) row.get("index5"),
-         (Integer) row.get("index6"));
+         (Long) (row.get(ID)),
+         (Integer) row.get(INDEX1),
+         (Integer) row.get(INDEX2),
+         (Integer) row.get(INDEX3),
+         (Integer) row.get(INDEX4),
+         (Integer) row.get(INDEX5),
+         (Integer) row.get(INDEX6));
    }
 
    public static ShortLink parseShortLink(Map<String, Object> row) {
       return new ShortLink(
-         (String) row.get("user_email"),
-         (String) row.get("original_link"),
-         (String) row.get("shorted_link"),
-         convertUTCToKolkataTimeZone((ZonedDateTime) row.get("creation_date"), "cre"),
-         convertUTCToKolkataTimeZone((ZonedDateTime) row.get("expiry_date"), "exp"),
-         convertByteToBoolean(row.get("is_active")),
-         convertUTCToKolkataTimeZone((ZonedDateTime) row.get("update_time"), "upd")
+         (String) row.get(USER_EMAIL),
+         (String) row.get(ORIGINAL_LINK),
+         (String) row.get(SHORTED_LINK),
+         convertUTCToKolkataTimeZone((ZonedDateTime) row.get(CREATION_DATE)),
+         convertUTCToKolkataTimeZone((ZonedDateTime) row.get(EXPIRY_DATE)),
+         convertByteToBoolean(row.get(IS_ACTIVE)),
+         convertUTCToKolkataTimeZone((ZonedDateTime) row.get(UPDATED_TIME))
       );
    }
 
    public static EmailConfirmationToken parseEmailConfirmationToken(Map<String, Object> row) {
       return new EmailConfirmationToken(
-         (String) row.get("confirmation_token"),
-         (String) row.get("user_email"),
+         (String) row.get(CONFIRMATION_TOKEN),
+         (String) row.get(USER_EMAIL),
          (ZonedDateTime) row.get("updated_time")
       );
    }
@@ -71,12 +73,12 @@ public class CommonUtil {
 
    public static ShortLinkResponse parseToShortLinkResponse(Map<String, Object> row) {
       return new ShortLinkResponse(
-         (String) row.get("user_email"),
-         (String) row.get("original_link"),
-         (String) row.get("shorted_link"),
-         convertUTCToKolkataTimeZone((ZonedDateTime) row.get("expiry_date"), "ex"),
-         convertUTCToKolkataTimeZone((ZonedDateTime) row.get("creation_date"), "cr"),
-         convertUTCToKolkataTimeZone((ZonedDateTime) row.get("update_time"), "up")
+         (String) row.get(USER_EMAIL),
+         (String) row.get(ORIGINAL_LINK),
+         (String) row.get(SHORTED_LINK),
+         convertUTCToKolkataTimeZone((ZonedDateTime) row.get(EXPIRY_DATE)),
+         convertUTCToKolkataTimeZone((ZonedDateTime) row.get(CREATION_DATE)),
+         convertUTCToKolkataTimeZone((ZonedDateTime) row.get(UPDATED_TIME))
       );
    }
 
@@ -87,7 +89,7 @@ public class CommonUtil {
       return LocalDateTime.parse(dateTime + "T00:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME);
    }
 
-   public static LocalDateTime convertUTCToKolkataTimeZone(ZonedDateTime utcDateTime, String flag) {
+   public static LocalDateTime convertUTCToKolkataTimeZone(ZonedDateTime utcDateTime) {
       if (utcDateTime == null) {
          return LocalDateTime.MIN;
       }
