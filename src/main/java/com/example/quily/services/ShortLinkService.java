@@ -2,7 +2,6 @@ package com.example.quily.services;
 
 import com.example.quily.constants.ShortLinkConstants;
 import com.example.quily.exception.EntityAlreadyExistException;
-import com.example.quily.exception.InternalServerError;
 import com.example.quily.exception.ResourceNotFoundException;
 import com.example.quily.model.KeyIndices;
 import com.example.quily.model.ShortLink;
@@ -120,7 +119,8 @@ public class ShortLinkService {
                   originalLink,
                   url,
                   shortLink.getExpiryDate(),
-                  shortLink.getCreationDate()
+                  shortLink.getCreationDate(),
+                  shortLink.getUpdatedTime()
                ))
          );
    }
@@ -138,7 +138,8 @@ public class ShortLinkService {
                   shortLink.getOriginalLink(),
                   url,
                   shortLink.getExpiryDate(),
-                  shortLink.getCreationDate()
+                  shortLink.getCreationDate(),
+                  shortLink.getUpdatedTime()
                ));
          });
    }
@@ -155,7 +156,8 @@ public class ShortLinkService {
                   originalLink,
                   shortLink.getShortedLink(),
                   shortLink.getExpiryDate(),
-                  shortLink.getCreationDate()
+                  shortLink.getCreationDate(),
+                  shortLink.getUpdatedTime()
                ));
          });
    }

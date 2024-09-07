@@ -46,6 +46,7 @@ public class CommonUtil {
 
    public static ShortLink parseShortLink(Map<String, Object> row) {
       return new ShortLink(
+         (Long) row.get(ID),
          (String) row.get(USER_EMAIL),
          (String) row.get(ORIGINAL_LINK),
          (String) row.get(SHORTED_LINK),
