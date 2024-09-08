@@ -29,6 +29,15 @@ public class ShortLinkRepository {
       this.client = client;
    }
 
+   public Mono<ShortLink> getShortLinkForUser(String shortLink, String email) {
+      return client.sql(SqlQueryToCallGetShortLinkByEmailAndShortedLinkProcedure)
+         .bind(USER_EMAIL, email)
+         .bind(SHORTED_LINK, shortLink)
+         .fetch()
+         .first()
+         .map(CommonUtil::parseShortLink);
+   }
+
    public Mono<ShortLink> getShortLink(String shortLink) {
       return client.sql(SqlQueryToCallGetShortLinkProcedure)
          .bind(SHORTED_LINK, shortLink)

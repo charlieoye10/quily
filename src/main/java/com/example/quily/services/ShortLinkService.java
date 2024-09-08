@@ -44,8 +44,8 @@ public class ShortLinkService {
    }
 
    public Mono<ShortLink> findOriginalLink(String shortLink) {
-      return shortLinkRepository
-         .getShortLink(shortLink);
+     return userDetailsService.getLoggedInUser()
+         .flatMap(userDetails -> shortLinkRepository.getShortLinkForUser(shortLink, userDetails.getUsername()));
    }
 
    public Mono<Boolean> isCustomAliasAvailable(String customAlias) {
@@ -88,7 +88,7 @@ public class ShortLinkService {
    }
 
    public Mono<ShortLinkResponse> updateShortLink(UpdateShortLinkRequest req) {
-      return shortLinkRepository.getShortLink(req.getShortedLink())
+      return shortLinkRepository.getShortLinkForUser(req.getShortedLink(),req.getUserEmail())
          .flatMap(shortLink -> {
             if (req.getCustomAlias() != null && req.getOriginalLink() != null) {
                return handleShortLinkAndOriginalLinkUpdate(shortLink, req.getOriginalLink(), req.getCustomAlias());
