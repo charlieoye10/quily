@@ -41,7 +41,7 @@ public class ShortLinkDAO {
    public Mono<ShortLink> createShortLink(CreateShortLinkRequest request) {
       return userDetailsService.getLoggedInUser()
          .flatMap(userDetails -> {
-            if (request.getCustomAlias() != null) {
+            if (request.getCustomBackHalf() != null) {
                return handleCustomAlias(request, userDetails);
             }
             return handleGeneratedAlias(request, userDetails);
@@ -49,15 +49,15 @@ public class ShortLinkDAO {
    }
 
    private Mono<ShortLink> handleCustomAlias(CreateShortLinkRequest request, UserDetails userDetails) {
-      if (!isCustomAliasPatter(request.getCustomAlias())) {
+      if (!isCustomAliasPatter(request.getCustomBackHalf())) {
          return Mono.error(new BadRequestException(CUSTOM_ALIAS_PATTERN_MESSAGE));
       }
-      return shortLinkService.isCustomAliasAvailable(request.getCustomAlias())
+      return shortLinkService.isCustomAliasAvailable(request.getCustomBackHalf())
          .flatMap(available -> {
             if (!available) {
                return Mono.error(new EntityAlreadyExistException(CUSTOM_ALIAS_EXISTS_MESSAGE));
             }
-            final ShortLink shortLink = getShortLink(request, request.getCustomAlias(), userDetails);
+            final ShortLink shortLink = getShortLink(request, request.getCustomBackHalf(), userDetails);
             return shortLinkService.createSortLinkAndUpdateIndices(shortLink, Optional.empty());
          });
    }
@@ -73,7 +73,7 @@ public class ShortLinkDAO {
    }
 
    private ShortLink getShortLink(CreateShortLinkRequest request, String hashKey, UserDetails userDetails) {
-      final String shortUrl = String.join("", ShortLinkConstants.LOCALHOST_URL, hashKey);
+      final String shortUrl = String.join("", ShortLinkConstants.BASE_URL, hashKey);
       return converter.convertRequestToModel(request, shortUrl, userDetails.getUsername());
    }
 
