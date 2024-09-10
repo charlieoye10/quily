@@ -111,7 +111,6 @@ public class ShortLinkHandler {
    public Mono<ServerResponse> getLinkDetail(ServerRequest request) {
       final Optional<String> backHalf = request.queryParam("backHalf");
       final String userEmail = request.headers().firstHeader("UserEmail");
-      System.out.println("userEmail -> " + userEmail);
       if (backHalf.isEmpty()) {
          return Mono.error(new BadRequestException(PARAMS_VALUE_NOT_PRESENT));
       }
