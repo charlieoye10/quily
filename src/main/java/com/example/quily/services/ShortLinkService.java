@@ -19,7 +19,6 @@ import reactor.util.function.Tuple2;
 
 import java.util.Optional;
 
-import static com.example.quily.constants.CommonConstants.COMMON_INTERNAL_SERVER_MESSAGE;
 import static com.example.quily.constants.ShortLinkConstants.*;
 
 
@@ -43,13 +42,13 @@ public class ShortLinkService {
       return shortLinkRepository.createShortLink(shortLink);
    }
 
-   public Mono<ShortLink> findOriginalLink(String shortLink) {
+   public Mono<ShortLink> getShortLinkDetail(String shortLink) {
       return shortLinkRepository
          .getShortLink(shortLink);
    }
 
    public Mono<Boolean> isCustomAliasAvailable(String customAlias) {
-      final String url = String.join("", ShortLinkConstants.LOCALHOST_URL, customAlias);
+      final String url = String.join("", ShortLinkConstants.BASE_URL, customAlias);
       return shortLinkRepository
          .getShortLink(url)
          .map(link -> false)
@@ -75,7 +74,7 @@ public class ShortLinkService {
    }
 
    public Mono<String> deleteShortLink(String shortLink) {
-      String shortedLink = ShortLinkConstants.LOCALHOST_URL + shortLink;
+      String shortedLink = ShortLinkConstants.BASE_URL + shortLink;
 
       return userDetailsService.getLoggedInUser()
          .flatMap(userDetails ->
@@ -88,20 +87,21 @@ public class ShortLinkService {
    }
 
    public Mono<ShortLinkResponse> updateShortLink(UpdateShortLinkRequest req) {
+      System.out.println("REQ -> " + req.getShortedLink() +"    " + req.getOriginalLink() + "    " + req.getCustomBackHalf());
       return shortLinkRepository.getShortLink(req.getShortedLink())
          .flatMap(shortLink -> {
-            if (req.getCustomAlias() != null && req.getOriginalLink() != null) {
-               return handleShortLinkAndOriginalLinkUpdate(shortLink, req.getOriginalLink(), req.getCustomAlias());
+            if (req.getCustomBackHalf() != null && req.getOriginalLink() != null) {
+               return handleShortLinkAndOriginalLinkUpdate(shortLink, req.getOriginalLink(), req.getCustomBackHalf());
             }
-            if (req.getCustomAlias() != null) {
-               return handleShortLinkUpdate(shortLink, req.getCustomAlias());
+            if (req.getCustomBackHalf() != null) {
+               return handleShortLinkUpdate(shortLink, req.getCustomBackHalf());
             }
             return handleOriginalLinkUpdate(shortLink, req.getOriginalLink());
          }).switchIfEmpty(Mono.error(new ResourceNotFoundException(SHORT_LINK_DOES_NOT_EXIST_MESSAGE)));
    }
 
    private Mono<ShortLinkResponse> handleShortLinkAndOriginalLinkUpdate(ShortLink shortLink, String originalLink, String customAlias) {
-      final String url = String.join("", ShortLinkConstants.LOCALHOST_URL, customAlias);
+      final String url = String.join("", ShortLinkConstants.BASE_URL, customAlias);
       return shortLinkRepository.getShortLinkByOriginalLinkCustomAliasAndEmail(originalLink, url, shortLink.getUserEmail())
          .flatMap(existingShortLink -> {
             if (existingShortLink.getShortedLink().equals(url) && existingShortLink.getOriginalLink().equals(originalLink)) {
@@ -126,7 +126,7 @@ public class ShortLinkService {
    }
 
    private Mono<ShortLinkResponse> handleShortLinkUpdate(ShortLink shortLink, String customAlias) {
-      final String url = String.join("", ShortLinkConstants.LOCALHOST_URL, customAlias);
+      final String url = String.join("", ShortLinkConstants.BASE_URL, customAlias);
       return isCustomAliasAvailable(customAlias)
          .flatMap(isAvailable -> {
             if (!isAvailable) {

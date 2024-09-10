@@ -40,7 +40,7 @@ public class ShortLinkRepository {
    public Mono<ShortLink> createShortLink(ShortLink shortLink) {
       return client.sql(SqlQueryToCallCreateShortLinkProcedure)
          .bind(USER_EMAIL, shortLink.getUserEmail())
-         .bind(COMPARE_LINK, ShortLinkUtil.getOriginalLinkWithoutParams(shortLink))
+         .bind(COMPARE_LINK, shortLink.getOriginalLink())
          .bind(ORIGINAL_LINK, shortLink.getOriginalLink())
          .bind(SHORTED_LINK, shortLink.getShortedLink())
          .bind(EXPIRY_DATE, shortLink.getExpiryDate())

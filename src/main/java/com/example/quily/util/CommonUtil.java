@@ -15,6 +15,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import static com.example.quily.constants.ColumnNameConstants.*;
+import static com.example.quily.constants.CommonConstants.MAX_LOCAL_TIME;
+import static com.example.quily.converter.ShortLinkConverter.handleExpiryDateResponse;
 
 public class CommonUtil {
    public static String getCurrentDateTimeInFormat() {
@@ -77,7 +79,7 @@ public class CommonUtil {
          (String) row.get(USER_EMAIL),
          (String) row.get(ORIGINAL_LINK),
          (String) row.get(SHORTED_LINK),
-         convertUTCToKolkataTimeZone((ZonedDateTime) row.get(EXPIRY_DATE)),
+         handleExpiryDateResponse(convertUTCToKolkataTimeZone((ZonedDateTime) row.get(EXPIRY_DATE))),
          convertUTCToKolkataTimeZone((ZonedDateTime) row.get(CREATION_DATE)),
          convertUTCToKolkataTimeZone((ZonedDateTime) row.get(UPDATED_TIME))
       );
@@ -85,7 +87,7 @@ public class CommonUtil {
 
    public static LocalDateTime convertStringToLocalTimeDate(String dateTime) {
       if (dateTime == null) {
-         return LocalDateTime.MIN;
+         return LocalDateTime.parse(MAX_LOCAL_TIME, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
       }
       return LocalDateTime.parse(dateTime + "T00:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME);
    }

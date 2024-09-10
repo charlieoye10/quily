@@ -52,4 +52,12 @@ public class UserRepository {
          .fetch()
          .rowsUpdated();
    }
+
+   public Mono<Long> updateUsername(String email, String username) {
+      return client.sql(SqlQueryToUpdateUsername)
+         .bind(EMAIL, email)
+         .bind(USER_NAME, username)
+         .fetch()
+         .rowsUpdated();
+   }
 }
