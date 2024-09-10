@@ -5,11 +5,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.server.WebExceptionHandler;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Configuration
 @Order(-2)
@@ -23,6 +27,8 @@ public class GlobalWebExceptionHandler implements WebExceptionHandler {
             case "EntityAlreadyExistException" -> HttpStatus.CONFLICT;
             case "GreaterIndicesFoundException", "BadRequestException", "EmailFormatException" ->
                HttpStatus.BAD_REQUEST;
+            case "UnauthorizedException" -> HttpStatus.UNAUTHORIZED;
+            case "ExpiredJwtException" -> HttpStatus.FORBIDDEN;
             default -> HttpStatus.INTERNAL_SERVER_ERROR;
          };
 
@@ -39,6 +45,11 @@ public class GlobalWebExceptionHandler implements WebExceptionHandler {
 
    private Mono<Void> handleResponse(ServerWebExchange exchange, Throwable ex, ResponseBody<String> response) {
       try {
+         HttpHeaders headers = exchange.getResponse().getHeaders();
+         headers.setAccessControlAllowOrigin("http://localhost:3000");
+         headers.setAccessControlAllowMethods(List.of(HttpMethod.GET, HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PATCH));
+         headers.setAccessControlAllowHeaders(List.of("Content-Type", "Authorization", "X-Requested-With"));
+
          return exchange.getResponse().writeWith(
             Mono.just(exchange.getResponse().bufferFactory().wrap(
                new ObjectMapper().writeValueAsBytes(response)

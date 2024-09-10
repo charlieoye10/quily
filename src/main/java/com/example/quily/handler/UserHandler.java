@@ -130,4 +130,12 @@ public class UserHandler {
 
    }
 
+   public Mono<ServerResponse> updateUsername(ServerRequest serverRequest) {
+      final String userEmail = serverRequest.headers().firstHeader("UserEmail");
+      return serverRequest.bodyToMono(UserUpdateRequest.class)
+         .flatMap(req -> userService.updateUsername(req, userEmail))
+         .flatMap(message -> ServerResponse.ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(new ResponseBody<>(HttpStatus.OK.value(), message, null)));
+   }
 }

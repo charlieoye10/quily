@@ -6,12 +6,14 @@ import com.example.quily.dao.EmailConfirmationTokenDAO;
 import com.example.quily.exception.BadRequestException;
 import com.example.quily.exception.EntityAlreadyExistException;
 import com.example.quily.exception.InternalServerError;
+import com.example.quily.exception.UnauthorizedException;
 import com.example.quily.model.EmailConfirmationToken;
 import com.example.quily.model.KeyIndices;
 import com.example.quily.model.User;
 import com.example.quily.repositories.UserRepository;
 import com.example.quily.request.ForgetPasswordRequest;
 import com.example.quily.request.ResetPasswordRequest;
+import com.example.quily.request.UserUpdateRequest;
 import com.example.quily.request.VerifyEmailForgetPasswordRequest;
 import com.example.quily.response.SignUpResponse;
 import com.example.quily.security.UserDetailsServiceImpl;
@@ -27,6 +29,7 @@ import java.time.ZonedDateTime;
 
 import static com.example.quily.constants.CommonConstants.COMMON_INTERNAL_SERVER_MESSAGE;
 import static com.example.quily.constants.CommonConstants.EMAIL_VERIFICATION_TOKEN_AGE;
+import static com.example.quily.constants.UserConstants.USERNAME_UPDATED_SUCCESSFULLY;
 import static com.example.quily.constants.UserConstants.USER_EXIST_WITH_EMAIL;
 
 @Service
@@ -110,9 +113,15 @@ public class UserService {
          .switchIfEmpty(Mono.error(new InternalServerError(COMMON_INTERNAL_SERVER_MESSAGE)));
    }
 
-   public Mono<Object> createUser(User user) {
+   public Mono<User> createUser(User user) {
       return userRepository.findUserByEmail(user.getEmail())
-         .flatMap(dbUser -> Mono.error(new EntityAlreadyExistException(String.format(USER_EXIST_WITH_EMAIL,user.getEmail()))))
+         .flatMap(dbUser -> {
+            if (dbUser.isActive()) {
+               return Mono.error(new EntityAlreadyExistException(String.format(USER_EXIST_WITH_EMAIL, user.getEmail())));
+            } else {
+               return Mono.just(dbUser);
+            }
+         })
          .switchIfEmpty(userRepository.createUser(user));
    }
 
@@ -134,7 +143,6 @@ public class UserService {
       return emailTokenService.findByToken(token)
          .flatMap(confirmedToken -> {
             Duration tokenAge = Duration.between(confirmedToken.getUpdateTime(), ZonedDateTime.now());
-
             if (tokenAge.toMinutes() > EMAIL_VERIFICATION_TOKEN_AGE) {
                return userRepository.findUserByEmail(confirmedToken.getUserEmail())
                   .flatMap(this::sendEmailVerificationLink)
@@ -164,7 +172,7 @@ public class UserService {
                   .flatMap(updatePassword -> Mono.just(UserConstants.PASSWORD_RESET_SUCCESSFULLY))
                   .switchIfEmpty(Mono.error(new InternalServerError(COMMON_INTERNAL_SERVER_MESSAGE)));
             }
-            return Mono.error(new BadRequestException(UserConstants.CURRENT_PASSWORD_INCORRECT_MESSAGE));
+            return Mono.error(new UnauthorizedException(UserConstants.CURRENT_PASSWORD_INCORRECT_MESSAGE));
          });
    }
 
@@ -203,5 +211,12 @@ public class UserService {
          .switchIfEmpty(Mono.error(new BadRequestException(
             String.format(UserConstants.USER_DOES_NOT_EXIST_MESSAGE, req.getEmail())
          )));
+   }
+
+   public Mono<String> updateUsername(UserUpdateRequest req, String email) {
+      return userRepository.updateUsername(email, req.getUsername())
+         .filter(rowUpdated -> rowUpdated != 0)
+         .map(rowUpdated -> USERNAME_UPDATED_SUCCESSFULLY)
+         .switchIfEmpty(Mono.error(new InternalServerError(COMMON_INTERNAL_SERVER_MESSAGE)));
    }
 }

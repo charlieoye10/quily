@@ -3,8 +3,8 @@ package com.example.quily.request;
 import lombok.Data;
 
 @Data
-public class CreateShortLinkRequest {
+public class UpdateShortLinkRequest {
+    private String shortedLink;
     private String originalLink;
-    private String expiryDate;   // format must be yyyy-mm-dd
     private String customBackHalf;
 }

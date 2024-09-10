@@ -24,9 +24,9 @@ public class KeyIndicesConverter implements Converter<KeyGeneratorRequest, KeyGe
    }
 
    @Override
-   public ResponseBody<KeyGeneratorResponse> getResponseFromModel(KeyIndices keyIndices) {
+   public ResponseBody<KeyGeneratorResponse> getResponseFromModel(KeyIndices keyIndices, int statusCode, String message) {
       final KeyGeneratorResponse keyGeneratorResponse =
          keyGeneratorDAO.getResponseFromKeyIndices(keyIndices);
-      return new ResponseBody<>(200, keyGeneratorResponse);
+      return new ResponseBody<>(statusCode, keyGeneratorResponse);
    }
 }

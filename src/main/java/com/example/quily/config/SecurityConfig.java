@@ -13,6 +13,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
 import org.springframework.security.web.server.authentication.ServerAuthenticationConverter;
 
+import static com.example.quily.router.ShortLinkRouter.REDIRECT_TO_ORIGINAL_LINK;
 import static com.example.quily.router.UserRouter.*;
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -39,7 +40,10 @@ class SecurityConfig {
          FORGOT_PASSWORD_URL
       };
 
-      String[] getRoutes = {CONFIRM_ACCOUNT_URL};
+      String[] getRoutes = {
+         CONFIRM_ACCOUNT_URL,
+         REDIRECT_TO_ORIGINAL_LINK
+      };
 
       return http
          .authorizeExchange(exchanges -> exchanges

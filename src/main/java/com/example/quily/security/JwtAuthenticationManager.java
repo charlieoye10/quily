@@ -1,6 +1,7 @@
 package com.example.quily.security;
 
 import com.example.quily.exception.BadRequestException;
+import com.example.quily.exception.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -27,6 +28,6 @@ public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
             return authenticationToken;
          })
          .cast(Authentication.class)
-         .switchIfEmpty(Mono.error(new BadRequestException(TOKEN_VALIDATION_FAILED_MESSAGE)));
+         .switchIfEmpty(Mono.error(new UnauthorizedException(TOKEN_VALIDATION_FAILED_MESSAGE)));
    }
 }

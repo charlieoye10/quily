@@ -1,6 +1,7 @@
 package com.example.quily.security;
 
 import com.example.quily.exception.ResourceNotFoundException;
+import com.example.quily.exception.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
@@ -12,6 +13,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 
+import static com.example.quily.constants.UserConstants.TOKEN_VALIDATION_FAILED_MESSAGE;
 import static com.example.quily.constants.UserConstants.USER_NOT_FOUND_MESSAGE;
 
 @Component
@@ -39,6 +41,7 @@ public class JwtServerAuthenticationConverter implements ServerAuthenticationCon
       return userDetailsService.findByUsername(userEmail)
          .switchIfEmpty(Mono.error(new ResourceNotFoundException(USER_NOT_FOUND_MESSAGE)))
          .filter(userDetails -> jwtUtil.validateToken(token, userDetails.getUsername()))
+         .switchIfEmpty(Mono.error(new UnauthorizedException(TOKEN_VALIDATION_FAILED_MESSAGE)))
          .map(userDetails -> new AuthenticationToken(Collections.emptyList(), userDetails));
    }
 }
