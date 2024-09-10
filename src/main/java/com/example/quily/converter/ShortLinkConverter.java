@@ -7,7 +7,9 @@ import com.example.quily.response.ShortLinkResponse;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
+import static com.example.quily.constants.CommonConstants.MAX_LOCAL_TIME;
 import static com.example.quily.util.CommonUtil.convertStringToLocalTimeDate;
 
 @Component
@@ -36,9 +38,17 @@ public class ShortLinkConverter implements Converter<CreateShortLinkRequest, Sho
          shortLink.getUserEmail(),
          shortLink.getOriginalLink(),
          shortLink.getShortedLink(),
-         shortLink.getExpiryDate(),
+         handleExpiryDateResponse(shortLink.getExpiryDate()),
          shortLink.getCreationDate(),
          shortLink.getUpdatedTime());
       return new ResponseBody<>(statusCode, message, shortLinkResponse);
+   }
+
+   public static final LocalDateTime handleExpiryDateResponse(LocalDateTime expiryDate) {
+      if (expiryDate.equals(LocalDateTime.parse(MAX_LOCAL_TIME, DateTimeFormatter.ISO_LOCAL_DATE_TIME))) {
+         return null;
+      } else {
+         return expiryDate;
+      }
    }
 }

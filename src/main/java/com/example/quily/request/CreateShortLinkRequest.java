@@ -6,5 +6,5 @@ import lombok.Data;
 public class CreateShortLinkRequest {
     private String originalLink;
     private String expiryDate;   // format must be yyyy-mm-dd
-    private String customAlias;
+    private String customBackHalf;
 }

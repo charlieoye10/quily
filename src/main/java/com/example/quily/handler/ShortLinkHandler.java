@@ -1,10 +1,10 @@
 package com.example.quily.handler;
 
 import com.example.quily.constants.ShortLinkConstants;
-import com.example.quily.constants.UserConstants;
 import com.example.quily.converter.ShortLinkConverter;
 import com.example.quily.dao.ShortLinkDAO;
 import com.example.quily.exception.BadRequestException;
+import com.example.quily.exception.ResourceNotFoundException;
 import com.example.quily.request.CreateShortLinkRequest;
 import com.example.quily.request.UpdateShortLinkRequest;
 import com.example.quily.response.ResponseBody;
@@ -18,12 +18,12 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
 import java.util.Optional;
 
 import static com.example.quily.constants.ColumnNameConstants.*;
 import static com.example.quily.constants.CommonConstants.PARAMS_VALUE_NOT_PRESENT;
-import static com.example.quily.constants.ShortLinkConstants.SHORT_LINK_CREATED_MESSAGE;
-import static com.example.quily.constants.ShortLinkConstants.SHORT_LINK_UPDATED_MESSAGE;
+import static com.example.quily.constants.ShortLinkConstants.*;
 
 
 @Component
@@ -54,24 +54,20 @@ public class ShortLinkHandler {
          );
    }
 
-   public Mono<ServerResponse> getOriginalLink(ServerRequest serverRequest) {
+   public Mono<ServerResponse> redirect(ServerRequest serverRequest) {
       return shortLinkService
-         .findOriginalLink(serverRequest.uri().toString())
-         .flatMap(shortLink -> {
-            final ResponseBody<ShortLinkResponse> responseBody = shortLinkConverter.getResponseFromModel(shortLink, HttpStatus.OK.value(), null);
-            return ServerResponse.ok()
-               .contentType(MediaType.APPLICATION_JSON)
-               .bodyValue(responseBody);
-         })
-         .switchIfEmpty(handleIfInvalidUrl());
+         .getShortLinkDetail(serverRequest.uri().toString())
+         .flatMap(linkDetail -> ServerResponse.status(HttpStatus.FOUND)
+            .location(URI.create(linkDetail.getOriginalLink()))
+            .build())
+         .switchIfEmpty(Mono.error(new ResourceNotFoundException(INVALID_URL_MESSAGE)));
    }
 
    private Mono<ServerResponse> handleIfInvalidUrl() {
-      final String errorMessage = ShortLinkConstants.INVALID_URL_MESSAGE;
       return ServerResponse.status(HttpStatus.BAD_REQUEST)
          .contentType(MediaType.APPLICATION_JSON)
          .bodyValue(
-            new ResponseBody<>(HttpStatus.BAD_REQUEST.value(), errorMessage, null)
+            new ResponseBody<>(HttpStatus.BAD_REQUEST.value(), INVALID_URL_MESSAGE, null)
          );
    }
 
@@ -110,5 +106,23 @@ public class ShortLinkHandler {
                .flatMap(shortLinkResponse -> ServerResponse.ok()
                   .contentType(MediaType.APPLICATION_JSON)
                   .bodyValue(new ResponseBody<>(HttpStatus.OK.value(),SHORT_LINK_UPDATED_MESSAGE ,shortLinkResponse ))));
+   }
+
+   public Mono<ServerResponse> getLinkDetail(ServerRequest request) {
+      final Optional<String> backHalf = request.queryParam("backHalf");
+      final String userEmail = request.headers().firstHeader("UserEmail");
+      if (backHalf.isEmpty()) {
+         return Mono.error(new BadRequestException(PARAMS_VALUE_NOT_PRESENT));
+      }
+      final String shortURL = String.join("", BASE_URL, backHalf.get());
+      return shortLinkService.getShortLinkDetail(shortURL)
+         .filter(linkDetail -> linkDetail.getUserEmail().equals(userEmail))
+         .flatMap(linkDetail -> {
+            final ResponseBody<ShortLinkResponse> responseBody = shortLinkConverter.getResponseFromModel(linkDetail, HttpStatus.OK.value(), null);
+            return ServerResponse.ok()
+               .contentType(MediaType.APPLICATION_JSON)
+               .bodyValue(responseBody);
+         })
+         .switchIfEmpty(handleIfInvalidUrl());
    }
 }

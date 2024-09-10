@@ -28,6 +28,8 @@ public class UserConstants {
 
    public static final String TOKEN_DOES_NOT_EXIST = "The token does not exist";
 
+   public static final String USERNAME_UPDATED_SUCCESSFULLY = "Username updated successfully.";
+
    public static final String TOKEN_VALIDATION_FAILED_MESSAGE = "The provided token is either expired or invalid. Please login again to obtain a new token.";
 
    public static final String LOGIN_FAILED_MESSAGE = "Email or password is incorrect. Try again.";
@@ -47,4 +49,6 @@ public class UserConstants {
    public static final String SqlQueryToCallMakeUserActiveProcedure = "CALL make_user_active(:email)";
 
    public static final String SqlQueryToResetPassword = "CALL reset_password(:email, :password)";
+
+   public static final String SqlQueryToUpdateUsername = "CALL update_username(:email, :user_name)";
 }
