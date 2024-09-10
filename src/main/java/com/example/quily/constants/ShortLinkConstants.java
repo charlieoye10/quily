@@ -1,12 +1,12 @@
 package com.example.quily.constants;
 
 public class ShortLinkConstants {
-   public static final String BASE_URL = "https://quily.onrender.com/";
+   public static final String BASE_URL = "http://localhost:8081/";
    public static final String FE_LOCALHOST_URL = "http://localhost:3000/";
    public static final String NETLIFY_FE_DOMAIN = "https://production--quily.netlify.app/";
    public static final String FE_LOGIN_URL = FE_LOCALHOST_URL + "login";
    public static final String EMAIL_VERIFICATION_URL = String.join("", BASE_URL, "api/auth/confirm-account?token=");
-   public static final String PASSWORD_VERIFICATION_URL = String.join("", NETLIFY_FE_DOMAIN, "ForgotPassword?token=");
+   public static final String PASSWORD_VERIFICATION_URL = String.join("", FE_LOCALHOST_URL, "ForgotPassword?token=");
 
    public static final String LINK_ALREADY_USED_MESSAGE = "Provided link already has been used.";
    public static final String SHORT_LINK_CREATED_MESSAGE = "Link shorted successfully";
