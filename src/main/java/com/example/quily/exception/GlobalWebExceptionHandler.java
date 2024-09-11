@@ -49,9 +49,8 @@ public class GlobalWebExceptionHandler implements WebExceptionHandler {
    private Mono<Void> handleResponse(ServerWebExchange exchange, Throwable ex, ResponseBody<String> response) {
       try {
          HttpHeaders headers = exchange.getResponse().getHeaders();
-         headers.setAccessControlAllowOrigin("http://localhost:3000");
-         if (NETLIFY_FE_DOMAIN.equals(headers.getOrigin()) || FE_LOCALHOST_URL.equals(headers.getOrigin())) {
-            headers.setAccessControlAllowOrigin(headers.getOrigin());
+         if (NETLIFY_FE_DOMAIN.equals(headers.getAccessControlAllowOrigin()) || FE_LOCALHOST_URL.equals(headers.getAccessControlAllowOrigin())) {
+            headers.setAccessControlAllowOrigin(headers.getAccessControlAllowOrigin());
          }
          headers.setAccessControlAllowMethods(List.of(HttpMethod.GET, HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PATCH));
          headers.setAccessControlAllowHeaders(List.of("Content-Type", "Authorization", "X-Requested-With"));
