@@ -87,7 +87,6 @@ public class ShortLinkService {
    }
 
    public Mono<ShortLinkResponse> updateShortLink(UpdateShortLinkRequest req) {
-      System.out.println("REQ -> " + req.getShortedLink() +"    " + req.getOriginalLink() + "    " + req.getCustomBackHalf());
       return shortLinkRepository.getShortLink(req.getShortedLink())
          .flatMap(shortLink -> {
             if (req.getCustomBackHalf() != null && req.getOriginalLink() != null) {
