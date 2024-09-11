@@ -23,7 +23,7 @@ import reactor.core.publisher.Mono;
 import java.net.URI;
 import java.util.Optional;
 
-import static com.example.quily.constants.ShortLinkConstants.FE_LOGIN_URL;
+import static com.example.quily.constants.ShortLinkConstants.NETLIFY_FE_DOMAIN;
 import static com.example.quily.constants.UserConstants.LOGIN_FAILED_MESSAGE;
 
 @Component
@@ -50,7 +50,7 @@ public class UserHandler {
             );
       }
       return ServerResponse.status(HttpStatus.FOUND)
-         .location(URI.create(FE_LOGIN_URL))
+         .location(URI.create(NETLIFY_FE_DOMAIN))
          .build();
    }
 
