@@ -48,12 +48,15 @@ public class GlobalWebExceptionHandler implements WebExceptionHandler {
 
    private Mono<Void> handleResponse(ServerWebExchange exchange, Throwable ex, ResponseBody<String> response) {
       try {
-         HttpHeaders headers = exchange.getResponse().getHeaders();
-         if (NETLIFY_FE_DOMAIN.equals(headers.getAccessControlAllowOrigin()) || FE_LOCALHOST_URL.equals(headers.getAccessControlAllowOrigin())) {
-            headers.setAccessControlAllowOrigin(headers.getAccessControlAllowOrigin());
+         HttpHeaders responseHeader = exchange.getResponse().getHeaders();
+         HttpHeaders requestHeader = exchange.getRequest().getHeaders();
+         if (NETLIFY_FE_DOMAIN.equals(requestHeader.getOrigin() + "/") ||
+            FE_LOCALHOST_URL.equals(requestHeader.getOrigin() + "/")
+         ) {
+            responseHeader.setAccessControlAllowOrigin(requestHeader.getOrigin());
          }
-         headers.setAccessControlAllowMethods(List.of(HttpMethod.GET, HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PATCH));
-         headers.setAccessControlAllowHeaders(List.of("Content-Type", "Authorization", "X-Requested-With"));
+         responseHeader.setAccessControlAllowMethods(List.of(HttpMethod.GET, HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PATCH));
+         responseHeader.setAccessControlAllowHeaders(List.of("Content-Type", "Authorization", "X-Requested-With"));
 
          return exchange.getResponse().writeWith(
             Mono.just(exchange.getResponse().bufferFactory().wrap(
