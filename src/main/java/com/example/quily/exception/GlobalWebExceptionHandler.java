@@ -15,6 +15,9 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+import static com.example.quily.constants.ShortLinkConstants.FE_LOCALHOST_URL;
+import static com.example.quily.constants.ShortLinkConstants.NETLIFY_FE_DOMAIN;
+
 @Configuration
 @Order(-2)
 public class GlobalWebExceptionHandler implements WebExceptionHandler {
@@ -47,6 +50,9 @@ public class GlobalWebExceptionHandler implements WebExceptionHandler {
       try {
          HttpHeaders headers = exchange.getResponse().getHeaders();
          headers.setAccessControlAllowOrigin("http://localhost:3000");
+         if (NETLIFY_FE_DOMAIN.equals(headers.getOrigin()) || FE_LOCALHOST_URL.equals(headers.getOrigin())) {
+            headers.setAccessControlAllowOrigin(headers.getOrigin());
+         }
          headers.setAccessControlAllowMethods(List.of(HttpMethod.GET, HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PATCH));
          headers.setAccessControlAllowHeaders(List.of("Content-Type", "Authorization", "X-Requested-With"));
 
