@@ -22,6 +22,7 @@ public class ShortLink {
     private LocalDateTime expiryDate;
     private boolean isActive;
     private LocalDateTime  updatedTime;
+    private boolean isQrCreated;
 
     public ShortLink(
        @NonNull String userEmail,
@@ -30,7 +31,8 @@ public class ShortLink {
        LocalDateTime creationDate,
        LocalDateTime expiryDate,
        boolean isActive,
-       LocalDateTime updatedTime
+       LocalDateTime updatedTime,
+       boolean isQrCreated
     ) {
         this.userEmail = userEmail;
         this.originalLink = originalLink;
@@ -39,5 +41,6 @@ public class ShortLink {
         this.expiryDate = expiryDate;
         this.isActive = isActive;
         this.updatedTime = updatedTime;
+        this.isQrCreated = isQrCreated;
     }
 }

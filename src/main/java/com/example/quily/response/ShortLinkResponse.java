@@ -14,4 +14,5 @@ public class ShortLinkResponse {
     private LocalDateTime expiryDate;
     private LocalDateTime creationDate;
     private LocalDateTime updatedTime;
+    private boolean isQrCreated;
 }
