@@ -45,6 +45,7 @@ public class ShortLinkRepository {
          .bind(SHORTED_LINK, shortLink.getShortedLink())
          .bind(EXPIRY_DATE, shortLink.getExpiryDate())
          .bind(IS_ACTIVE, shortLink.isActive())
+         .bind(IS_QR_CREATED, shortLink.isQrCreated())
          .fetch()
          .rowsUpdated()
          .flatMap(row -> {

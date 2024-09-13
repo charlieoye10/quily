@@ -29,7 +29,8 @@ public class ShortLinkConverter implements Converter<CreateShortLinkRequest, Sho
          LocalDateTime.now(),
          convertStringToLocalTimeDate(createShortLinkRequest.getExpiryDate()),
          true,
-         LocalDateTime.now());
+         LocalDateTime.now(),
+         createShortLinkRequest.getIsQrRequest());
    }
 
    @Override
@@ -40,7 +41,8 @@ public class ShortLinkConverter implements Converter<CreateShortLinkRequest, Sho
          shortLink.getShortedLink(),
          handleExpiryDateResponse(shortLink.getExpiryDate()),
          shortLink.getCreationDate(),
-         shortLink.getUpdatedTime());
+         shortLink.getUpdatedTime(),
+         shortLink.isQrCreated());
       return new ResponseBody<>(statusCode, message, shortLinkResponse);
    }
 
