@@ -120,7 +120,8 @@ public class ShortLinkService {
                   url,
                   shortLink.getExpiryDate(),
                   shortLink.getCreationDate(),
-                  shortLink.getUpdatedTime()
+                  shortLink.getUpdatedTime(),
+                  shortLink.isQrCreated()
                ))
          );
    }
@@ -139,7 +140,8 @@ public class ShortLinkService {
                   url,
                   shortLink.getExpiryDate(),
                   shortLink.getCreationDate(),
-                  shortLink.getUpdatedTime()
+                  shortLink.getUpdatedTime(),
+                  shortLink.isQrCreated()
                ));
          });
    }
@@ -157,7 +159,8 @@ public class ShortLinkService {
                   shortLink.getShortedLink(),
                   shortLink.getExpiryDate(),
                   shortLink.getCreationDate(),
-                  shortLink.getUpdatedTime()
+                  shortLink.getUpdatedTime(),
+                  shortLink.isQrCreated()
                ));
          });
    }
