@@ -19,6 +19,7 @@ public class UserRouter {
    public static final String SEND_FORGET_PASSWORD_URL = "/api/auth/sendForgotPasswordVerificationEmail";
    public static final String FORGOT_PASSWORD_URL = "api/auth/forgotPassword";
    public static final String CHANGE_USERNAME_URL = "/api/auth/changeUsername";
+   public static final String link = "/api/auth/linkPreviewDetail";
 
    @Autowired
    public UserRouter(UserHandler userHandler) {
@@ -34,7 +35,8 @@ public class UserRouter {
          .andRoute(RequestPredicates.PUT(RESET_PASSWORD_URL), userHandler::resetPassword)
          .andRoute(RequestPredicates.POST(SEND_FORGET_PASSWORD_URL), userHandler::verifyEmailForForgotPassword)
          .andRoute(RequestPredicates.PUT(FORGOT_PASSWORD_URL), userHandler::forgotPassword)
-         .andRoute(RequestPredicates.PUT(CHANGE_USERNAME_URL), userHandler::updateUsername);
+         .andRoute(RequestPredicates.PUT(CHANGE_USERNAME_URL), userHandler::updateUsername)
+         .andRoute(RequestPredicates.GET(link), userHandler::getLinkDetailFromLinkPreview);
 
    }
 }
