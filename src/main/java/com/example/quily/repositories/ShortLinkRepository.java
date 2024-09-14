@@ -47,6 +47,7 @@ public class ShortLinkRepository {
          .bind(IS_ACTIVE, shortLink.isActive())
          .bind(IS_QR_CREATED, shortLink.isQrCreated())
          .bind(TITLE, shortLink.getTitle())
+         .bind(LOGO, shortLink.getLogo())
          .fetch()
          .rowsUpdated()
          .flatMap(row -> {
@@ -80,12 +81,13 @@ public class ShortLinkRepository {
          .map(CommonUtil::parseToShortLinkResponse);
    }
 
-   public Mono<String> updateShortLink(Long id, String shortedLink, String originalLink, String title) {
+   public Mono<String> updateShortLink(Long id, String shortedLink, String originalLink, String title, String logo) {
       return client.sql(SqlQueryToUpdateShortLinkProcedure)
          .bind(ID, id)
          .bind(SHORTED_LINK, shortedLink)
          .bind(ORIGINAL_LINK, originalLink)
          .bind(TITLE, title)
+         .bind(LOGO, logo)
          .fetch()
          .rowsUpdated()
          .flatMap(result -> result > 0

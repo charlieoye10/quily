@@ -9,6 +9,7 @@ public class LinkPreviewResponse {
    private String title;
    private String description;
    private String url;
+   private String image;
    private int error;
    private String errorMessage;
 }

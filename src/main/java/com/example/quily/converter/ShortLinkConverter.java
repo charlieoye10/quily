@@ -22,7 +22,8 @@ public class ShortLinkConverter implements Converter<CreateShortLinkRequest, Sho
    public ShortLink convertRequestToModel(CreateShortLinkRequest createShortLinkRequest,
                                           String shortLink,
                                           String userEmail,
-                                          String title) {
+                                          String title,
+                                          String logo) {
       return new ShortLink(
          userEmail,
          createShortLinkRequest.getOriginalLink(),
@@ -32,7 +33,8 @@ public class ShortLinkConverter implements Converter<CreateShortLinkRequest, Sho
          true,
          LocalDateTime.now(),
          createShortLinkRequest.getIsQrRequest(),
-         title);
+         title,
+         logo);
    }
 
    @Override
@@ -45,7 +47,8 @@ public class ShortLinkConverter implements Converter<CreateShortLinkRequest, Sho
          shortLink.getCreationDate(),
          shortLink.getUpdatedTime(),
          shortLink.isQrCreated(),
-         shortLink.getTitle());
+         shortLink.getTitle(),
+         shortLink.getLogo());
       return new ResponseBody<>(statusCode, message, shortLinkResponse);
    }
 
