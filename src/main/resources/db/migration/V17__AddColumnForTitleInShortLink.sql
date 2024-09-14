@@ -1,5 +1,7 @@
 ALTER TABLE Quily.short_link
     ADD COLUMN title TEXT;
+ALTER TABLE Quily.short_link
+    ADD COLUMN logo TEXT DEFAULT NULL;
 
 USE `Quily`;
 
@@ -15,7 +17,8 @@ CREATE PROCEDURE `create_short_link` (
     IN p_is_active BOOLEAN,
     IN p_link_to_compare TEXT,
     IN p_is_qr_created TINYINT,
-    IN p_title TEXT
+    IN p_title TEXT,
+    IN p_logo TEXT
 )
 BEGIN
     IF NOT EXISTS (
@@ -33,7 +36,8 @@ BEGIN
             `is_active`,
             `update_time`,
             `is_qr_created`,
-             `title`
+             `title`,
+             `logo`
         ) VALUES (
                      p_user_id,
                      p_original_link,
@@ -43,7 +47,8 @@ BEGIN
                      p_is_active,
                      NOW(),
                      p_is_qr_created,
-                     p_title
+                     p_title,
+                     p_logo
                  );
     END IF;
 END$$
@@ -59,7 +64,8 @@ CREATE PROCEDURE `update_short_link` (
     IN id_value BIGINT,
     IN shorted_link_value TEXT,
     IN original_link_value TEXT,
-    IN title_value TEXT
+    IN title_value TEXT,
+    IN logo_value TEXT
 )
 BEGIN
 
@@ -67,7 +73,8 @@ BEGIN
     SET shorted_link = shorted_link_value,
         original_link = original_link_value,
         update_time = NOW(),
-        title = title_value
+        title = title_value,
+        logo = logo_value
     WHERE id = id_value;
 
 END$$

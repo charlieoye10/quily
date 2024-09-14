@@ -16,4 +16,5 @@ public class ShortLinkResponse {
     private LocalDateTime updatedTime;
     private boolean isQrCreated;
     private String title;
+    private String logo;
 }

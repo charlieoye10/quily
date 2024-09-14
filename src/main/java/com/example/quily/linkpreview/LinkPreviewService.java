@@ -32,7 +32,7 @@ public class LinkPreviewService {
          .retrieve()
          .bodyToMono(LinkPreviewResponse.class)
          .onErrorResume(e -> Mono.just(new LinkPreviewResponse("Untitled",
-            "", "",
+            "", "", "",
             400, "Error found from LinkPreviewService")));
    }
 
@@ -42,7 +42,7 @@ public class LinkPreviewService {
       } else {
          return Mono.just(
             new LinkPreviewResponse("Untitled",
-               "", "",
+               "", "", "",
                HttpStatus.TOO_MANY_REQUESTS.value(),
                "API rate limit Exceeded on LinkPreviewService")
          );
