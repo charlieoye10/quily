@@ -3,6 +3,7 @@ package com.example.quily.services;
 import com.example.quily.constants.ShortLinkConstants;
 import com.example.quily.exception.EntityAlreadyExistException;
 import com.example.quily.exception.ResourceNotFoundException;
+import com.example.quily.linkpreview.LinkPreviewService;
 import com.example.quily.model.KeyIndices;
 import com.example.quily.model.ShortLink;
 import com.example.quily.repositories.ShortLinkRepository;
@@ -28,14 +29,16 @@ public class ShortLinkService {
    private final KeyGeneratorService KeyGeneratorService;
    private final ShortLinkRepository shortLinkRepository;
    private final UserDetailsServiceImpl userDetailsService;
+   private final LinkPreviewService linkPreviewService;
 
    @Autowired
    public ShortLinkService(KeyGeneratorService keyGeneratorService, ShortLinkRepository shortLinkRepository,
-                           UserDetailsServiceImpl userDetailsService) {
+                           UserDetailsServiceImpl userDetailsService, LinkPreviewService linkPreviewService) {
       this.KeyGeneratorService = keyGeneratorService;
       this.shortLinkRepository = shortLinkRepository;
       this.userDetailsService = userDetailsService;
 
+      this.linkPreviewService = linkPreviewService;
    }
 
    public Mono<ShortLink> createShortLink(ShortLink shortLink) {
@@ -86,20 +89,38 @@ public class ShortLinkService {
       return shortLinkRepository.getShortLinks(pageSize, pageNumber, userEmail);
    }
 
-   public Mono<ShortLinkResponse> updateShortLink(UpdateShortLinkRequest req) {
-      return shortLinkRepository.getShortLink(req.getShortedLink())
-         .flatMap(shortLink -> {
-            if (req.getCustomBackHalf() != null && req.getOriginalLink() != null) {
-               return handleShortLinkAndOriginalLinkUpdate(shortLink, req.getOriginalLink(), req.getCustomBackHalf());
-            }
-            if (req.getCustomBackHalf() != null) {
-               return handleShortLinkUpdate(shortLink, req.getCustomBackHalf());
-            }
-            return handleOriginalLinkUpdate(shortLink, req.getOriginalLink());
-         }).switchIfEmpty(Mono.error(new ResourceNotFoundException(SHORT_LINK_DOES_NOT_EXIST_MESSAGE)));
+   public Mono<String> getTitle(String url, String titleValue) {
+      System.out.println("titleValue -> " + titleValue);
+      if (titleValue != null && !titleValue.isEmpty()) {
+         return Mono.just(titleValue);
+      }
+      return linkPreviewService.getUrlDetails(url)
+         .map(linkDetail -> {
+            if (linkDetail.getTitle().isEmpty() || linkDetail.getTitle().equals("Untitled")) {
+               if (url.length() < 50) return url + " - untitled";
+               else return url.substring(0, 50) + " - untitled";
+            } else return linkDetail.getTitle();
+         });
    }
 
-   private Mono<ShortLinkResponse> handleShortLinkAndOriginalLinkUpdate(ShortLink shortLink, String originalLink, String customAlias) {
+   public Mono<ShortLinkResponse> updateShortLink(UpdateShortLinkRequest req) {
+      return shortLinkRepository.getShortLink(req.getShortedLink())
+         .flatMap(shortLink -> getTitle(req.getOriginalLink(), req.getTitle())
+            .flatMap(title -> {
+               if (req.getCustomBackHalf() != null && req.getOriginalLink() != null) {
+                  return handleShortLinkAndOriginalLinkUpdate(shortLink, req.getOriginalLink(), req.getCustomBackHalf(), title);
+               }
+               if (req.getCustomBackHalf() != null) {
+                  return handleShortLinkUpdate(shortLink, req.getCustomBackHalf(), req.getTitle());
+               }
+               if (req.getTitle() != null) {
+                  return handTitleRequest(shortLink, title);
+               }
+               return handleOriginalLinkUpdate(shortLink, req.getOriginalLink(), title);
+            })).switchIfEmpty(Mono.error(new ResourceNotFoundException(SHORT_LINK_DOES_NOT_EXIST_MESSAGE)));
+   }
+
+   private Mono<ShortLinkResponse> handleShortLinkAndOriginalLinkUpdate(ShortLink shortLink, String originalLink, String customAlias, String title) {
       final String url = String.join("", ShortLinkConstants.BASE_URL, customAlias);
       return shortLinkRepository.getShortLinkByOriginalLinkCustomAliasAndEmail(originalLink, url, shortLink.getUserEmail())
          .flatMap(existingShortLink -> {
@@ -112,7 +133,7 @@ public class ShortLinkService {
             }
          }).cast(ShortLinkResponse.class)
          .switchIfEmpty(
-            shortLinkRepository.updateShortLink(shortLink.getId(), url, originalLink)
+            shortLinkRepository.updateShortLink(shortLink.getId(), url, originalLink, title)
                .map(updatedShortLink -> new ShortLinkResponse(
                   shortLink.getUserEmail(),
                   originalLink,
@@ -120,19 +141,20 @@ public class ShortLinkService {
                   shortLink.getExpiryDate(),
                   shortLink.getCreationDate(),
                   shortLink.getUpdatedTime(),
-                  shortLink.isQrCreated()
+                  shortLink.isQrCreated(),
+                  title
                ))
          );
    }
 
-   private Mono<ShortLinkResponse> handleShortLinkUpdate(ShortLink shortLink, String customAlias) {
+   private Mono<ShortLinkResponse> handleShortLinkUpdate(ShortLink shortLink, String customAlias, String title) {
       final String url = String.join("", ShortLinkConstants.BASE_URL, customAlias);
       return isCustomAliasAvailable(customAlias)
          .flatMap(isAvailable -> {
             if (!isAvailable) {
                return Mono.error(new EntityAlreadyExistException(CUSTOM_ALIAS_EXISTS_MESSAGE));
             }
-            return shortLinkRepository.updateShortLink(shortLink.getId(), url, shortLink.getOriginalLink())
+            return shortLinkRepository.updateShortLink(shortLink.getId(), url, shortLink.getOriginalLink(), title)
                .map(updatedShortLink -> new ShortLinkResponse(
                   shortLink.getUserEmail(),
                   shortLink.getOriginalLink(),
@@ -140,18 +162,19 @@ public class ShortLinkService {
                   shortLink.getExpiryDate(),
                   shortLink.getCreationDate(),
                   shortLink.getUpdatedTime(),
-                  shortLink.isQrCreated()
+                  shortLink.isQrCreated(),
+                  title
                ));
          });
    }
 
-   private Mono<ShortLinkResponse> handleOriginalLinkUpdate(ShortLink shortLink, String originalLink) {
+   private Mono<ShortLinkResponse> handleOriginalLinkUpdate(ShortLink shortLink, String originalLink, String title) {
       return isOriginalLinkAvailableForTeam(originalLink, shortLink.getUserEmail())
          .flatMap(isAvailable -> {
             if (!isAvailable) {
                return Mono.error(new EntityAlreadyExistException(LINK_ALREADY_USED_MESSAGE));
             }
-            return shortLinkRepository.updateShortLink(shortLink.getId(), shortLink.getShortedLink(), originalLink)
+            return shortLinkRepository.updateShortLink(shortLink.getId(), shortLink.getShortedLink(), originalLink, title)
                .map(updatedShortLink -> new ShortLinkResponse(
                   shortLink.getUserEmail(),
                   originalLink,
@@ -159,8 +182,23 @@ public class ShortLinkService {
                   shortLink.getExpiryDate(),
                   shortLink.getCreationDate(),
                   shortLink.getUpdatedTime(),
-                  shortLink.isQrCreated()
+                  shortLink.isQrCreated(),
+                  title
                ));
          });
+   }
+
+   private Mono<ShortLinkResponse> handTitleRequest(ShortLink shortLink, String title) {
+      return shortLinkRepository.updateShortLink(shortLink.getId(), shortLink.getShortedLink(), shortLink.getOriginalLink(), title)
+         .map(updatedShortLink -> new ShortLinkResponse(
+            shortLink.getUserEmail(),
+            shortLink.getOriginalLink(),
+            shortLink.getShortedLink(),
+            shortLink.getExpiryDate(),
+            shortLink.getCreationDate(),
+            shortLink.getUpdatedTime(),
+            shortLink.isQrCreated(),
+            title
+         ));
    }
 }

@@ -1,5 +1,7 @@
 package com.example.quily.handler;
 
+import com.example.quily.linkpreview.LinkPreviewResponse;
+import com.example.quily.linkpreview.LinkPreviewService;
 import com.example.quily.metadata.LoginResponseData;
 import com.example.quily.constants.UserConstants;
 import com.example.quily.converter.UserSignupConverter;
@@ -32,13 +34,15 @@ public class UserHandler {
    private final UserDao userDao;
    private final UserSignupConverter userSignupConverter;
    private final JwtUtil jwtUtil;
+   private final LinkPreviewService linkPreviewService;
 
 	@Autowired
-   public UserHandler(UserService userService, UserDao userDao, UserSignupConverter userSignupConverter, JwtUtil jwtUtil) {
+   public UserHandler(UserService userService, UserDao userDao, UserSignupConverter userSignupConverter, JwtUtil jwtUtil, LinkPreviewService linkPreviewService) {
       this.userService = userService;
       this.userDao = userDao;
       this.userSignupConverter = userSignupConverter;
       this.jwtUtil = jwtUtil;
+      this.linkPreviewService = linkPreviewService;
    }
 
    private Mono<ServerResponse> handleSignupResponseAfterEmailValidation(SignUpResponse signUpResponse) {
@@ -137,5 +141,13 @@ public class UserHandler {
          .flatMap(message -> ServerResponse.ok()
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(new ResponseBody<>(HttpStatus.OK.value(), message, null)));
+   }
+
+   public Mono<ServerResponse> getLinkDetailFromLinkPreview(ServerRequest serverRequest) {
+      return serverRequest.bodyToMono(CreateShortLinkRequest.class)
+         .flatMap(url -> linkPreviewService.getUrlDetails(url.getOriginalLink()))
+         .flatMap(detail -> ServerResponse.ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(detail));
    }
 }

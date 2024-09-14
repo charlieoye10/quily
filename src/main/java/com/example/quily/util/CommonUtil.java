@@ -56,7 +56,8 @@ public class CommonUtil {
          convertUTCToKolkataTimeZone((ZonedDateTime) row.get(EXPIRY_DATE)),
          convertByteToBoolean(row.get(IS_ACTIVE)),
          convertUTCToKolkataTimeZone((ZonedDateTime) row.get(UPDATED_TIME)),
-         convertByteToBoolean(row.get(IS_QR_CREATED))
+         convertByteToBoolean(row.get(IS_QR_CREATED)),
+         (String) row.get(TITLE)
       );
    }
 
@@ -83,7 +84,8 @@ public class CommonUtil {
          handleExpiryDateResponse(convertUTCToKolkataTimeZone((ZonedDateTime) row.get(EXPIRY_DATE))),
          convertUTCToKolkataTimeZone((ZonedDateTime) row.get(CREATION_DATE)),
          convertUTCToKolkataTimeZone((ZonedDateTime) row.get(UPDATED_TIME)),
-         convertByteToBoolean(row.get(IS_QR_CREATED))
+         convertByteToBoolean(row.get(IS_QR_CREATED)),
+         (String) row.get(TITLE)
       );
    }
 
