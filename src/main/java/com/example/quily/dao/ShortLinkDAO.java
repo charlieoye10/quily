@@ -4,6 +4,7 @@ import com.example.quily.constants.ShortLinkConstants;
 import com.example.quily.converter.ShortLinkConverter;
 import com.example.quily.exception.BadRequestException;
 import com.example.quily.exception.EntityAlreadyExistException;
+import com.example.quily.linkpreview.LinkPreviewService;
 import com.example.quily.model.KeyIndices;
 import com.example.quily.model.ShortLink;
 import com.example.quily.request.CreateShortLinkRequest;
@@ -31,7 +32,7 @@ public class ShortLinkDAO {
    public ShortLinkDAO(KeyGeneratorService keyGeneratorService,
                        ShortLinkService shortLinkService,
                        ShortLinkConverter converter,
-                       UserDetailsServiceImpl userDetailsService) {
+                       UserDetailsServiceImpl userDetailsService, LinkPreviewService linkPreviewService) {
       this.keyGeneratorService = keyGeneratorService;
       this.shortLinkService = shortLinkService;
       this.converter = converter;
@@ -39,16 +40,18 @@ public class ShortLinkDAO {
    }
 
    public Mono<ShortLink> createShortLink(CreateShortLinkRequest request) {
-      return userDetailsService.getLoggedInUser()
-         .flatMap(userDetails -> {
-            if (request.getCustomBackHalf() != null) {
-               return handleCustomAlias(request, userDetails);
-            }
-            return handleGeneratedAlias(request, userDetails);
-         });
+      return shortLinkService.getTitleAndLogo(request.getOriginalLink(), request.getTitle())
+         .flatMap(titleAndLogo ->
+            userDetailsService.getLoggedInUser()
+               .flatMap(userDetails -> {
+                  if (request.getCustomBackHalf() != null) {
+                     return handleCustomAlias(request, userDetails, titleAndLogo.get(0), titleAndLogo.get(1));
+                  }
+                  return handleGeneratedAlias(request, userDetails, titleAndLogo.get(0), titleAndLogo.get(1));
+               }));
    }
 
-   private Mono<ShortLink> handleCustomAlias(CreateShortLinkRequest request, UserDetails userDetails) {
+   private Mono<ShortLink> handleCustomAlias(CreateShortLinkRequest request, UserDetails userDetails, String title, String logo) {
       if (!isCustomAliasPatter(request.getCustomBackHalf())) {
          return Mono.error(new BadRequestException(CUSTOM_ALIAS_PATTERN_MESSAGE));
       }
@@ -57,24 +60,24 @@ public class ShortLinkDAO {
             if (!available) {
                return Mono.error(new EntityAlreadyExistException(CUSTOM_ALIAS_EXISTS_MESSAGE));
             }
-            final ShortLink shortLink = getShortLink(request, request.getCustomBackHalf(), userDetails);
+            final ShortLink shortLink = getShortLink(request, request.getCustomBackHalf(), userDetails, title, logo);
             return shortLinkService.createSortLinkAndUpdateIndices(shortLink, Optional.empty());
          });
    }
 
-   private Mono<ShortLink> handleGeneratedAlias(CreateShortLinkRequest request, UserDetails userDetails) {
+   private Mono<ShortLink> handleGeneratedAlias(CreateShortLinkRequest request, UserDetails userDetails, String title, String logo) {
       return keyGeneratorService.getCurrentKey()
          .flatMap(responseDetail -> {
             final String hashKey = responseDetail.getKeyGeneratorResponse().getHashKey();
             final Optional<KeyIndices> nextIndices = Optional.of(responseDetail.getNextIndices());
-            final ShortLink shortLink = getShortLink(request, hashKey, userDetails);
+            final ShortLink shortLink = getShortLink(request, hashKey, userDetails, title, logo);
             return shortLinkService.createSortLinkAndUpdateIndices(shortLink, nextIndices);
          });
    }
 
-   private ShortLink getShortLink(CreateShortLinkRequest request, String hashKey, UserDetails userDetails) {
+   private ShortLink getShortLink(CreateShortLinkRequest request, String hashKey, UserDetails userDetails, String title, String logo) {
       final String shortUrl = String.join("", ShortLinkConstants.BASE_URL, hashKey);
-      return converter.convertRequestToModel(request, shortUrl, userDetails.getUsername());
+      return converter.convertRequestToModel(request, shortUrl, userDetails.getUsername(), title, logo);
    }
 
    public Boolean isCustomAliasPatter(String customAliasPatter) {

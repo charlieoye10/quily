@@ -3,10 +3,10 @@ package com.example.quily.constants;
 public class ShortLinkConstants {
    public static final String BASE_URL = "https://quily.onrender.com/";
    public static final String FE_LOCALHOST_URL = "http://localhost:3000/";
-   public static final String NETLIFY_FE_DOMAIN = "https://production--quily.netlify.app/";
+   public static final String NETLIFY_FE_DOMAIN = "https://main--quily.netlify.app/";
    public static final String FE_LOGIN_URL = FE_LOCALHOST_URL + "login";
    public static final String EMAIL_VERIFICATION_URL = String.join("", BASE_URL, "api/auth/confirm-account?token=");
-   public static final String PASSWORD_VERIFICATION_URL = String.join("", NETLIFY_FE_DOMAIN, "ForgotPassword/token/");
+   public static final String PASSWORD_VERIFICATION_URL = String.join("", NETLIFY_FE_DOMAIN, "forgot-password/change/");
 
    public static final String LINK_ALREADY_USED_MESSAGE = "Provided link already has been used.";
    public static final String SHORT_LINK_CREATED_MESSAGE = "Link shorted successfully";
@@ -24,14 +24,14 @@ public class ShortLinkConstants {
    public static final String SqlQueryToCallGetShortLinkProcedure = "CALL get_short_link_by_url(:shorted_link)";
 
    public static final String SqlQueryToCallCreateShortLinkProcedure =
-      "CALL create_short_link(:user_email, :original_link, :shorted_link, :expiry_date, :is_active, :compare_link, :is_qr_created)";
+      "CALL create_short_link(:user_email, :original_link, :shorted_link, :expiry_date, :is_active, :compare_link, :is_qr_created, :title, :logo)";
 
    public static final String SqlQueryToCallDeletedShortLinkProcedure =
       "CALL delete_short_link(:user_email, :shorted_link)";
    public static final String SqlQueryToGetShortLinksProcedure = "CALL get_short_links(:page_number, :page_size, :user_email)";
 
    public static final String SqlQueryToUpdateShortLinkProcedure =
-      "CALL update_short_link(:id, :shorted_link, :original_link)";
+      "CALL update_short_link(:id, :shorted_link, :original_link, :title, :logo)";
 
    public static final String SqlQueryToCallGetShortLinkByOriginalLinkAndEmailProcedure = "CALL get_short_link_by_original_link_and_email(:original_link, :user_email)";
 
