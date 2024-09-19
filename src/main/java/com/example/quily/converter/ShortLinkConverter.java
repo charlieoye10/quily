@@ -21,7 +21,9 @@ public class ShortLinkConverter implements Converter<CreateShortLinkRequest, Sho
 
    public ShortLink convertRequestToModel(CreateShortLinkRequest createShortLinkRequest,
                                           String shortLink,
-                                          String userEmail) {
+                                          String userEmail,
+                                          String title,
+                                          String logo) {
       return new ShortLink(
          userEmail,
          createShortLinkRequest.getOriginalLink(),
@@ -30,7 +32,9 @@ public class ShortLinkConverter implements Converter<CreateShortLinkRequest, Sho
          convertStringToLocalTimeDate(createShortLinkRequest.getExpiryDate()),
          true,
          LocalDateTime.now(),
-         createShortLinkRequest.getIsQrRequest());
+         createShortLinkRequest.getIsQrRequest(),
+         title,
+         logo);
    }
 
    @Override
@@ -42,7 +46,9 @@ public class ShortLinkConverter implements Converter<CreateShortLinkRequest, Sho
          handleExpiryDateResponse(shortLink.getExpiryDate()),
          shortLink.getCreationDate(),
          shortLink.getUpdatedTime(),
-         shortLink.isQrCreated());
+         shortLink.isQrCreated(),
+         shortLink.getTitle(),
+         shortLink.getLogo());
       return new ResponseBody<>(statusCode, message, shortLinkResponse);
    }
 
