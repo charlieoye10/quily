@@ -25,5 +25,6 @@ public class KeyGeneratorRouter {
       return RouterFunctions
          .route(RequestPredicates.GET(GET_KEY_URL), req -> keyGeneratorHandler.getAvailableKey())
          .andRoute(RequestPredicates.PUT(KGS_UPDATE_URL), keyGeneratorHandler::updateKey);
+      //test by sami
    }
 }
