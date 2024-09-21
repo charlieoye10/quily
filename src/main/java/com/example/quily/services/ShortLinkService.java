@@ -91,28 +91,33 @@ public class ShortLinkService {
       return shortLinkRepository.getShortLinks(pageSize, pageNumber, userEmail);
    }
 
-   public Mono<List<String>> getTitleAndLogo(String url, String titleValue) {
+   public Mono<List<String>> getTitleAndLogo(String url, String titleValue, ShortLink shortLink) {
       if (titleValue != null && !titleValue.isEmpty()) {
          return Mono.just(Arrays.asList(titleValue, ""));
       }
-      return linkPreviewService.getUrlDetails(url)
-         .map(linkDetail -> {
-            if (linkDetail.getTitle().isEmpty() || linkDetail.getTitle().equals("Untitled")) {
-               if (url.length() < 50) return Arrays.asList(url + " - untitled", "");
-               else return Arrays.asList(url.substring(0, 50) + " - untitled", "");
-            } else return Arrays.asList(linkDetail.getTitle(), linkDetail.getImage());
-         });
+      if (url != null && !url.isEmpty()) {
+        return linkPreviewService.getUrlDetails(url)
+            .map(linkDetail -> {
+               if (linkDetail.getTitle().isEmpty() || linkDetail.getTitle().equals("Untitled")) {
+                  if (url.length() < 50) return Arrays.asList(url + " - untitled", "");
+                  else return Arrays.asList(url.substring(0, 50) + " - untitled", "");
+               } else return Arrays.asList(linkDetail.getTitle(), linkDetail.getImage());
+            });
+      }
+      if (shortLink != null)
+         return Mono.just(Arrays.asList(shortLink.getTitle(), shortLink.getLogo()));
+      return Mono.just(Arrays.asList("Untitled", ""));
    }
 
    public Mono<ShortLinkResponse> updateShortLink(UpdateShortLinkRequest req) {
       return shortLinkRepository.getShortLink(req.getShortedLink())
-         .flatMap(shortLink -> getTitleAndLogo(req.getOriginalLink(), req.getTitle())
+         .flatMap(shortLink -> getTitleAndLogo(req.getOriginalLink(), req.getTitle(), shortLink)
             .flatMap(titleAndLogo -> {
                if (req.getCustomBackHalf() != null && req.getOriginalLink() != null) {
                   return handleShortLinkAndOriginalLinkUpdate(shortLink, req.getOriginalLink(), req.getCustomBackHalf(), titleAndLogo.get(0), titleAndLogo.get(1));
                }
                if (req.getCustomBackHalf() != null) {
-                  return handleShortLinkUpdate(shortLink, req.getCustomBackHalf(), req.getTitle(), "");
+                  return handleShortLinkUpdate(shortLink, req.getCustomBackHalf(), titleAndLogo.get(0), titleAndLogo.get(1));
                }
                if (req.getTitle() != null) {
                   return handTitleRequest(shortLink, titleAndLogo.get(0), titleAndLogo.get(1));

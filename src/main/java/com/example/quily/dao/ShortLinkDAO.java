@@ -40,7 +40,7 @@ public class ShortLinkDAO {
    }
 
    public Mono<ShortLink> createShortLink(CreateShortLinkRequest request) {
-      return shortLinkService.getTitleAndLogo(request.getOriginalLink(), request.getTitle())
+      return shortLinkService.getTitleAndLogo(request.getOriginalLink(), request.getTitle(), null)
          .flatMap(titleAndLogo ->
             userDetailsService.getLoggedInUser()
                .flatMap(userDetails -> {
