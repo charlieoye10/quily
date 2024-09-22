@@ -113,4 +113,11 @@ public class ShortLinkRepository {
          .first()
          .map(CommonUtil::parseShortLink);
    }
+
+   public Mono<Long> deleteShortLinks(String email, String urls) {
+      return client.sql(SqlQueryToDeleteLinksProcedure)
+         .bind(USER_EMAIL, email)
+         .bind("urls", urls)
+         .fetch().rowsUpdated();
+   }
 }
