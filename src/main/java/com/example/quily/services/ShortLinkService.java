@@ -126,6 +126,10 @@ public class ShortLinkService {
             })).switchIfEmpty(Mono.error(new ResourceNotFoundException(SHORT_LINK_DOES_NOT_EXIST_MESSAGE)));
    }
 
+   public Mono<Long> deleteShortLinks(String email, String urls) {
+      return shortLinkRepository.deleteShortLinks(email, urls);
+   }
+
    private Mono<ShortLinkResponse> handleShortLinkAndOriginalLinkUpdate(ShortLink shortLink, String originalLink, String customAlias, String title, String logo) {
       final String url = String.join("", ShortLinkConstants.BASE_URL, customAlias);
       return shortLinkRepository.getShortLinkByOriginalLinkCustomAliasAndEmail(originalLink, url, shortLink.getUserEmail())
