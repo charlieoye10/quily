@@ -1,4 +1,4 @@
-CREATE TABLE quily.audit_log (
+CREATE TABLE Quily.audit_log (
     audit_log_id INT AUTO_INCREMENT PRIMARY KEY,
     record_id TEXT,
     record_type TEXT,
