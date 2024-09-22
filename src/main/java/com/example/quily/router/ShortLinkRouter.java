@@ -19,6 +19,7 @@ public class ShortLinkRouter {
       "/api/shortLink/getShortLink";
    private static final String UPDATE_SHORT_LINK_URL = "/api/shortLink/updateShortLink";
    public static final String REDIRECT_TO_ORIGINAL_LINK = "/{id:(?!api).+}";
+   private static final String DELETE_SHORT_LINKS = "/api/shortLink/delete";
 
    @Autowired
    public ShortLinkRouter(ShortLinkHandler shortLinkHandler) {
@@ -33,6 +34,7 @@ public class ShortLinkRouter {
          .andRoute(RequestPredicates.DELETE(DELETE_ORIGINAL_LINK_URL), shortLinkHandler::deleteShortLink)
          .andRoute(RequestPredicates.GET(GET_SHORT_LINK_LIST), shortLinkHandler::getShortLinks)
          .andRoute(RequestPredicates.PUT(UPDATE_SHORT_LINK_URL), shortLinkHandler::updateShortLink)
-         .andRoute(RequestPredicates.GET(GET_LINK_DETAIL), shortLinkHandler::getLinkDetail);
+         .andRoute(RequestPredicates.GET(GET_LINK_DETAIL), shortLinkHandler::getLinkDetail)
+         .andRoute(RequestPredicates.DELETE(DELETE_SHORT_LINKS), shortLinkHandler::delete);
    }
 }

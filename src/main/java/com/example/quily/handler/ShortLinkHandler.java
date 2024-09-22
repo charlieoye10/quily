@@ -6,6 +6,7 @@ import com.example.quily.dao.ShortLinkDAO;
 import com.example.quily.exception.BadRequestException;
 import com.example.quily.exception.ResourceNotFoundException;
 import com.example.quily.request.CreateShortLinkRequest;
+import com.example.quily.request.DeleteShortLinksRequest;
 import com.example.quily.request.UpdateShortLinkRequest;
 import com.example.quily.response.ResponseBody;
 import com.example.quily.response.ShortLinkResponse;
@@ -73,13 +74,12 @@ public class ShortLinkHandler {
 
    public Mono<ServerResponse> deleteShortLink(ServerRequest serverRequest) {
     final Optional<String> shortLinkUrlOpt = serverRequest.queryParam("shortLink");
-      final String errorMessage = ShortLinkConstants.SHORT_LINK_DOES_NOT_PASSED;
       return shortLinkUrlOpt.map(shortLink ->
          shortLinkService.deleteShortLink(shortLink)
          .flatMap(message -> ServerResponse.ok()
          .contentType(MediaType.APPLICATION_JSON)
          .bodyValue(new ResponseBody<>(HttpStatus.OK.value(), message, null))))
-         .orElseGet(() -> Mono.error(new BadRequestException(errorMessage)));
+         .orElseGet(() -> Mono.error(new BadRequestException(ShortLinkConstants.SHORT_LINK_DOES_NOT_PASSED)));
 
    }
 
@@ -114,6 +114,7 @@ public class ShortLinkHandler {
       if (backHalf.isEmpty()) {
          return Mono.error(new BadRequestException(PARAMS_VALUE_NOT_PRESENT));
       }
+
       final String shortURL = String.join("", BASE_URL, backHalf.get());
       return shortLinkService.getShortLinkDetail(shortURL)
          .filter(linkDetail -> linkDetail.getUserEmail().equals(userEmail))
@@ -124,5 +125,16 @@ public class ShortLinkHandler {
                .bodyValue(responseBody);
          })
          .switchIfEmpty(handleIfInvalidUrl());
+   }
+
+   public Mono<ServerResponse> delete(ServerRequest serverRequest) {
+      final String userEmail = serverRequest.headers().firstHeader("UserEmail");
+      return serverRequest.bodyToMono(DeleteShortLinksRequest.class)
+         .flatMap(req ->
+            shortLinkService.deleteShortLinks(userEmail, req.getLinks())
+               .flatMap(res -> ServerResponse.ok()
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .bodyValue(new ResponseBody<>(HttpStatus.OK.value(), LINK_DELETE_MESSAGE , null)))
+            );
    }
 }
