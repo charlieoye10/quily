@@ -35,6 +35,6 @@ public class ShortLinkRouter {
          .andRoute(RequestPredicates.GET(GET_SHORT_LINK_LIST), shortLinkHandler::getShortLinks)
          .andRoute(RequestPredicates.PUT(UPDATE_SHORT_LINK_URL), shortLinkHandler::updateShortLink)
          .andRoute(RequestPredicates.GET(GET_LINK_DETAIL), shortLinkHandler::getLinkDetail)
-         .andRoute(RequestPredicates.DELETE(DELETE_SHORT_LINKS), shortLinkHandler::delete);
+         .andRoute(RequestPredicates.PUT(DELETE_SHORT_LINKS), shortLinkHandler::delete);
    }
 }
