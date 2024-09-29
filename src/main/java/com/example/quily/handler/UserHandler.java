@@ -21,10 +21,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+import static com.example.quily.constants.ColumnNameConstants.*;
 
 import java.net.URI;
 import java.util.Optional;
 
+import static com.example.quily.constants.CommonConstants.PARAMS_VALUE_NOT_PRESENT;
 import static com.example.quily.constants.ShortLinkConstants.FE_LOGIN_URL;
 import static com.example.quily.constants.UserConstants.LOGIN_FAILED_MESSAGE;
 
@@ -149,5 +151,23 @@ public class UserHandler {
          .flatMap(detail -> ServerResponse.ok()
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(detail));
+   }
+
+   public Mono<ServerResponse> getAuditLog(ServerRequest serverRequest) {
+      final Optional<Integer> pageSize = serverRequest.queryParam(PAGE_SIZE).map(Integer::parseInt);
+      final Optional<Integer> pageNumber = serverRequest.queryParam(PAGE_NUMBER).map(Integer::parseInt);
+      final Optional<String> userEmail = serverRequest.queryParam(USER_EMAIL);
+      final Optional<String> recordType = serverRequest.queryParam(RECORD_TYPE);
+      String recordTypeValue = recordType.orElse(null);
+      boolean allPresent = (pageSize.isPresent() && pageNumber.isPresent() && userEmail.isPresent() || recordType.isPresent()) ;
+      if (allPresent) {
+         return userService.getAuditLog(pageSize.get(), pageNumber.get(),recordTypeValue, userEmail.get())
+                 .collectList()
+                 .flatMap(getAuditLog -> ServerResponse.ok()
+                         .contentType(MediaType.APPLICATION_JSON)
+                         .bodyValue(new ResponseBody<>(HttpStatus.OK.value(), null, getAuditLog)));
+      } else {
+         return Mono.error(new BadRequestException(PARAMS_VALUE_NOT_PRESENT));
+      }
    }
 }

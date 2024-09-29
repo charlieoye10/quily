@@ -15,12 +15,15 @@ import com.example.quily.request.ForgetPasswordRequest;
 import com.example.quily.request.ResetPasswordRequest;
 import com.example.quily.request.UserUpdateRequest;
 import com.example.quily.request.VerifyEmailForgetPasswordRequest;
+import com.example.quily.response.AuditLogResponse;
+import com.example.quily.response.ShortLinkResponse;
 import com.example.quily.response.SignUpResponse;
 import com.example.quily.security.UserDetailsServiceImpl;
 import com.example.quily.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
@@ -218,5 +221,9 @@ public class UserService {
          .filter(rowUpdated -> rowUpdated != 0)
          .map(rowUpdated -> USERNAME_UPDATED_SUCCESSFULLY)
          .switchIfEmpty(Mono.error(new InternalServerError(COMMON_INTERNAL_SERVER_MESSAGE)));
+   }
+
+   public Flux<AuditLogResponse> getAuditLog(int pageSize, int pageNumber,String recordType, String userEmail) {
+      return userRepository.getAuditLog(pageSize, pageNumber,recordType, userEmail);
    }
 }

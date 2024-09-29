@@ -40,4 +40,7 @@ public class ShortLinkConstants {
       "CALL get_short_link_by_original_link_custom_alias_and_email(:original_link, :shorted_link, :user_email)";
 
    public static final String SqlQueryToDeleteLinksProcedure = "CALL delete_short_links(:user_email, :urls)";
+
+   public static final String SqlQueryToGetAuditLogsProcedure = "CALL get_audit_logs(:page_number, :page_size, :record_type, :user_email)";
+
 }
