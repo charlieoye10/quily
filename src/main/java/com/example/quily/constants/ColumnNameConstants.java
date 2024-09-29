@@ -38,4 +38,5 @@ public class ColumnNameConstants {
    public static final String ACTION_TYPE = "action_type";
    public static final String PERFORMED_DATE = "performed_date";
    public static final String PERFORMED_BY = "performed_by";
+   public static final String DATA_ENTITY = "data_entity";
 }

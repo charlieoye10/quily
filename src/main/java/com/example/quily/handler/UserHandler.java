@@ -157,11 +157,11 @@ public class UserHandler {
       final Optional<Integer> pageSize = serverRequest.queryParam(PAGE_SIZE).map(Integer::parseInt);
       final Optional<Integer> pageNumber = serverRequest.queryParam(PAGE_NUMBER).map(Integer::parseInt);
       final Optional<String> userEmail = serverRequest.queryParam(USER_EMAIL);
-      final Optional<String> recordType = serverRequest.queryParam(RECORD_TYPE);
-      String recordTypeValue = recordType.orElse(null);
-      boolean allPresent = (pageSize.isPresent() && pageNumber.isPresent() && userEmail.isPresent() || recordType.isPresent()) ;
+      final Optional<String> dataEntity = serverRequest.queryParam(DATA_ENTITY);
+      String dataEntityValue = dataEntity.orElse(null);
+      boolean allPresent = (pageSize.isPresent() && pageNumber.isPresent() && userEmail.isPresent() || dataEntity.isPresent()) ;
       if (allPresent) {
-         return userService.getAuditLog(pageSize.get(), pageNumber.get(),recordTypeValue, userEmail.get())
+         return userService.getAuditLog(pageSize.get(), pageNumber.get(),dataEntityValue, userEmail.get())
                  .collectList()
                  .flatMap(getAuditLog -> ServerResponse.ok()
                          .contentType(MediaType.APPLICATION_JSON)

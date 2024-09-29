@@ -222,7 +222,7 @@ public class UserService {
          .switchIfEmpty(Mono.error(new InternalServerError(COMMON_INTERNAL_SERVER_MESSAGE)));
    }
 
-   public Flux<AuditLogResponse> getAuditLog(int pageSize, int pageNumber,String recordType, String userEmail) {
-      return userRepository.getAuditLog(pageSize, pageNumber,recordType, userEmail);
+   public Flux<AuditLogResponse> getAuditLog(int pageSize, int pageNumber,String dataEntity, String userEmail) {
+      return userRepository.getAuditLog(pageSize, pageNumber,dataEntity, userEmail);
    }
 }

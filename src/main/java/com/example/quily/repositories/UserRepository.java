@@ -64,22 +64,22 @@ public class UserRepository {
          .rowsUpdated();
    }
 
-   public Flux<AuditLogResponse> getAuditLog(int pageSize, int pageNumber, String recordType, String userEmail) {
-      return bindRecordType(
+   public Flux<AuditLogResponse> getAuditLog(int pageSize, int pageNumber, String dataEntity, String userEmail) {
+      return binddataEntity(
               client.sql(SqlQueryToGetAuditLogsProcedure)
                       .bind(PAGE_NUMBER, pageNumber)
                       .bind(PAGE_SIZE, pageSize)
-                      .bind(USER_EMAIL, userEmail), recordType)  // Pass the query and recordType
+                      .bind(USER_EMAIL, userEmail), dataEntity)
               .fetch()
               .all()
               .map(CommonUtil::parseToAuditLogResponse);
    }
 
-   private DatabaseClient.GenericExecuteSpec bindRecordType(DatabaseClient.GenericExecuteSpec query, String recordType) {
-      if (recordType == null || recordType.isEmpty()) {
-         return query.bindNull(RECORD_TYPE, String.class);
+   private DatabaseClient.GenericExecuteSpec binddataEntity(DatabaseClient.GenericExecuteSpec query, String dataEntity) {
+      if (dataEntity == null || dataEntity.isEmpty()) {
+         return query.bindNull(DATA_ENTITY, String.class);
       } else {
-         return query.bind(RECORD_TYPE, recordType);
+         return query.bind(DATA_ENTITY, dataEntity);
       }
    }
 

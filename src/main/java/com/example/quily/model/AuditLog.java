@@ -18,6 +18,7 @@ public class AuditLog {
     private String previous_value;
     private String current_value;
     private String action_type;
+    private String data_entity;
     private LocalDateTime performed_date;
     private String performed_by;
 }

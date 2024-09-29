@@ -13,6 +13,8 @@ public class AuditLogResponse {
     private String previous_value;
     private String current_value;
     private String action_type;
-    private LocalDateTime performed_date;
+    private String data_Entity;
     private String performed_by;
+    private LocalDateTime performed_date;
+
 }

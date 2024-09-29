@@ -41,6 +41,6 @@ public class ShortLinkConstants {
 
    public static final String SqlQueryToDeleteLinksProcedure = "CALL delete_short_links(:user_email, :urls)";
 
-   public static final String SqlQueryToGetAuditLogsProcedure = "CALL get_audit_logs(:page_number, :page_size, :record_type, :user_email)";
+   public static final String SqlQueryToGetAuditLogsProcedure = "CALL get_audit_logs(:page_number, :page_size, :user_email, :data_entity)";
 
 }

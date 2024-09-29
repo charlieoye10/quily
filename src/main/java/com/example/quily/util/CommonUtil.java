@@ -114,8 +114,9 @@ public class CommonUtil {
               (String) row.get(PREVIOUS_VALUE),
               (String) row.get(CURRENT_VALUE),
               (String) row.get(ACTION_TYPE),
-              handleExpiryDateResponse(convertUTCToKolkataTimeZone((ZonedDateTime) row.get(PERFORMED_DATE))),
-              (String) row.get(PERFORMED_BY)
-      );
+              (String) row.get(DATA_ENTITY),
+              (String) row.get(PERFORMED_BY),
+              handleExpiryDateResponse(convertUTCToKolkataTimeZone((ZonedDateTime) row.get(PERFORMED_DATE)))
+              );
    }
 }
