@@ -4,6 +4,7 @@ import com.example.quily.model.EmailConfirmationToken;
 import com.example.quily.model.KeyIndices;
 import com.example.quily.model.ShortLink;
 import com.example.quily.model.User;
+import com.example.quily.response.AuditLogResponse;
 import com.example.quily.response.ShortLinkResponse;
 
 
@@ -104,5 +105,18 @@ public class CommonUtil {
       }
       return utcDateTime.withZoneSameInstant(ZoneId.of("Asia/Kolkata"))
          .toLocalDateTime();
+   }
+
+   public static AuditLogResponse parseToAuditLogResponse(Map<String, Object> row) {
+      return new AuditLogResponse(
+              (String) row.get(RECORD_ID),
+              (String) row.get(RECORD_TYPE),
+              (String) row.get(PREVIOUS_VALUE),
+              (String) row.get(CURRENT_VALUE),
+              (String) row.get(ACTION_TYPE),
+              (String) row.get(DATA_ENTITY),
+              (String) row.get(PERFORMED_BY),
+              handleExpiryDateResponse(convertUTCToKolkataTimeZone((ZonedDateTime) row.get(PERFORMED_DATE)))
+              );
    }
 }
