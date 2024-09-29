@@ -15,5 +15,4 @@ public class AuditLogResponse {
     private String action_type;
     private LocalDateTime performed_date;
     private String performed_by;
-
 }

@@ -16,7 +16,6 @@ import com.example.quily.request.ResetPasswordRequest;
 import com.example.quily.request.UserUpdateRequest;
 import com.example.quily.request.VerifyEmailForgetPasswordRequest;
 import com.example.quily.response.AuditLogResponse;
-import com.example.quily.response.ShortLinkResponse;
 import com.example.quily.response.SignUpResponse;
 import com.example.quily.security.UserDetailsServiceImpl;
 import com.example.quily.util.CommonUtil;

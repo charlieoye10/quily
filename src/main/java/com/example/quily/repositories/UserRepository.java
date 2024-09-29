@@ -2,7 +2,6 @@ package com.example.quily.repositories;
 
 import com.example.quily.model.User;
 import com.example.quily.response.AuditLogResponse;
-import com.example.quily.response.ShortLinkResponse;
 import com.example.quily.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.r2dbc.core.DatabaseClient;
@@ -12,7 +11,6 @@ import reactor.core.publisher.Mono;
 
 import static com.example.quily.constants.ColumnNameConstants.*;
 import static com.example.quily.constants.ShortLinkConstants.SqlQueryToGetAuditLogsProcedure;
-import static com.example.quily.constants.ShortLinkConstants.SqlQueryToGetShortLinksProcedure;
 import static com.example.quily.constants.UserConstants.*;
 
 @Repository
@@ -67,18 +65,22 @@ public class UserRepository {
    }
 
    public Flux<AuditLogResponse> getAuditLog(int pageSize, int pageNumber, String recordType, String userEmail) {
-      var query = client.sql(SqlQueryToGetAuditLogsProcedure)
-              .bind(PAGE_NUMBER, pageNumber)
-              .bind(PAGE_SIZE, pageSize)
-              .bind(USER_EMAIL, userEmail);
-      if (recordType == null || recordType.isEmpty()) {
-         query = query.bindNull(RECORD_TYPE, String.class);
-      } else {
-         query = query.bind(RECORD_TYPE, recordType);
-      }
-      return query.fetch()
+      return bindRecordType(
+              client.sql(SqlQueryToGetAuditLogsProcedure)
+                      .bind(PAGE_NUMBER, pageNumber)
+                      .bind(PAGE_SIZE, pageSize)
+                      .bind(USER_EMAIL, userEmail), recordType)  // Pass the query and recordType
+              .fetch()
               .all()
               .map(CommonUtil::parseToAuditLogResponse);
+   }
+
+   private DatabaseClient.GenericExecuteSpec bindRecordType(DatabaseClient.GenericExecuteSpec query, String recordType) {
+      if (recordType == null || recordType.isEmpty()) {
+         return query.bindNull(RECORD_TYPE, String.class);
+      } else {
+         return query.bind(RECORD_TYPE, recordType);
+      }
    }
 
 }

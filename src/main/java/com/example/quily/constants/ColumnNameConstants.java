@@ -31,7 +31,6 @@ public class ColumnNameConstants {
    public static final String PAGE_NUMBER = "page_number";
    public static final String PAGE_SIZE = "page_size";
 
-
    public static final String RECORD_ID = "record_id";
    public static final String RECORD_TYPE = "record_type";
    public static final String PREVIOUS_VALUE = "previous_value";
@@ -39,5 +38,4 @@ public class ColumnNameConstants {
    public static final String ACTION_TYPE = "action_type";
    public static final String PERFORMED_DATE = "performed_date";
    public static final String PERFORMED_BY = "performed_by";
-
 }
